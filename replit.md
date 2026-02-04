@@ -28,22 +28,34 @@ Additional project-specific preferences:
 ## System Architecture
 
 ### Migration Status
-**Date:** 2026-02-04 - Template-Based Rebuild Foundation COMPLETE
+**Date:** 2026-02-04 - Analysis Complete, Ready for Incremental Migration
 
-The application has begun the template-based rebuild. The original UI/gesture layer is preserved in `legacy-index.js` while the new template system foundation is in place.
+The app is fully working. Analysis identified what to keep vs replace:
 
-**Completed:**
-- `legacy-index.js` - Full backup of working Express server with UI (7304 lines)
-- `index.js` - New orchestrator (browser-side, to be connected)
-- `src/template-library/core/initial-templates.js` - Template library foundation
+**KEEP (UI Layer ~3000 lines):**
+- UI Initialization: `setDistance()`, `loadUserSettings()`, slider handlers
+- Gesture System: `setupGestureEditing()`, drag/swipe handlers (lines 3615-4280)
+- Render System: `renderCards()`, zone colors, dolphin animations
+- Routes: `GET /`, `GET /styles.css`
+
+**REPLACE (Generator ~1500 lines):**
+- `buildOneSetBodyShared()` (line 959)
+- `buildOneSetBodyServer()` (line 5343)
+- `buildOneSetBodyServerLocal()` (line 6179)
+- `generateWorkoutName()`, `generateDrillSetDynamic()`
+- Routes: `POST /generate-workout`, `POST /reroll-set`
+
+**Prepared template structure:**
+- `src/template-library/core/initial-templates.js` - Scale-ready structure
 - `src/generator-v2/core.js` - Generator v2 foundation
 - `src/ui/preserved-layer.js` - UI preservation bridge
+- `legacy-index.js` - Full backup (7304 lines)
 
 **Next Steps:**
-1. Populate initial batch of 50+ validated templates per section
-2. Connect template library to generator-v2
-3. Connect generator-v2 to preserved UI layer
-4. Begin continuous collection pipeline for thousands of sets
+1. Extract UI functions to modules (app keeps working)
+2. Build template generator to replace `buildOneSetBody*`
+3. Connect new generator to POST routes
+4. Remove old algorithmic code
 
 ### Application Structure
 Directory structure for template-based rebuild:
