@@ -3461,10 +3461,11 @@ app.get("/", (req, res) => {
         try {
           const lastFp = loadLastWorkoutFingerprint();
 
+          const useTemplateGen = localStorage.getItem('useTemplateGenerator') === 'true';
           const res = await fetch("/generate-workout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...payload, lastWorkoutFp: lastFp })
+            body: JSON.stringify({ ...payload, lastWorkoutFp: lastFp, useTemplateGenerator: useTemplateGen })
           });
 
           let data = null;
@@ -4833,6 +4834,31 @@ ${HOME_JS_RENDER}
 ${HOME_JS_EVENTS}
 ${HOME_JS_GESTURES}
 ${HOME_JS_CLOSE}
+
+<!-- Generator Test Toggle -->
+<div id="generatorTogglePanel" style="position: fixed; bottom: 10px; right: 10px; z-index: 1000; background: white; padding: 10px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-family: system-ui, sans-serif;">
+  <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+    <input type="checkbox" id="templateGeneratorToggle" style="width: 18px; height: 18px;">
+    <span style="font-size: 14px;">Template Generator</span>
+  </label>
+  <div id="generatorStatus" style="font-size: 11px; color: #666; margin-top: 4px;">Current: Legacy</div>
+</div>
+<script>
+(function() {
+  const toggle = document.getElementById('templateGeneratorToggle');
+  const status = document.getElementById('generatorStatus');
+  if (toggle && status) {
+    const saved = localStorage.getItem('useTemplateGenerator') === 'true';
+    toggle.checked = saved;
+    status.textContent = 'Current: ' + (saved ? 'Template' : 'Legacy');
+    toggle.addEventListener('change', function() {
+      localStorage.setItem('useTemplateGenerator', this.checked);
+      status.textContent = 'Current: ' + (this.checked ? 'Template' : 'Legacy');
+    });
+  }
+})();
+</script>
+
 </body>
 </html>`;
 
@@ -5800,7 +5826,10 @@ app.post("/generate-workout", (req, res) => {
     // ========================================================================
     // GENERATOR SELECTION: Template v2 vs Legacy Algorithmic
     // ========================================================================
-    if (USE_TEMPLATE_GENERATOR && TemplateGenerator) {
+    // Check request body for useTemplateGenerator flag (UI toggle) or fallback to server flag
+    const useTemplateGen = body.useTemplateGenerator === true || USE_TEMPLATE_GENERATOR;
+    
+    if (useTemplateGen && TemplateGenerator) {
       // Template-based generator v2
       const generator = new TemplateGenerator();
       workout = generator.generateWorkout({
