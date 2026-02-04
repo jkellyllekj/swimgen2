@@ -5,7 +5,6 @@
 const form = document.getElementById("genForm");
 const errorBox = document.getElementById("errorBox");
 const statusPill = document.getElementById("statusPill");
-const dolphinLoader = document.getElementById("dolphinLoader");
 const cards = document.getElementById("cards");
 const totalBox = document.getElementById("totalBox");
 const totalText = document.getElementById("totalText");
@@ -15,15 +14,7 @@ const copyBtn = document.getElementById("copyBtn");
 const distanceSlider = document.getElementById("distanceSlider");
 const distanceHidden = document.getElementById("distanceHidden");
 const distanceLabel = document.getElementById("distanceLabel");
-const poolButtons = document.getElementById("poolButtons");
-const poolHidden = document.getElementById("poolLengthHidden");
-const customLen = document.getElementById("customPoolLength");
-const customUnit = document.getElementById("poolLengthUnit");
-const thresholdPace = document.getElementById("thresholdPace");
-const toggleAdvanced = document.getElementById("toggleAdvanced");
-const advancedWrap = document.getElementById("advancedWrap");
 const generateBtn = document.getElementById("generateBtn");
-const advancedChip = document.getElementById("advancedChip");
 
 // ===== MOCK WORKOUT DATA =====
 const MOCK_WORKOUTS = {
@@ -245,7 +236,7 @@ function snap100(n) {
     return Math.round(x / 100) * 100;
 }
 
-function setDistance(val, skipSave) {
+function setDistance(val) {
     const snapped = snap100(val);
     if (distanceSlider) distanceSlider.value = String(snapped);
     if (distanceHidden) distanceHidden.value = String(snapped);
@@ -267,19 +258,6 @@ function fmtMmSs(totalSeconds) {
     return String(mm) + ":" + String(ss).padStart(2, "0");
 }
 
-function unitShortFromPayload(payload) {
-    if (payload.poolLength === "custom") {
-        return payload.poolLengthUnit === "yards" ? "yd" : "m";
-    }
-    return payload.poolLength === "25yd" ? "yd" : "m";
-}
-
-function poolLabelFromPayload(payload) {
-    if (payload.poolLength !== "custom") return payload.poolLength;
-    const u = payload.poolLengthUnit === "yards" ? "yd" : "m";
-    return String(payload.customPoolLength) + u + " custom";
-}
-
 function clearUI() {
     if (errorBox) {
         errorBox.style.display = "none";
@@ -291,12 +269,10 @@ function clearUI() {
     }
     if (totalBox) {
         totalBox.style.display = "none";
-        totalBox.classList.remove("workout-fade-in");
     }
     if (footerBox) {
         footerBox.style.display = "none";
         footerBox.innerHTML = "";
-        footerBox.classList.remove("workout-fade-in");
     }
     if (raw) {
         raw.style.display = "none";
@@ -309,7 +285,6 @@ function clearUI() {
         copyBtn.disabled = true;
         copyBtn.dataset.copyText = "";
     }
-    window.__swgSummary = null;
 }
 
 function renderError(title, details) {
@@ -490,7 +465,7 @@ function computeSetDistanceFromBody(body) {
     return sum > 0 ? sum : null;
 }
 
-function renderCards(payload, workoutText) {
+function renderCards(workoutText) {
     const parts = splitWorkout(workoutText);
     const setLines = parts.setLines || [];
     const footerLines = parts.footerLines || [];
@@ -525,7 +500,6 @@ function renderCards(payload, workoutText) {
         const body = s.bodies.filter(Boolean).join("\n");
         const setDist = computeSetDistanceFromBody(body);
         const effortLevel = getEffortLevel(label, body);
-        const unitShort = unitShortFromPayload(payload);
 
         let boxStyle;
         let textColor = '#111';
@@ -544,12 +518,12 @@ function renderCards(payload, workoutText) {
 
         html.push('<div style="flex:1; min-width:0;">');
         html.push('<div style="font-weight:700; color:' + textColor + '; margin-bottom:6px;">' + safeHtml(label) + '</div>');
-        html.push('<div data-set-body="' + safeHtml(String(idx)) + '" data-original-body="' + safeHtml(body) + '" style="white-space:pre-wrap; line-height:1.35; font-weight:600; color:' + textColor + ';">' + safeHtml(body) + "</div>");
+        html.push('<div style="white-space:pre-wrap; line-height:1.35; font-weight:600; color:' + textColor + ';">' + safeHtml(body) + "</div>");
         html.push("</div>");
 
         html.push('<div class="setRightCol" style="margin-left:10px; display:flex; flex-direction:column; align-items:flex-end;">');
         if (Number.isFinite(setDist)) {
-            html.push('<div class="setMeters" style="font-size:14px; white-space:nowrap; color:' + distColor + ';">' + String(setDist) + unitShort + "</div>");
+            html.push('<div class="setMeters" style="font-size:14px; white-space:nowrap; color:' + distColor + ';">' + String(setDist) + "m</div>");
         }
         html.push("</div>");
 
@@ -562,7 +536,7 @@ function renderCards(payload, workoutText) {
     cards.style.display = "block";
 
     // Render footer
-    renderFooterTotalsAndMeta(footerLines, payload);
+    renderFooterTotalsAndMeta(footerLines);
 
     return true;
 }
@@ -589,27 +563,21 @@ function extractFooterInfo(footerLines) {
     return info;
 }
 
-function renderFooterTotalsAndMeta(footerLines, payload) {
+function renderFooterTotalsAndMeta(footerLines) {
     if (!footerBox) return;
 
-    const s = window.__swgSummary || { units: "", requested: null, poolText: "", paceSec: null };
     const info = extractFooterInfo(footerLines);
 
     // Extract total distance
     let totalDistStr = "";
     if (info.totalDistanceLine) {
         const match = info.totalDistanceLine.match(/Total distance:\s*(\d+)/);
-        if (match) totalDistStr = match[1] + (s.units || "m");
-    } else if (Number.isFinite(s.requested)) {
-        totalDistStr = String(s.requested) + (s.units || "m");
+        if (match) totalDistStr = match[1] + "m";
     }
 
     // Show yellow Total box
     if (totalDistStr && totalBox && totalText) {
         totalText.textContent = "Total " + totalDistStr;
-        totalBox.style.opacity = "0";
-        totalBox.style.transform = "translateY(16px)";
-        totalBox.style.transition = "none";
         totalBox.style.display = "block";
     } else if (totalBox) {
         totalBox.style.display = "none";
@@ -617,7 +585,6 @@ function renderFooterTotalsAndMeta(footerLines, payload) {
 
     // Build summary chips
     const chips = [];
-    if (s.poolText) chips.push("Pool: " + s.poolText);
     if (info.totalLengthsLine) chips.push(info.totalLengthsLine);
     if (info.estTotalTimeLine) chips.push(info.estTotalTimeLine);
 
@@ -647,105 +614,37 @@ function renderFooterTotalsAndMeta(footerLines, payload) {
     f.push("<div style=\"margin-top:12px; text-align:center; font-size:12px; opacity:0.7;\">\u00A9 Creative Arts Global LTD. All rights reserved.</div>");
 
     footerBox.innerHTML = f.join("");
-    footerBox.style.opacity = "0";
-    footerBox.style.transform = "translateY(16px)";
-    footerBox.style.transition = "none";
     footerBox.style.display = "block";
 }
 
-function captureSummary(payload, workoutText) {
-    const units = unitShortFromPayload(payload);
-    const requested = Number(payload.distance);
-    const poolText = poolLabelFromPayload(payload);
-
-    window.__swgSummary = {
-        units: units,
-        requested: requested,
-        poolText: poolText,
-        paceSec: null,
-        workoutText: String(workoutText || "")
-    };
-}
-
-function renderAll(payload, workoutText) {
-    captureSummary(payload, workoutText);
-    const ok = renderCards(payload, workoutText);
+function renderAll(workoutText) {
+    const ok = renderCards(workoutText);
     return ok;
 }
 
 function formToPayload() {
     if (!form) return {};
 
-    const fd = new FormData(form);
-    const payload = Object.fromEntries(fd.entries());
+    const workoutType = document.getElementById("workoutType");
+    const difficulty = document.getElementById("difficulty");
+    const distance = document.getElementById("distanceHidden");
 
-    // Normalize checkboxes
-    const boolNames = [
-        "stroke_freestyle",
-        "stroke_backstroke",
-        "stroke_breaststroke",
-        "stroke_butterfly",
-        "includeKick",
-        "includePull",
-        "equip_fins",
-        "equip_paddles"
-    ];
-    for (const n of boolNames) payload[n] = payload[n] === "on";
-
-    // Ensure numeric values
-    payload.distance = Number(payload.distance) || 2000;
-
-    return payload;
+    return {
+        workoutType: workoutType ? workoutType.value : "strength",
+        difficulty: difficulty ? difficulty.value : "intermediate",
+        distance: distance ? distance.value : "2000"
+    };
 }
 
 // ===== INITIALIZATION =====
 function initPage() {
-    console.log("Workout Generator Test Version Initialized");
+    console.log("Workout Generator Test Version Initialized - Mock Data Mode");
 
     // Initialize form elements
     if (distanceSlider) {
         setDistance(2000);
         distanceSlider.addEventListener("input", (e) => {
             setDistance(e.target.value);
-        });
-    }
-
-    // Pool buttons
-    if (poolButtons) {
-        poolButtons.addEventListener("click", (e) => {
-            const btn = e.target.closest("button[data-pool]");
-            if (!btn) return;
-            const poolValue = btn.getAttribute("data-pool");
-            if (poolHidden) poolHidden.value = poolValue;
-
-            // Update button active state
-            for (const b of poolButtons.querySelectorAll("button[data-pool]")) {
-                b.classList.toggle("active", b === btn);
-            }
-        });
-
-        // Set default pool
-        const defaultPoolBtn = poolButtons.querySelector("button[data-pool='25m']");
-        if (defaultPoolBtn) defaultPoolBtn.click();
-    }
-
-    // Advanced toggle
-    if (toggleAdvanced && advancedWrap) {
-        toggleAdvanced.addEventListener("click", () => {
-            const open = advancedWrap.style.display !== "none";
-            if (open) {
-                advancedWrap.style.display = "none";
-                if (advancedChip) {
-                    advancedChip.innerHTML = "▶ Advanced options";
-                    advancedChip.classList.remove("whiteChipActive");
-                }
-            } else {
-                advancedWrap.style.display = "block";
-                if (advancedChip) {
-                    advancedChip.innerHTML = "▼ Advanced options";
-                    advancedChip.classList.add("whiteChipActive");
-                }
-            }
         });
     }
 
@@ -786,14 +685,14 @@ function initPage() {
             const payload = formToPayload();
 
             // Validate
-            if (!payload.workoutType || !payload.duration || !payload.difficulty) {
-                renderError("Missing fields", ["Please fill in all required fields"]);
+            if (!payload.workoutType || !payload.difficulty) {
+                renderError("Missing fields", ["Please select workout type and difficulty"]);
                 if (statusPill) statusPill.textContent = "";
                 return;
             }
 
             // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             // Get mock workout
             const workoutType = payload.workoutType;
@@ -810,7 +709,7 @@ function initPage() {
             if (statusPill) statusPill.textContent = "";
 
             // Render the workout
-            const ok = renderAll(payload, workoutText);
+            const ok = renderAll(workoutText);
 
             if (ok) {
                 // Set up copy button
@@ -826,18 +725,6 @@ function initPage() {
                         cards.style.opacity = "1";
                         cards.style.transform = "translateY(0)";
                     }
-
-                    if (totalBox && totalBox.style.display !== "none") {
-                        totalBox.style.transition = "opacity 0.7s ease-out, transform 0.7s ease-out";
-                        totalBox.style.opacity = "1";
-                        totalBox.style.transform = "translateY(0)";
-                    }
-
-                    if (footerBox && footerBox.style.display !== "none") {
-                        footerBox.style.transition = "opacity 0.7s ease-out, transform 0.7s ease-out";
-                        footerBox.style.opacity = "1";
-                        footerBox.style.transform = "translateY(0)";
-                    }
                 }, 100);
             } else {
                 if (raw) {
@@ -850,14 +737,12 @@ function initPage() {
 
     // Initialize with default values
     const workoutTypeSelect = document.getElementById("workoutType");
-    const durationInput = document.getElementById("duration");
     const difficultySelect = document.getElementById("difficulty");
 
     if (workoutTypeSelect) workoutTypeSelect.value = "strength";
-    if (durationInput) durationInput.value = "60";
     if (difficultySelect) difficultySelect.value = "intermediate";
 
-    console.log("Page initialization complete");
+    console.log("Test page ready - Generate button will create mock workouts");
 }
 
 // ===== START EVERYTHING =====
