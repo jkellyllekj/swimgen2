@@ -2,7 +2,7 @@
 
 Working title(s): SwimDice / SetRoll / PacePalette (TBD)  
 Last updated: 2026-02-04  
-Status: Active (Pause In Action Resume)
+Status: Active Development - Template-Based Rebuild
 
 ============================================================================
 READ THIS FIRST
@@ -19,6 +19,16 @@ If there is any uncertainty about:
 Then STOP and read this file in full before doing anything else.
 
 Chat memory is disposable. This file is not.
+
+============================================================================
+ACTIVE DEVELOPMENT - SWIMGEN2
+============================================================================
+
+**Repository:** https://github.com/jkellyllekj/SwimGen2  
+**Status:** Template-based rebuild preserving UI layer  
+**Core Principle:** No algorithmic set invention - real-world templates only  
+**Scale Goal:** Thousands of validated swim sets continuously growing  
+**Current Focus:** Foundation overhaul with real-world template library
 
 ============================================================================
 INSTRUCTION STYLE RULE
@@ -59,58 +69,66 @@ Long term evolution is expected (years), but v1 must stand on its own.
 CURRENT PHASE
 ============================================================================
 
-Phase: v1 Reality Anchoring and Productisation
+Phase: Template-Based Rebuild Foundation
 
 Primary goals:
-- Generator outputs are coach plausible on first generation
-- Set structures feel conventional and recognisable
-- Workouts are wall safe in all pool lengths
-- The app is usable poolside
-- Product is ready for TestFlight by end of February
+- Replace algorithmic generator with real-world template library
+- Fix critical bugs (edit persistence, unrealistic sets)
+- Preserve and enhance current UI/gesture functionality
+- Build scalable architecture for thousands of swim sets
 
 Constraints:
-- Core generator correctness is prioritised
-- UI redesign is not permitted, but additive UI evolution is allowed
-- No AI rewrite layer yet
-- Changes must be bounded and testable
-- Avoid speculative architecture work
+- Generator uses ONLY real-world templates (no algorithmic invention)
+- Current UI/gestures must be preserved during migration
+- All sets must be coach-plausible and wall-safe
+- Template collection is continuous process
 
 Phase is complete when:
-- Generator uses a finite catalogue of coach normal set structures
-- Outputs can be swum without "why would a coach do this" moments
-- v1 feature set is complete and internally stable
-- App is ready for TestFlight distribution
+- Generator uses validated template library with 1000+ real sets
+- Edit functionality works with tabbed interface
+- All critical bugs are resolved
+- Architecture supports continuous template growth
 
 ============================================================================
-ARCHITECTURE OVERVIEW
+ARCHITECTURE OVERVIEW (MIGRATION PATH)
 ============================================================================
 
-Current State:
-- Monolithic index.js (7000+ lines)
-- Algorithmic generator with realism issues
-- Working UI/gesture layer
+**CURRENT (LEGACY):**
+- Monolithic index.js with algorithmic generation
+- Working UI/gestures with animation issues
 - Broken edit persistence
+- Limited set variation
 
-Target Architecture:
-- index.js (orchestrator only)
-- core/generator-v2.js (template-based generation)
-- core/template-library.js (real-world patterns)
-- core/editor-engine.js (working edit with tabs)
-- ui/gestures.js (drag/swipe interactions)
-- ui/renderer.js (card display/animation)
-- business/tiers.js (Free/Premium/Pro gating)
+**TARGET (SWIMGEN2):**
+```
+/swimgen2/
+├── legacy/                    # Original working code
+├── src/
+│   ├── generator-v2.js        # Template-based engine
+│   ├── template-library/      # Real-world sets (thousands)
+│   ├── editor/                # Tabbed editor system
+│   │   ├── drill-editor.js
+│   │   ├── mainset-editor.js
+│   │   └── effort-builder.js
+│   ├── pace-calculator.js     # CSS/interval mathematics
+│   └── workout-model.js       # Data structures
+├── ui/                        # Preserved & enhanced UI
+│   ├── gestures.js            # Enhanced with phone gestures
+│   ├── renderer.js            # Animation fixes
+│   ├── modals.js              # Tabbed edit modal
+│   └── background-options.js
+└── business/
+    ├── tiers.js               # Free/Premium/Pro gating
+    ├── ads.js                 # Ad integration for free tier
+    └── storage.js             # Workout history/favorites
+```
 
-Migration Path:
-1. Build generator-v2 alongside current system
-2. Test side-by-side output comparison
+**MIGRATION STRATEGY:**
+1. Build generator-v2 alongside legacy system
+2. Compare outputs for realism validation
 3. Gradually replace algorithmic generation
 4. Preserve all UI/gesture functionality
-
-Legacy notes:
-- Workouts are generated deterministically with seeded variation
-- Manual swimming and inspection is authoritative
-- The agent is execution only
-- Planning, validation, and judgement happen in chat
+5. Cutover when template library > 1000 validated sets
 
 ============================================================================
 PAUSE IN ACTION AND NEW CHAT HANDOVER
@@ -122,12 +140,12 @@ When a Pause In Action is declared:
 - No prior chat context should be assumed
 
 Canonical raw links:
-PROJECT: labsg-app-01
-https://raw.githubusercontent.com/jkellyllekj/labsg-app-01/main/project-state.md
-https://raw.githubusercontent.com/jkellyllekj/labsg-app-01/main/WORKING-METHOD-REPLIT.md
-https://raw.githubusercontent.com/jkellyllekj/labsg-app-01/main/COACH_DESIGN_NOTES.md
-https://raw.githubusercontent.com/jkellyllekj/labsg-app-01/main/index.js
-https://raw.githubusercontent.com/jkellyllekj/labsg-app-01/main/styles.css
+PROJECT: SwimGen2
+https://raw.githubusercontent.com/jkellyllekj/swimgen2/main/project-state.md
+https://raw.githubusercontent.com/jkellyllekj/swimgen2/main/WORKING-METHOD-REPLIT.md
+https://raw.githubusercontent.com/jkellyllekj/swimgen2/main/COACH_DESIGN_NOTES.md
+https://raw.githubusercontent.com/jkellyllekj/swimgen2/main/index.js
+https://raw.githubusercontent.com/jkellyllekj/swimgen2/main/styles.css
 
 Rules:
 - Assistant cannot browse repo folders
@@ -206,17 +224,18 @@ All edit modal effort selectors must use these exact colors:
 LOCKED INVARIANTS
 ============================================================================
 
+- Generator uses real-world templates ONLY (no algorithmic invention)
+- Template library contains thousands of continuously growing sets
+- Edit operations persist mathematically with tabbed interface
+- All sets are coach-plausible and wall-safe
+- Current UI/gestures preserved and enhanced during migration
+- Phone and web have appropriate gesture sets for their platforms
+- Animations are smooth 200ms transitions, not instant
+- Effort levels follow standard color coding
+- Intervals calculate correctly for CSS or rest-based timing
 - index.js is runtime authority
 - Generator never returns null or fails silently
 - Reroll must always produce a valid workout
-- Reality Anchors remain active constraints:
-  - Section distance buckets enforced for Warm up, Kick, Cool down
-  - Sprint volume caps enforced, with single line sprint blocks rejected
-  - Validation is section aware via validateSetBody(body, targetDistance, poolLen, sectionLabel)
-- Generator must use real-world templates only (no algorithmic invention)
-- Edit operations must persist mathematically
-- All sets must be coach-plausible on first generation
-- Template library is authoritative source of set patterns
 
 ============================================================================
 PRODUCT TIERS AND MONETISATION (v1)
@@ -224,31 +243,31 @@ PRODUCT TIERS AND MONETISATION (v1)
 
 SwimGen uses a subscription based model. Generator rerolls are deterministic and local. Monetisation is not tied to generation count.
 
-Free (ad supported):
-- Unlimited workout generation
-- Full workout visibility
-- Standard pool lengths
-- Fixed sets (no resizing or editing)
-- Persistent ad banner at top of screen
-- Optional light interstitial ads
+**Free Tier (Ad-supported):**
+- Basic template-based generation
+- Standard pool lengths (25m, 50m, 25yd)
+- Fixed set structures (no editing)
+- Persistent banner ad + light interstitial ads
 
-Premium:
+**Premium Tier (Subscription):**
 - Removes all ads
-- Allows resizing workout sections
-- Allows rerolling individual sections
-- Supports custom pool lengths
+- Allows custom pool lengths
+- Allows set resizing and editing
+- Basic pace suggestions
+- Equipment toggles (fins, paddles, snorkel, pull buoy)
 
-Pro:
+**Pro Tier (Subscription):**
 - Includes all Premium features
-- Adds pace input (CSS or equivalent)
-- Pace aware set suggestions
+- Adds full pace/CSS integration with interval calculations
+- Advanced effort customization (builds, pyramids, alternations)
+- Drill database access (30+ drills with categorization)
+- Workout history and favorites system
 - Advanced control over effort and stroke bias
-- Intended home for future advanced features
+- Season planning foundation
 
 Notes:
 - No standalone ad removal only tier
 - Subscription only (monthly and yearly)
-- No lifetime unlocks
 - Free trial supported where platform allows
 
 Accounts:
@@ -265,59 +284,36 @@ Rules:
 - Structural redesign is not allowed in v1
 - Additive and reversible UI changes are allowed
 - Visual variants (example white background) may be added if they do not destabilise layout or interaction
-- Gesture heavy interactions are deferred
-
-The current colour coded workout cards are a core engagement feature.
+- Current color coded workout cards are a core engagement feature
 
 ============================================================================
 RECENT WORK (FACTS, NOT PLANS)
 ============================================================================
 
-## Recent Work (Today)
-1. **Drag-and-Drop Reordering**: 
-   - Long-press (300ms) to initiate drag on workout sets
-   - Visual feedback: card lifts with shadow/scale during drag
-   - Drop zone detection with physical card separation (40px gap)
-   - Smooth animations (0.2s) for card movement
-   - DOM reordering with data-index updates
-   - Integration with existing swipe/double-tap gestures
-   - Mobile touch support with scroll prevention
+## Recent Work (2026-02-04)
+1. **Generator Analysis Complete:**
+   - Critical flaw identified: produces unrealistic sets (e.g., 76x25 cooldown)
+   - Edit functionality broken: changes don't persist mathematically
+   - Mobile drag requires horizontal swipe first
+   - Animation issues: drops instant instead of 200ms smooth
 
-2. **Bug Fixes**:
-   - Fixed container ID reference (workoutResultsBox → cards)
-   - Fixed JavaScript variable crash (adjustedTo → toIndex)
-   - Fixed CSS transition timing issues
-   - Added proper touch event handling
+2. **Strategic Decisions Made:**
+   - Complete template-based rebuild required
+   - No algorithmic set invention - real-world templates only
+   - New repository: SwimGen2 for clean development
+   - Scale goal: Thousands of validated swim sets
+
+3. **Current Implementation Status:**
+   - Drag-and-drop functional with animation issues
+   - LocalStorage persistence implemented for user settings
+   - Dolphin button inconsistent (works on mobile, not web)
+   - All four gesture operations work but need polish
 
 - Gesture editing math totals fixed (2026-02-03)
   - Drag-to-delete: Updates math totals, preserves footer
   - Drag-to-move: Updates math totals, preserves footer  
   - Edit modal: Updates math totals, preserves footer, edits correct set
   - All operations use direct DOM updates instead of full re-render
-  - data-index tracking ensures correct set identification after deletions/moves
-  - All gesture handlers now read data-index dynamically
-
-- Gesture editing foundation implemented (2026-02-02)
-  - Drag left: moves set to bottom (green feedback on right side)
-  - Drag right: deletes set (red feedback on left side)
-  - Visual feedback positioned correctly for mobile (indicators on visible side)
-  
-- Edit modal improvements:
-  - Responsive design for mobile screens (98% width on small screens)
-  - Effort level selection with gradient/striation options (Build, Descend, Alternate)
-  - Set type preservation in editor (detects kick, drill, pull, backstroke, etc.)
-  
-- Fixed effort color mapping:
-  - Easy: blue
-  - Moderate: green
-  - Strong: yellow
-  - Hard: orange
-  - Full Gas: red
-  
-- Re-render system fixed:
-  - rerenderWorkoutFromArray() now calls main renderCards() function
-  - Math totals update after all gesture operations
-  - Gestures re-attached after each render via setupGestureEditing()
 
 - Previous work (2026-01-30):
   - Post generation validator added
@@ -325,18 +321,259 @@ RECENT WORK (FACTS, NOT PLANS)
   - Rep count realism caps and odd prime rep elimination
   - Runtime crash fix in buildOneSetBodyShared
 
-- 2026-02-04: Drag implementation complete with remaining animation issues
-- 2026-02-04: LocalStorage persistence implemented for user settings
-- 2026-02-04: Critical generator flaw identified - produces unrealistic sets (e.g., 76x25 cooldown)
-- 2026-02-04: Edit functionality discovered broken - changes don't persist mathematically
-- 2026-02-04: Decision made to rebuild generator using real-world templates only
-- 2026-02-04: Mobile drag requires horizontal swipe first to work properly
+============================================================================
+REBUILD & FEATURE STRATEGY (ACTIVE)
+============================================================================
+
+**PHASE 1: FOUNDATION OVERHAUL (IMMEDIATE)**
+1. **Real-World Template Library** (Thousands of sets)
+   - Sources: USA Swimming, Swim England, SwimSwam, coaching publications
+   - No algorithmic invention - only real patterns
+   - Continuous collection & validation pipeline
+
+2. **Generator-v2 Engine**
+   - Template matching only, no algorithmic generation
+   - Outputs only coach-plausible, wall-safe sets
+   - Preserves current UI/gesture layer
+
+3. **Fixed Edit System with Tabs**
+   - Tabbed interface: Drill, Main, Kick, Pull, Warmup, Cooldown tabs
+   - Each tab has type-specific controls
+   - Edit changes persist mathematically
+
+**PHASE 2: SET EDITOR ENHANCEMENTS**
+1. **Drill Editor Tab**
+   - Database of 30+ drills with categorization (catch, cadence, turns, etc.)
+   - Custom drill entry field
+   - Drill selection matching interval count
+
+2. **Main Set Editor Tab**
+   - Pyramid configuration (100-200-300-200-100 patterns)
+   - Multiple interval types within single set (e.g., 12x100 + 8x50)
+   - Mixed effort levels within sets
+
+3. **Effort Customization**
+   - Build from X to Y (selectable start/end efforts)
+   - Alternate between A and B (selectable pairs)
+   - Gradient options across full spectrum (easy to full gas)
+
+4. **Interval/Rest System**
+   - CSS-based auto-calculation with 5/10 second rounding
+   - Rest-based alternative (20s rest, etc.)
+   - Send-off vs rest interval options
+   - Display intervals per set
+
+**PHASE 3: UI & GESTURE POLISH**
+1. **Animation Fixes**
+   - Smooth 200ms drop animations (not instant)
+   - Cards flow into position, not teleport
+   - Other cards scroll up/down smoothly during reorder
+
+2. **Gesture Enhancements**
+   - Phone: Two-finger spread to add set between cards
+   - Web: Alternative add-set method (plus button or gesture)
+   - Mobile drag without requiring horizontal swipe first
+   - Auto-scroll when dragging to off-screen positions
+
+3. **Visual Customization**
+   - Solid color square backgrounds (white, black, color picker)
+   - Variable image backgrounds from existing collection
+   - Consistent color coding per effort level
+
+**PHASE 4: ADVANCED FEATURES**
+1. **Regeneration Improvements**
+   - Greater set variation (not repetitive patterns)
+   - Favorites/heart system for preferred sets
+   - Tag-based generation (endurance, sprint, technique focus)
+
+2. **Pace/CSS Integration**
+   - CSS input for pace-aware intervals
+   - Adjustments for different strokes (IM vs freestyle)
+   - Rest period customization per set
+
+3. **Equipment Integration**
+   - Fins, paddles, snorkel, pull buoy toggles
+   - Equipment-aware set suggestions
+   - Display equipment icons in sets
+
+4. **Workout Management**
+   - Save favorite workouts
+   - Upload workout results/times
+   - Progress tracking over time
+   - Season planning foundation
+
+**PHASE 5: LAUNCH PREPARATION**
+1. **Monetization Tiers Implementation**
+2. **App Store Readiness** (iOS/Android wrappers)
+3. **Performance Optimization**
+4. **Offline Functionality**
+
+============================================================================
+TEMPLATE LIBRARY ARCHITECTURE
+============================================================================
+
+**GOAL:** Thousands of real-world swim sets, continuously growing collection.
+
+**VALIDATION PIPELINE:**
+1. Source Verification (provenance tracking)
+2. Format Validation (automated parsing)
+3. Coach Review (realism check)
+4. Community Rating (ongoing quality)
+
+**COLLECTION SOURCES:**
+- USA Swimming published workouts
+- Swim England Masters sessions
+- SwimSwam "Workout of the Week" archive
+- Swimming World Magazine workouts
+- FINA competition training sets
+- Coaching blog publications
+- TrainingPeaks public workouts
+- Academic swimming studies
+- Community coach submissions
+
+**STORAGE STRUCTURE:**
+```
+/swimgen2/src/template-library/
+├── collector/          # Automated collection tools
+├── sources/            # Raw collected sets by source
+├── validated/          # Coach-approved sets
+├── community/          # User-submitted sets (vetted)
+└── index.js            # Consolidated access
+```
+
+**TEMPLATE FORMAT:**
+```javascript
+{
+  "id": "usaswim-2024-001",
+  "pattern": "8x50 kick on 1:00",
+  "baseDistance": 400,
+  "effort": "moderate",
+  "section": "kick",
+  "equipment": ["fins"],
+  "stroke": "freestyle",
+  "interval": "1:00",
+  "variations": ["6x50", "10x50", "8x75"],
+  "tags": ["kick", "ankle flexibility", "fins"],
+  "source": "USA Swimming - Spring Training",
+  "coachNotes": "Focus on steady kick tempo",
+  "validation": {
+    "coachApproved": true,
+    "usageCount": 1250,
+    "rating": 4.8
+  }
+}
+```
+
+**QUALITY RULES:**
+- Every template must be from real coaching practice
+- No mathematically impossible combinations
+- All sets must be "wall-safe" for common pool lengths
+- Effort progressions must follow coaching norms
+- Source attribution maintained
+
+============================================================================
+SET EDITOR SPECIFICATION
+============================================================================
+
+**TABBED INTERFACE:**
+
+**Drill Tab**
+- Drill database with 30+ options
+- Categorization: catch, cadence, turns, breathing, etc.
+- Custom drill text entry
+- Drill-to-interval matching logic
+
+**Main Set Tab**
+- Pyramid builder (ascend/descend/symmetric)
+- Mixed interval builder (e.g., 12x100 + 8x50)
+- Effort variation within set
+- Interval time calculation (CSS or rest-based)
+
+**Kick/Pull Tab**
+- Equipment selection (fins, paddles, snorkel, buoy)
+- Stroke specification
+- Distance/rep configuration
+- Effort level setting
+
+**Warmup/Cooldown Tab**
+- Progressive effort builder
+- Distance allocation
+- Stroke variety controls
+
+**EFFORT CUSTOMIZATION:**
+- Build: Select start effort (easy) to end effort (full gas)
+- Alternate: Choose two efforts to alternate between
+- Gradient: Smooth progression across selected range
+- Fixed: Single effort level for entire set
+
+**INTERVAL SYSTEM:**
+- CSS-based: Auto-calculates send-off times
+- Rest-based: Fixed rest periods between intervals
+- Hybrid: Base interval with adjustable rest
+- Display: Shows interval/rest per set in workout view
+
+============================================================================
+GESTURE & UI ENHANCEMENTS
+============================================================================
+
+**PHONE-SPECIFIC GESTURES:**
+- Two-finger spread/pinch: Add/remove set between cards
+- Long-press + drag: Current reorder functionality (needs mobile fix)
+- Horizontal swipe: Delete/defer (currently working)
+
+**WEB ALTERNATIVES:**
+- Plus button between cards for add-set
+- Right-click context menu for set operations
+- Keyboard shortcuts for power users
+
+**ANIMATION STANDARDS:**
+- All transitions: 200ms duration
+- Easing: cubic-bezier(0.2, 0.8, 0.3, 1)
+- Drop animation: Cards flow into place, not teleport
+- Scroll animation: Smooth auto-scroll during drag
+
+**VISUAL CUSTOMIZATION:**
+- Solid background options: white, black, color picker
+- Image backgrounds: Curated swimming-related images
+- Color coding: Consistent effort-level colors
+- Icon system: Equipment, stroke, effort indicators
+
+============================================================================
+KNOWN BUGS & LIMITATIONS (MUST FIX)
+============================================================================
+
+**CRITICAL BUGS (MUST FIX):**
+- Generator creates unrealistic/never-used sets (e.g., 76x25 cooldown)
+- Edit modal changes don't persist to workout mathematics
+- Mobile vertical drag fails without horizontal swipe first
+- Set regeneration produces limited variation (same patterns)
+
+**MAJOR ISSUES:**
+- Drop animation instant (not 200ms smooth)
+- No auto-scroll during drag to off-screen positions
+- Pace/CSS system not implemented
+- Drill selection missing (no database)
+- Effort customization limited (no build/alternate/gradient options)
+- Tabbed editor missing (single interface for all set types)
+
+**UI/DESIGN ISSUES:**
+- Dolphin button inconsistent (web vs mobile)
+- Animation timing inconsistencies
+- Background customization limited
+- Phone-specific gestures missing (two-finger spread)
+- No visual indication for add-set functionality on web
+
+**GENERATOR REALISM ISSUES:**
+- Produces sets that would never be used in real coaching
+- Limited variation in set patterns
+- No connection to real-world swimming practice
+- Mathematical correctness but coaching implausibility
 
 ============================================================================
 TESTING AND TOOLING
 ============================================================================
 
-- Automated smoke test script: scripts/gen_smoke_test.js
+Automated smoke test script: scripts/gen_smoke_test.js
 
 Smoke test suites:
 - Suite A: crash and retry hardening
@@ -348,279 +585,21 @@ Manual testing is authoritative. Short distance manual testing is mandatory:
 - 25m at 1000, 1500, 2000
 - Custom pool at 2000
 
-============================================================================
-KNOWN LIMITATIONS
-============================================================================
-
-- API returns workoutText plus structured metadata
-- /generate-workout includes:
-  - sections
-  - sectionMeta
-  - workoutMeta
-
-This enables detection of:
-- red presence
-- label and colour mismatches
-- striation patterns
-
-Gesture editing limitations:
-- No vertical reordering (only move to bottom)
-- No set resizing via edge dragging
-- No set duplication gesture
-- Drill sets don't regenerate multiple drill variations when count changes
-
-Critical Bugs (Must Fix Before Launch):
-- Generator creates mathematically impossible/unrealistic sets
-  - Example: 76x25 cooldown would never exist in real coaching
-  - Sets must come from real-world template library only
-- Edit modal changes don't persist to workout mathematics
-  - Users can edit sets but totals don't update correctly
-  - Changes don't save to the workout array
-- Mobile drag reset without horizontal swipe
-  - Vertical-only drag fails on mobile
-  - Requires horizontal gesture first to activate
-
-Major Issues:
-- Drop animation instant instead of smooth 200ms
-- No auto-scroll when dragging to off-screen positions
-- Pace/CSS system not yet implemented
-- Template-based drill selection missing
-
-Minor Issues:
-- Dolphin button inconsistency (web vs mobile)
-- Animation timing inconsistencies
-- Some gesture conflicts in edge cases
+New Testing Requirements:
+- Template validation testing
+- Edit persistence verification
+- Animation timing verification
+- Gesture functionality across platforms
 
 ============================================================================
-NEXT SINGLE STEP (ACTIVE)
+GLOSSARY
 ============================================================================
 
-REBUILD STRATEGY (ACTIVE)
-
-Phase 1: Foundation Overhaul (Immediate)
-
-1. Build Real-World Template Library
-   - Source: USA Swimming, Swim England Masters, Master Swim Swam, reputable coaching publications
-   - Rule: No algorithmic set invention - only real patterns from coaching practice
-   - Format: { pattern: "8x50 kick", distance: 400, effort: "moderate", section: "kick" }
-
-2. Create generator-v2.js
-   - Template-based generation only
-   - Matches templates to distance/pool constraints
-   - Ensures "wall-safe" sets only
-   - Preserves current UI/gesture layer
-
-3. Fix Edit Persistence
-   - Edit modal must actually modify workout array
-   - Mathematical totals must update correctly
-   - Changes must persist through re-renders
-
-Phase 2: Core v1 Features (Next)
-- Pace/CSS interval calculations
-- Template-based drill selection with 30+ drill options
-- Working tabbed editor for set types (kick, drill, main, etc.)
-- Effort level customization (builds, pyramids, alternations)
-
-Phase 3: Polish & Launch (Final)
-- Smooth 200ms animations throughout
-- Monetization tier implementation (Free/Ads, Premium, Pro)
-- App Store readiness (offline, performance, store assets)
-
-CRITICAL RULE: No new algorithmic set generation. Template matching only.
-
-============================================================================
-TEMPLATE LIBRARY SPECIFICATION
-============================================================================
-
-Sources (Real Coaching Sets Only):
-- USA Swimming published workouts (usaswimming.org)
-- Swim England Masters sessions (swimming.org)
-- Master Swim Swam archives
-- Reputable coaching blogs and publications
-- Historical workout databases
-
-Template Format:
-```javascript
-{
-  pattern: "8x50 kick steady",
-  baseDistance: 400,
-  effort: "moderate",
-  section: "kick",
-  equipment: ["fins"],
-  stroke: "freestyle",
-  variations: [
-    "6x50 kick moderate",
-    "10x50 kick build", 
-    "8x75 kick steady"
-  ]
-}
-```
-
-Validation Rules:
-- Every template must come from real coaching practice
-- No mathematically impossible combinations
-- All sets must be "wall-safe" for given pool length
-- Effort progressions must follow coaching norms
-
-============================================================================
-GESTURE EDITING STATUS (Current Focus)
-============================================================================
-
-## Gesture Editing Status
-✅ **Enabled & Fully Functional**
-- Swipe right → Delete set
-- Swipe left → Defer to next workout  
-- Double-tap → Edit set (with color-matched modal)
-- Long-press (300ms) + drag → Reorder sets
-- All gestures work together with conflict prevention
-
-============================================================================
-IDEA PARKING LOT (NOT SCHEDULED, NOT COMMITTED)
-============================================================================
-
-Rule: Idea Capture Responsibility
-
-If an idea is discussed and not written here, it is considered lost.
-
-Items below are not tasks and must not be implemented without promotion.
-
-Template driven realism:
-- Shift from generate then ban to template first generation
-- Large corpus of coach derived set shapes
-- Templates tagged by intent, stroke mix, energy system
-
-User customisation and editing:
-- Drag to reorder sections
-- Resize sections by dragging edges
-- Swipe to remove sections
-- Lock sections to preserve them across rerolls
-- Poolside interaction lock mode to prevent accidental edits
-- Manual distance rebalancing when resizing sections
-- Workout total may exceed or fall below slider after edits
-- Optional lock to preserve total and redistribute
-- Insert new section between existing blocks
-
-Visual themes:
-- White background and monochrome modes
-- Colour banding instead of full card backgrounds
-- User selectable themes
-
-Pacing and timing:
-- Floating pace clock overlay
-- Standalone pace clock app
-- Interval based and rest based views
-- Estimated workout duration
-
-Video and feedback systems:
-- Drill demonstration videos linked from sets
-- Timestamped video references
-- Delayed playback poolside mirror system
-- Underwater and multi angle feedback concepts
-
-Hardware and accessories:
-- Waterproof phone cases with built in stands
-- Poolside mounting concepts
-- Potential partnerships
-
-Accounts and data:
-- Optional user accounts
-- Saved preferences
-- Workout history
-- Email capture
-
-AI and higher tiers:
-- AI as constrained editor
-- AI generated coaching notes
-- Optionally suggest coach rationale per set
-- Full AI generation only after validator maturity
-
-============================================================================
-KNOWN ISSUES
-============================================================================
-
-## Known Issues
-- Edit modal background still very dark (requested: lighter, 20% opacity dark blue)
-- No undo for accidental deletions/reorders
-- Drag feedback could show original position marker
-- Very long workouts might have scrolling issues during drag
-- Short workout constraint failure still observed
-- Effort gradients slightly overrepresented
-- Full Gas underrepresented in some runs
-- Rare odd length leaks in edge cases
-- Custom pool lengths formatting inconsistency: some sections omit (N lengths) while others show it in the same workout
-
----
-
-## Next Phase: Interactive Set Editing UI (📐 In Planning)
-
-Goal: Enable users to directly interact with individual swim sets using touch gestures, similar to task/timer apps.
-
-### Planned Features:
-
-- **Swipe Right** → Delete set (workout total shrinks)
-- **Swipe Left** → Defer (move set to bottom)
-- **Press + Hold + Drag** → Reorder sets
-- **3-Finger Tap** → Duplicate set
-- **2-Finger Spread Between Sets** → Insert new set via modal
-
-### Add Set Modal Options:
-- Distance (e.g. 200, 400)
-- Set type: warm up, main, drill, kick, pull, cooldown
-- Effort profile: steady, build, sprint, threshold
-- Optional tags: pyramid, breathing, technique
-- Interval/turnaround pacing if swimmer time is known
-
-### Edit Existing Set:
-- Tap set → Edit reps, interval, effort level
-- Pinch to resize total distance (e.g. 400 → 600)
-- Swipe down or long-press → Regenerate set
-
-### Finalization Mode:
-- Lock workout to prevent accidental changes (wet screen mode)
-
-This scope will be handled in a separate UI-focused thread.
-
----
-
-============================================================================
-PAUSE IN ACTION HANDOVER (2026-02-03)
-============================================================================
-
-**Session Summary**:
-- Fixed gesture editing to preserve footer after all operations
-- Implemented direct DOM manipulation for delete/move/edit (no full re-render)
-- Added data-index tracking to reliably identify sets after deletions/moves
-- All gesture handlers now read data-index dynamically instead of using stale closure-captured indices
-- Math totals (yellow TOTAL box) update correctly after all operations
-
-**Fixes Completed This Session**:
-1. deleteWorkoutSet() removes DOM element directly, renumbers remaining sets
-2. moveSetToBottom() moves DOM element directly, renumbers all sets
-3. saveGestureEdit() updates specific set in DOM without full re-render
-4. All gesture handlers use data-index attribute for accurate set identification
-5. Footer (TOTAL box, pool info chips, lengths count) preserved after all operations
-
-**Previous Session (2026-02-02)**:
-- Implemented basic gesture editing: drag left (move to bottom), drag right (delete)
-- Fixed mobile visual feedback positioning
-- Created responsive edit modal
-- Corrected effort color mapping
-- Added pattern options (Build, Descend, Alternate)
-
-**Next Priorities**:
-1. Edit modal color matching with app's 5 core colors
-2. User-selectable effort levels in edit modal
-3. Drill set regeneration with drill picker
-4. Background themes (black/white toggle)
-
-**Ready for Next Agent**:
-The project is in a stable state. Gesture editing core is complete and functional.
-
-**Primary Files**:
-- index.js - Main app with gesture functions (deleteWorkoutSet, moveSetToBottom, saveGestureEdit)
-- styles.css - Gesture and modal styles
-- project-state.md - This file
-
-============================================================================
-END OF FILE
-============================================================================
+- CSS: Critical Swim Speed (threshold pace)
+- Wall safe: Total distance divisible by 2 times pool length
+- Reroll: Regenerate a single set within a workout
+- Section: Structural part of a workout (warmup, main, etc.)
+- Set: Individual component with reps, distance, and effort
+- Template: Real-world set pattern from coaching practice
+- Interval: Time between rep starts (send-off time)
+- Rest: Recovery time between reps
