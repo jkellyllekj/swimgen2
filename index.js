@@ -1029,38 +1029,51 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
 
   // Find best rep distance - MUST return exact target distance
   // No floor division allowed - distance must match exactly
+  // ===== RESEARCH-BASED CONSTRAINTS =====
+  // Real coaches rarely program >20 repeats of same set
+  // Long distance + high repeats is unrealistic
+  // Very short repeats in large quantities are unrealistic
+  const MAX_REALISTIC_REPS = 20;
+  const MIN_DISTANCE_FOR_HIGH_REPS = 50;
+  
   const findBestFit = (preferredDists, useSeed) => {
     const dists = useSeed ? shuffleWithSeed(preferredDists, seedC) : preferredDists;
     
-    // First pass: exact fit (reps × dist = target exactly)
+    // First pass: exact fit (reps x dist = target exactly) with research constraints
     for (const d of dists) {
       if (d > 0 && target % d === 0) {
         const reps = target / d;
-        if (reps >= 2 && reps <= 30) {
+        // CONSTRAINT 1: No unrealistic repeat counts (research-based max 20)
+        // CONSTRAINT 3: Very short repeats (<50) in large quantities (>8) are unrealistic
+        const minReps = (d < MIN_DISTANCE_FOR_HIGH_REPS) ? 2 : 2;
+        const maxReps = (d < MIN_DISTANCE_FOR_HIGH_REPS) ? 8 : MAX_REALISTIC_REPS;
+        if (reps >= minReps && reps <= maxReps) {
           return { reps, dist: d };
         }
       }
     }
     
-    // Second pass: try pool length itself
+    // Second pass: try pool length itself (still cap at realistic max)
     if (base > 0 && target % base === 0) {
       const reps = target / base;
-      if (reps >= 2 && reps <= 50) {
+      const maxReps = (base < MIN_DISTANCE_FOR_HIGH_REPS) ? 8 : MAX_REALISTIC_REPS;
+      if (reps >= 2 && reps <= maxReps) {
         return { reps, dist: base };
       }
     }
     
-    // Third pass: try 2×base
+    // Third pass: try 2xbase (always at least 50m for standard pools)
     const base2 = base * 2;
     if (base2 > 0 && target % base2 === 0) {
       const reps = target / base2;
-      if (reps >= 2 && reps <= 30) {
+      if (reps >= 2 && reps <= MAX_REALISTIC_REPS) {
         return { reps, dist: base2 };
       }
     }
     
     return null;
   };
+  // ===== END RESEARCH-BASED CONSTRAINTS =====
 
   const stroke = pickStroke();
   const k = String(label || "").toLowerCase();
