@@ -1,60 +1,21 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Workout Test</title>
-    <style>
-        body { font-family: Arial; padding: 20px; }
-        .card { padding: 15px; margin: 10px 0; border-radius: 8px; }
-        #errorBox { background: #fee; padding: 10px; display: none; }
-        button { padding: 10px 20px; margin: 5px; }
-    </style>
-</head>
+<head><title>Test</title></head>
 <body>
-    <h1>Test Page</h1>
-    
-    <form id="genForm">
-        <div>
-            <label>Workout Type:</label>
-            <select id="workoutType">
-                <option value="strength">Strength</option>
-                <option value="hypertrophy">Hypertrophy</option>
-                <option value="endurance">Endurance</option>
-            </select>
-        </div>
-        
-        <div>
-            <label>Difficulty:</label>
-            <select id="difficulty">
-                <option value="beginner">Beginner</option>
-                <option value="intermediate" selected>Intermediate</option>
-                <option value="advanced">Advanced</option>
-            </select>
-        </div>
-        
-        <div>
-            <label>Distance: <span id="distanceLabel">2000</span>m</label>
-            <input type="range" id="distanceSlider" min="1000" max="5000" value="2000">
-            <input type="hidden" id="distanceHidden" value="2000">
-        </div>
-        
-        <button type="button" id="generateBtn">Generate Workout</button>
-    </form>
-    
-    <div id="errorBox"></div>
-    <div id="statusPill"></div>
-    <div id="cards"></div>
-    <div id="totalBox"><div id="totalText"></div></div>
-    <div id="footerBox"></div>
-    <button id="copyBtn" disabled>Copy</button>
-    
-    <script src="/index-test.js"></script>
-    
-    <script>
-        // Update distance display
-        document.getElementById('distanceSlider').addEventListener('input', function(e) {
-            document.getElementById('distanceLabel').textContent = e.target.value;
-            document.getElementById('distanceHidden').value = e.target.value;
-        });
-    </script>
+<form id="genForm">
+<select id="workoutType"><option value="strength">Strength</option></select>
+<select id="difficulty"><option value="intermediate">Intermediate</option></select>
+<input type="range" id="distanceSlider" value="2000">
+<span id="distanceLabel">2000</span>
+<input type="hidden" id="distanceHidden" value="2000">
+<button id="generateBtn">Generate</button>
+</form>
+<div id="errorBox"></div>
+<div id="statusPill"></div>
+<div id="cards"></div>
+<div id="totalBox"><div id="totalText"></div></div>
+<div id="footerBox"></div>
+<button id="copyBtn" disabled>Copy</button>
+<script src="/index-test.js"></script>
 </body>
 </html>
