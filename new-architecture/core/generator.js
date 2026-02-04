@@ -1,15 +1,117 @@
 /**
- * Generator v2 - Template-Based Workout Generation
- * =================================================
- * Uses real coach templates with baseDistance for math
- * Outputs clean structure text without section distances in body
+ * New Architecture - Core Generator Module
+ * =========================================
+ * Template-based workout generation with same interface as legacy buildWorkout.
+ * Uses real coach templates from template library.
  */
 
-const { TemplateLibrary } = require('../template-library/core/initial-templates.js');
+const { TemplateLibrary } = require('../../src/template-library/core/initial-templates.js');
 
-class TemplateGenerator {
+class WorkoutGenerator {
   constructor() {
     this.library = new TemplateLibrary();
+  }
+
+  /**
+   * Generate a complete workout matching legacy interface
+   * @param {Object} params - Same params as legacy buildWorkout
+   * @returns {Object} { text, sections, name, total, poolLen, generatedBy }
+   */
+  generateWorkout({ targetTotal, poolLen, unitsShort, poolLabel, thresholdPace, opts, seed }) {
+    const wallSafe = poolLen * 2;
+    const total = this.snapToWallSafe(targetTotal, wallSafe);
+    
+    let rngState = seed || Date.now();
+    const rng = () => {
+      rngState = ((rngState * 1103515245 + 12345) >>> 0) % 2147483648;
+      return rngState / 2147483648;
+    };
+    
+    const budgets = this.allocateSectionBudgets(total, wallSafe);
+    
+    const sectionConfigs = [
+      { label: 'Warm up', category: 'warmup', budget: budgets.warmup },
+      { label: 'Main', category: 'main', budget: budgets.main },
+      { label: 'Cool down', category: 'cooldown', budget: budgets.cooldown }
+    ];
+    
+    const sections = [];
+    let actualTotal = 0;
+    
+    for (const config of sectionConfigs) {
+      const result = this.selectTemplatesForSection(config.category, config.budget, wallSafe, rng);
+      
+      const bodyLines = result.selected.map(s => s.structure);
+      
+      sections.push({
+        label: config.label,
+        dist: result.actualTotal,
+        body: bodyLines.join('\n'),
+        sets: result.selected
+      });
+      actualTotal += result.actualTotal;
+    }
+
+    if (actualTotal < total) {
+      const diff = total - actualTotal;
+      const mainIdx = sections.findIndex(s => s.label === 'Main');
+      if (mainIdx >= 0 && diff >= wallSafe) {
+        sections[mainIdx].dist += diff;
+        sections[mainIdx].body += '\n' + this.createFillerSet(diff);
+        sections[mainIdx].sets.push({ structure: this.createFillerSet(diff), distance: diff });
+        actualTotal = total;
+      }
+    }
+    
+    const textLines = [];
+    const cleanSections = [];
+    for (const s of sections) {
+      textLines.push(`${s.label}:`);
+      textLines.push(s.body);
+      textLines.push('');
+      cleanSections.push({ label: s.label, dist: s.dist, body: s.body });
+    }
+    
+    return {
+      text: textLines.join('\n'),
+      sections: cleanSections,
+      name: this.generateWorkoutName(actualTotal, rng),
+      total: actualTotal,
+      poolLen: poolLen,
+      generatedBy: 'new-architecture-v1'
+    };
+  }
+
+  /**
+   * Generate a single set for reroll functionality
+   */
+  generateSingleSet({ label, targetDistance, poolLen, avoidText, seed }) {
+    const wallSafe = poolLen * 2;
+    const snapped = this.snapToWallSafe(targetDistance, wallSafe);
+    
+    let rngState = seed || Date.now();
+    const rng = () => {
+      rngState = ((rngState * 1103515245 + 12345) >>> 0) % 2147483648;
+      return rngState / 2147483648;
+    };
+    
+    const category = this.labelToCategory(label);
+    const templates = this.library.getTemplatesMatchingBudget(category, snapped);
+    
+    const filtered = avoidText 
+      ? templates.filter(t => !avoidText.includes(t.structure))
+      : templates;
+    
+    const pool = filtered.length > 0 ? filtered : templates;
+    
+    if (pool.length === 0) {
+      return { structure: this.createFillerSet(snapped), distance: snapped };
+    }
+    
+    const template = pool[Math.floor(rng() * pool.length)];
+    const distance = this.snapToWallSafe(template.baseDistance, wallSafe);
+    
+    return { structure: template.structure, distance };
   }
 
   allocateSectionBudgets(totalDistance, wallSafe) {
@@ -98,103 +200,6 @@ class TemplateGenerator {
     return `${distance} easy swim`;
   }
 
-  generateWorkout({ targetTotal, poolLen, unitsShort, poolLabel, thresholdPace, opts, seed }) {
-    const wallSafe = poolLen * 2;
-    const total = this.snapToWallSafe(targetTotal, wallSafe);
-    
-    let rngState = seed || Date.now();
-    const rng = () => {
-      rngState = ((rngState * 1103515245 + 12345) >>> 0) % 2147483648;
-      return rngState / 2147483648;
-    };
-    
-    const budgets = this.allocateSectionBudgets(total, wallSafe);
-    
-    const sectionConfigs = [
-      { label: 'Warm up', category: 'warmup', budget: budgets.warmup },
-      { label: 'Main', category: 'main', budget: budgets.main },
-      { label: 'Cool down', category: 'cooldown', budget: budgets.cooldown }
-    ];
-    
-    const sections = [];
-    let actualTotal = 0;
-    
-    for (const config of sectionConfigs) {
-      const result = this.selectTemplatesForSection(config.category, config.budget, wallSafe, rng);
-      
-      const bodyLines = result.selected.map(s => s.structure);
-      
-      sections.push({
-        label: config.label,
-        dist: result.actualTotal,
-        body: bodyLines.join('\n'),
-        sets: result.selected
-      });
-      actualTotal += result.actualTotal;
-    }
-    
-    if (actualTotal < total) {
-      const diff = total - actualTotal;
-      const mainIdx = sections.findIndex(s => s.label === 'Main');
-      if (mainIdx >= 0 && diff >= wallSafe) {
-        sections[mainIdx].dist += diff;
-        sections[mainIdx].body += '\n' + this.createFillerSet(diff);
-        sections[mainIdx].sets.push({ structure: this.createFillerSet(diff), distance: diff });
-        actualTotal = total;
-      }
-    }
-    
-    const textLines = [];
-    const cleanSections = [];
-    for (const s of sections) {
-      textLines.push(`${s.label}:`);
-      textLines.push(s.body);
-      textLines.push('');
-      cleanSections.push({ label: s.label, dist: s.dist, body: s.body });
-    }
-    
-    return {
-      text: textLines.join('\n'),
-      sections: cleanSections,
-      name: this.generateWorkoutName(actualTotal, rng),
-      total: actualTotal,
-      poolLen: poolLen,
-      generatedBy: 'template-v2'
-    };
-  }
-
-  /**
-   * Generate a single set for reroll functionality
-   */
-  generateSingleSet({ label, targetDistance, poolLen, avoidText, seed }) {
-    const wallSafe = poolLen * 2;
-    const snapped = this.snapToWallSafe(targetDistance, wallSafe);
-    
-    let rngState = seed || Date.now();
-    const rng = () => {
-      rngState = ((rngState * 1103515245 + 12345) >>> 0) % 2147483648;
-      return rngState / 2147483648;
-    };
-    
-    const category = this.labelToCategory(label);
-    const templates = this.library.getTemplatesMatchingBudget(category, snapped);
-    
-    const filtered = avoidText 
-      ? templates.filter(t => !avoidText.includes(t.structure))
-      : templates;
-    
-    const pool = filtered.length > 0 ? filtered : templates;
-    
-    if (pool.length === 0) {
-      return { structure: this.createFillerSet(snapped), distance: snapped };
-    }
-    
-    const template = pool[Math.floor(rng() * pool.length)];
-    const distance = this.snapToWallSafe(template.baseDistance, wallSafe);
-    
-    return { structure: template.structure, distance };
-  }
-
   labelToCategory(label) {
     const l = String(label || '').toLowerCase();
     if (l.includes('warm')) return 'warmup';
@@ -219,4 +224,4 @@ class TemplateGenerator {
   }
 }
 
-module.exports = { TemplateGenerator };
+module.exports = { WorkoutGenerator };
