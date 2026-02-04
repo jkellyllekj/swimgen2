@@ -28,18 +28,19 @@ Additional project-specific preferences:
 ## System Architecture
 
 ### Migration Status
-**Date:** 2026-02-04 - Connection Phase Complete
+**Date:** 2026-02-04 - Template Generator Active
 
 **COMPLETED:**
-- Template library with 125 validated sets (warmup: 25, build: 15, kick: 15, drill: 15, main: 40, cooldown: 15)
-- Generator v2 (`src/generator-v2/core.js`) uses templates from library
-- Feature flag `USE_TEMPLATE_GENERATOR` in index.js (line 27) - set to false (legacy default)
-- /generate-workout route branches on feature flag (lines 5803-5831)
-- Both generators work side-by-side
+- Template library with 55 validated sets (warmup: 15, main: 30, cooldown: 10)
+- Templates use `baseDistance` property for direct math calculations (no regex parsing)
+- Generator v2 (`src/generator-v2/core.js`) selects templates and uses baseDistance
+- Response uses workout.sections directly (not reparsed from text)
+- Clean output: body contains only template structures, no section distances
+- Template generator is now the default
 
 **Feature Flag:**
 ```javascript
-const USE_TEMPLATE_GENERATOR = false; // Set to true to test template generator
+const USE_TEMPLATE_GENERATOR = true; // Template generator is now active
 ```
 
 **KEEP (UI Layer ~3000 lines):**
@@ -56,10 +57,10 @@ const USE_TEMPLATE_GENERATOR = false; // Set to true to test template generator
 - `legacy-index.js` - Full backup (DO NOT MODIFY)
 
 **Next Steps:**
-1. Test with `USE_TEMPLATE_GENERATOR = true` to verify UI renders correctly
-2. Add /reroll-set feature flag support
-3. Scale template library to 500+ sets
-4. Remove old algorithmic code when template generator is validated
+1. Add /reroll-set feature flag support for template generator
+2. Scale template library to 200+ sets from real coaching sources
+3. Add more section types (build, kick, drill)
+4. Remove old algorithmic code when template generator is fully validated
 
 ### Application Structure
 Directory structure for template-based rebuild:
