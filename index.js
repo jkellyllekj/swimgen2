@@ -1368,6 +1368,8 @@ app.get("/", (req, res) => {
     <link rel="stylesheet" href="/styles.css">
     <div id="adBanner" style="width:100%; max-width:520px; height:50px; margin-bottom:10px; background:rgba(200,200,200,0.5); border-radius:6px; display:flex; align-items:center; justify-content:center; gap:16px; font-size:12px; color:#666;">
       <a href="/viewport-lab" style="color:inherit; text-decoration:underline; font-weight:600;">Viewport Lab</a>
+      <span style="margin:0 8px;">|</span>
+      <a href="/test" style="color:inherit; text-decoration:underline; font-weight:600;">Test Version</a>
     </div>
 
     <div style="max-width:520px;">
@@ -5196,6 +5198,24 @@ app.get("/viewport-lab", (req, res) => {
   res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   res.send(VIEWPORT_LAB_HTML);
 });
+
+// Test version route - serves same page with TEST indicator
+app.get("/test", (req, res) => {
+  const TEST_BANNER = `<div style="position:fixed; top:0; left:0; right:0; background:#ff6b6b; color:white; text-align:center; padding:8px; font-weight:bold; z-index:9999;">TEST VERSION - Changes here do not affect production</div><div style="height:40px;"></div>`;
+  
+  const HOME_HTML = `
+    <link rel="stylesheet" href="/styles.css">
+    ${TEST_BANNER}
+    <div id="adBanner" style="width:100%; max-width:520px; height:50px; margin-bottom:10px; background:rgba(200,200,200,0.5); border-radius:6px; display:flex; align-items:center; justify-content:center; gap:16px; font-size:12px; color:#666;">
+      <a href="/" style="color:inherit; text-decoration:underline; font-weight:600;">Back to Production</a>
+    </div>
+  `;
+  
+  // For now, redirect to main page with test indicator
+  // Full test version will be implemented separately
+  res.redirect("/?test=1");
+});
+
 app.post("/reroll-set", (req, res) => {
   try {
     const body = req.body || {};
