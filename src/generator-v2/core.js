@@ -1,41 +1,15 @@
 // ============================================================================
-// Generator v2 - Template-Based Workout Generation (Complete Rewrite)
+// Generator v2 - Template-Based Workout Generation
 // ============================================================================
-// STRICT math validation - totals MUST be correct
-// Every set distance is parsed and verified
+// Uses real coach templates with baseDistance for math
+// Outputs clean structure text without section distances in body
 // ============================================================================
 
-const { TemplateLibrary, TEMPLATE_LIBRARY } = require('../template-library/core/initial-templates.js');
-const { TemplateImportPipeline } = require('../template-library/import-pipeline.js');
-
-let templatesLoaded = false;
+const { TemplateLibrary } = require('../template-library/core/initial-templates.js');
 
 class TemplateGenerator {
   constructor() {
-    if (!templatesLoaded) {
-      const pipeline = new TemplateImportPipeline();
-      const batch = pipeline.getInitialBatch();
-      pipeline.importBatch(batch, TEMPLATE_LIBRARY);
-      templatesLoaded = true;
-    }
     this.library = new TemplateLibrary();
-  }
-
-  parseSetStructure(text) {
-    const repMatch = text.match(/^(\d+)x(\d+)/i);
-    if (repMatch) {
-      const reps = parseInt(repMatch[1], 10);
-      const dist = parseInt(repMatch[2], 10);
-      return { reps, distance: dist, total: reps * dist, structure: text };
-    }
-    
-    const singleMatch = text.match(/^(\d+)\s+/);
-    if (singleMatch) {
-      const dist = parseInt(singleMatch[1], 10);
-      return { reps: 1, distance: dist, total: dist, structure: text };
-    }
-    
-    return null;
   }
 
   allocateSectionBudgets(totalDistance, wallSafe) {
@@ -65,51 +39,42 @@ class TemplateGenerator {
       warmup = Math.max(minSection, totalDistance - main - cooldown);
     }
     
-    const sum = warmup + main + cooldown;
-    if (sum !== totalDistance) {
-      main = totalDistance - warmup - cooldown;
-    }
-    
     return { warmup, main, cooldown };
   }
 
   selectTemplatesForSection(category, budget, wallSafe, rng) {
     const selected = [];
     let remaining = budget;
-    const maxSets = 4;
+    const maxSets = 3;
     
     const templates = this.library.getTemplatesBySection(category);
     if (!templates || templates.length === 0) {
-      selected.push({ structure: `${budget} easy swim`, total: budget });
+      selected.push({ structure: `${budget} easy swim`, distance: budget });
       return { selected, actualTotal: budget };
     }
     
     for (let i = 0; i < maxSets && remaining >= wallSafe; i++) {
       const valid = templates.filter(t => {
-        const parsed = this.parseSetStructure(t.structure);
-        if (!parsed) return false;
-        const snapped = this.snapToWallSafe(parsed.total, wallSafe);
+        const snapped = this.snapToWallSafe(t.baseDistance, wallSafe);
         return snapped > 0 && snapped <= remaining;
       });
       
       if (valid.length === 0) break;
       
       const template = valid[Math.floor(rng() * valid.length)];
-      const parsed = this.parseSetStructure(template.structure);
-      const snapped = this.snapToWallSafe(parsed.total, wallSafe);
+      const snapped = this.snapToWallSafe(template.baseDistance, wallSafe);
       
       selected.push({ 
         structure: template.structure, 
-        total: snapped,
-        parsed: parsed
+        distance: snapped
       });
       remaining -= snapped;
     }
     
     if (remaining >= wallSafe) {
       selected.push({ 
-        structure: this.createFillerSet(remaining, category), 
-        total: remaining 
+        structure: this.createFillerSet(remaining), 
+        distance: remaining 
       });
       remaining = 0;
     }
@@ -118,45 +83,19 @@ class TemplateGenerator {
     return { selected, actualTotal };
   }
 
-  createFillerSet(distance, category) {
+  createFillerSet(distance) {
     if (distance <= 100) {
-      return `${distance} easy`;
+      return `${distance} easy swim`;
     } else if (distance <= 200) {
       return `${distance} easy choice`;
-    } else if (distance % 100 === 0) {
+    } else if (distance % 100 === 0 && distance <= 800) {
       const reps = distance / 100;
-      if (reps <= 10) {
-        return category === 'main' ? `${reps}x100 steady` : `${reps}x100 easy`;
-      }
-    }
-    if (distance % 50 === 0) {
+      return `${reps}x100 easy @ 2:00`;
+    } else if (distance % 50 === 0 && distance <= 600) {
       const reps = distance / 50;
-      if (reps <= 12) {
-        return `${reps}x50 easy`;
-      }
+      return `${reps}x50 easy @ 1:00`;
     }
     return `${distance} easy swim`;
-  }
-
-  validateWorkout(sections, targetDistance) {
-    let total = 0;
-    for (const section of sections) {
-      let sectionSum = 0;
-      for (const set of section.sets) {
-        sectionSum += set.total;
-      }
-      if (sectionSum !== section.dist) {
-        console.warn(`Section ${section.label} mismatch: claimed ${section.dist}, actual ${sectionSum}`);
-      }
-      total += section.dist;
-    }
-    
-    const tolerance = 100;
-    if (Math.abs(total - targetDistance) > tolerance) {
-      console.error(`Workout total mismatch: target ${targetDistance}, actual ${total}`);
-      return false;
-    }
-    return true;
   }
 
   generateWorkout({ targetTotal, poolLen, unitsShort, poolLabel, thresholdPace, opts, seed }) {
@@ -199,18 +138,16 @@ class TemplateGenerator {
       const mainIdx = sections.findIndex(s => s.label === 'Main');
       if (mainIdx >= 0 && diff >= wallSafe) {
         sections[mainIdx].dist += diff;
-        sections[mainIdx].body += `\n${this.createFillerSet(diff, 'main')}`;
-        sections[mainIdx].sets.push({ structure: this.createFillerSet(diff, 'main'), total: diff });
+        sections[mainIdx].body += '\n' + this.createFillerSet(diff);
+        sections[mainIdx].sets.push({ structure: this.createFillerSet(diff), distance: diff });
         actualTotal = total;
       }
     }
     
-    this.validateWorkout(sections, total);
-    
     const textLines = [];
     const cleanSections = [];
     for (const s of sections) {
-      textLines.push(`${s.label}: ${s.dist}`);
+      textLines.push(`${s.label}:`);
       textLines.push(s.body);
       textLines.push('');
       cleanSections.push({ label: s.label, dist: s.dist, body: s.body });

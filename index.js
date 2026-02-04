@@ -6007,9 +6007,12 @@ app.post("/generate-workout", (req, res) => {
       }
     }
 
-    const parsed = parseWorkoutTextToSections(workout.text);
+    // Use workout.sections directly if available (template generator), otherwise parse
+    const finalSections = workout.sections && workout.sections.length > 0
+      ? workout.sections
+      : parseWorkoutTextToSections(workout.text).sections;
 
-    const sectionMeta = parsed.sections.map((s) => {
+    const sectionMeta = finalSections.map((s) => {
       const zone = inferZoneFromText(s.body);
       const isStriated = inferIsStriatedFromText(s.body);
       return { zone, isStriated };
@@ -6026,7 +6029,7 @@ app.post("/generate-workout", (req, res) => {
       ok: true,
       workoutText: workout.text,
       workoutName: workout.name || "",
-      sections: parsed.sections,
+      sections: finalSections,
       sectionMeta,
       workoutMeta
     });
