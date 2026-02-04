@@ -20,7 +20,33 @@ Additional project-specific preferences:
 ## System Architecture
 
 ### Application Structure
-The application uses a single-file architecture where `index.js` contains the Express server, routes, and inline HTML, CSS, and JavaScript. It utilizes block-tagged code for structured editing. There is no build step, relying on plain Node.js and Express.
+The application now uses a **modular architecture** with separate directories for core logic, utilities, and data:
+
+**Entry Points:**
+- `index.js` - Simple loader that requires app.js
+- `app.js` - Orchestrator that loads all modules and delegates to legacy-index.js for the Express server
+- `legacy-index.js` - Original 7,316-line monolithic code (backup/reference during migration)
+
+**Core Modules (`core/`):**
+- `generator.js` - Workout generation logic (buildOneSetBodyShared)
+- `validator.js` - Math validation functions with 4-pass pickEvenRepScheme algorithm
+- `patterns.js` - V1 catalogue templates and real-world patterns
+
+**Utilities (`utils/`):**
+- `math.js` - Pure math functions: fnv1a32 hash, shuffleWithSeed, mulberry32 PRNG, snapping functions
+- `pool-utils.js` - Pool length handling and section target resolution
+
+**Data (`data/`):**
+- `workout-store.js` - Workout state management
+- `preferences.js` - User preferences structure
+
+**Critical Implementation Details:**
+- All deterministic functions (fnv1a32, shuffleWithSeed, pickEvenRepScheme) must EXACTLY match legacy implementations
+- fnv1a32 uses: `h = (h + (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)) >>> 0`
+- shuffleWithSeed uses: `((seed * (i + 1) * 9973) >>> 0) % (i + 1)`
+- pickEvenRepScheme has 4 passes for odd pool edge cases
+
+No build step; relies on plain Node.js and Express.
 
 ### Frontend
 The frontend features an inline HTML interface. Users can select pool type (25m, 50m, 25yd, Custom) and target distance via a slider (500-10000m, snapping to 100). Workouts are displayed as chips with zone-based colored backgrounds (CardGym-style: Easy blue, Moderate green, Strong yellow, Hard orange, Full Gas red). Readability is ensured with white text on dark backgrounds. Vertical gradients are used for multi-zone sets like builds and descends.
