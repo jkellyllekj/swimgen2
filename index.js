@@ -5830,8 +5830,11 @@ app.post("/generate-workout", (req, res) => {
     // Check request body for useTemplateGenerator flag (UI toggle) or fallback to server flag
     const useTemplateGen = body.useTemplateGenerator === true || USE_TEMPLATE_GENERATOR;
     
+    console.log('[GENERATOR] useTemplateGen:', useTemplateGen, '| TemplateGenerator loaded:', !!TemplateGenerator, '| targetTotal:', targetTotal);
+    
     if (useTemplateGen && TemplateGenerator) {
       // Template-based generator v2
+      console.log('[GENERATOR] Using TEMPLATE generator');
       const generator = new TemplateGenerator();
       workout = generator.generateWorkout({
         targetTotal,
@@ -5844,6 +5847,7 @@ app.post("/generate-workout", (req, res) => {
       });
     } else {
       // Legacy algorithmic generator
+      console.log('[GENERATOR] Using LEGACY generator (template not available or disabled)');
       for (let attempt = 0; attempt < maxRetries; attempt++) {
         workout = buildWorkout({
           targetTotal,
@@ -5894,7 +5898,11 @@ app.post("/generate-workout", (req, res) => {
           if (distMatch) dist = Number(distMatch[2]);
 
           current = { label, dist, bodyLines: [] };
-          if (tail) current.bodyLines.push(tail);
+          // Only add tail to body if it contains more than just a distance number
+          // This prevents the distance from being counted twice
+          if (tail && !/^\d+$/.test(tail.trim())) {
+            current.bodyLines.push(tail);
+          }
           continue;
         }
 
