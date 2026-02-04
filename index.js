@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 // FEATURE FLAG: Template-based generator v2
 // Set to true to use template library instead of algorithmic generation
 // ============================================================================
-const USE_TEMPLATE_GENERATOR = false; // Legacy is default
+const USE_TEMPLATE_GENERATOR = true; // Template generator is now default
 let TemplateGenerator = null;
 try {
   TemplateGenerator = require('./src/generator-v2/core.js').TemplateGenerator;
@@ -4841,16 +4841,17 @@ ${HOME_JS_CLOSE}
     <input type="checkbox" id="templateGeneratorToggle" style="width: 18px; height: 18px;">
     <span style="font-size: 14px;">Template Generator</span>
   </label>
-  <div id="generatorStatus" style="font-size: 11px; color: #666; margin-top: 4px;">Current: Legacy</div>
+  <div id="generatorStatus" style="font-size: 11px; color: #666; margin-top: 4px;">Current: Template</div>
 </div>
 <script>
 (function() {
   const toggle = document.getElementById('templateGeneratorToggle');
   const status = document.getElementById('generatorStatus');
   if (toggle && status) {
-    const saved = localStorage.getItem('useTemplateGenerator') === 'true';
-    toggle.checked = saved;
-    status.textContent = 'Current: ' + (saved ? 'Template' : 'Legacy');
+    const saved = localStorage.getItem('useTemplateGenerator');
+    const useTemplate = saved === null ? true : saved === 'true';
+    toggle.checked = useTemplate;
+    status.textContent = 'Current: ' + (useTemplate ? 'Template' : 'Legacy');
     toggle.addEventListener('change', function() {
       localStorage.setItem('useTemplateGenerator', this.checked);
       status.textContent = 'Current: ' + (this.checked ? 'Template' : 'Legacy');
