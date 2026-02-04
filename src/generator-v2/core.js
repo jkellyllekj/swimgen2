@@ -2,7 +2,7 @@
 // Generator v2 - Template-Based Workout Generation
 // ============================================================================
 // Uses ONLY real-world templates from the template library
-// Returns EXACT same structure as legacy buildOneSetBodyServer()
+// STRICT math validation - totals must always match
 // ============================================================================
 
 const { TemplateLibrary, TEMPLATE_LIBRARY } = require('../template-library/core/initial-templates.js');
@@ -19,120 +19,153 @@ class TemplateGenerator {
       templatesLoaded = true;
     }
     this.library = new TemplateLibrary();
-    this.generationCount = 0;
   }
 
   generateWorkout({ targetTotal, poolLen, unitsShort, poolLabel, thresholdPace, opts, seed }) {
-    this.generationCount++;
     const base = poolLen;
+    const wallSafe = base * 2;
     
-    const rawTotal = this.snapToPoolMultiple(targetTotal, base);
-    const lengths = Math.round(rawTotal / base);
-    const evenLengths = lengths % 2 === 0 ? lengths : lengths + 1;
-    const total = evenLengths * base;
+    const total = this.snapToWallSafe(targetTotal, wallSafe);
 
     let rngState = seed || Date.now();
-    const seededRng = () => {
+    const rng = () => {
       rngState = ((rngState * 1103515245 + 12345) >>> 0) % 2147483648;
       return rngState / 2147483648;
     };
 
-    const minSectionDist = base * 4;
+    const budgets = this.allocateSectionBudgets(total, wallSafe);
+    
     const sections = [];
-    let usedDist = 0;
+    let actualTotal = 0;
 
-    const warmDist = Math.max(this.snapToPoolMultiple(Math.round(total * 0.15), base), minSectionDist);
-    const coolDist = Math.max(this.snapToPoolMultiple(Math.round(total * 0.10), base), minSectionDist);
-    const mainDist = total - warmDist - coolDist;
-
-    sections.push({ label: 'Warm up', dist: warmDist });
-    sections.push({ label: 'Main', dist: mainDist });
-    sections.push({ label: 'Cool down', dist: coolDist });
-
-    const textLines = [];
-    const parsedSections = [];
-
-    for (const section of sections) {
-      const sectionKey = this.mapLabelToCategory(section.label);
-      const body = this.buildSectionBody(sectionKey, section.dist, base, seededRng);
-      
-      textLines.push(`${section.label}: ${section.dist}`);
-      textLines.push(body);
-      textLines.push('');
-
-      parsedSections.push({
-        label: section.label,
-        dist: section.dist,
-        body: body
+    for (const budget of budgets) {
+      const result = this.buildSection(budget.category, budget.target, wallSafe, rng);
+      sections.push({
+        label: budget.label,
+        dist: result.actualDist,
+        body: result.lines.join('\n')
       });
+      actualTotal += result.actualDist;
     }
 
-    const workoutName = this.generateWorkoutName(total, seededRng);
+    if (actualTotal !== total) {
+      const diff = total - actualTotal;
+      if (diff > 0 && sections.length > 1) {
+        const mainIdx = sections.findIndex(s => s.label === 'Main');
+        if (mainIdx >= 0) {
+          sections[mainIdx].dist += diff;
+          sections[mainIdx].body += `\n${diff} easy swim`;
+          actualTotal = total;
+        }
+      }
+    }
+
+    const textLines = [];
+    for (const s of sections) {
+      textLines.push(`${s.label}: ${s.dist}`);
+      textLines.push(s.body);
+      textLines.push('');
+    }
 
     return {
       text: textLines.join('\n'),
-      sections: parsedSections,
-      name: workoutName,
-      total: total,
+      sections: sections,
+      name: this.generateWorkoutName(actualTotal, rng),
+      total: actualTotal,
       poolLen: poolLen,
       generatedBy: 'template-v2'
     };
   }
 
-  buildSectionBody(category, targetDistance, poolLen, rng) {
-    const lines = [];
-    let remaining = targetDistance;
-    const minDist = poolLen * 2;
-    let attempts = 0;
-    const maxAttempts = 20;
+  allocateSectionBudgets(total, wallSafe) {
+    const minSection = wallSafe * 2;
+    
+    let warmup, main, cooldown;
+    
+    if (total <= 1000) {
+      warmup = this.snapToWallSafe(Math.round(total * 0.20), wallSafe);
+      cooldown = this.snapToWallSafe(Math.round(total * 0.10), wallSafe);
+    } else if (total <= 2000) {
+      warmup = this.snapToWallSafe(Math.round(total * 0.18), wallSafe);
+      cooldown = this.snapToWallSafe(Math.round(total * 0.12), wallSafe);
+    } else {
+      warmup = this.snapToWallSafe(Math.round(total * 0.15), wallSafe);
+      cooldown = this.snapToWallSafe(Math.round(total * 0.10), wallSafe);
+    }
+    
+    warmup = Math.max(warmup, minSection);
+    cooldown = Math.max(cooldown, minSection);
+    main = total - warmup - cooldown;
+    main = Math.max(main, minSection);
+    
+    const allocated = warmup + main + cooldown;
+    if (allocated !== total) {
+      main = total - warmup - cooldown;
+    }
 
-    while (remaining >= minDist && attempts < maxAttempts) {
-      attempts++;
+    return [
+      { label: 'Warm up', category: 'warmup', target: warmup },
+      { label: 'Main', category: 'main', target: main },
+      { label: 'Cool down', category: 'cooldown', target: cooldown }
+    ];
+  }
+
+  buildSection(category, targetDist, wallSafe, rng) {
+    const lines = [];
+    let remaining = targetDist;
+    let actualDist = 0;
+    const maxSets = 5;
+
+    for (let i = 0; i < maxSets && remaining >= wallSafe; i++) {
+      const templates = this.library.getTemplatesBySection(category);
       
-      const allTemplates = this.library.getTemplatesBySection(category);
-      const validTemplates = allTemplates.filter(t => {
-        const snapped = this.snapToPoolMultiple(t.distance, poolLen);
+      const valid = templates.filter(t => {
+        const snapped = this.snapToWallSafe(t.distance, wallSafe);
         return snapped > 0 && snapped <= remaining;
       });
 
-      if (validTemplates.length === 0) {
-        const fallbackDist = this.snapToPoolMultiple(remaining, poolLen);
-        if (fallbackDist >= minDist) {
-          lines.push(`${fallbackDist} easy swim`);
-          remaining -= fallbackDist;
-        }
-        break;
-      }
+      if (valid.length === 0) break;
 
-      const template = validTemplates[Math.floor(rng() * validTemplates.length)];
-      const snappedDist = this.snapToPoolMultiple(template.distance, poolLen);
+      const template = valid[Math.floor(rng() * valid.length)];
+      const snapped = this.snapToWallSafe(template.distance, wallSafe);
       
       lines.push(template.structure);
-      remaining -= snappedDist;
+      remaining -= snapped;
+      actualDist += snapped;
     }
 
-    if (remaining >= minDist) {
-      lines.push(`${remaining} easy swim`);
+    if (remaining >= wallSafe) {
+      lines.push(this.createFillerSet(remaining, category, wallSafe));
+      actualDist += remaining;
+      remaining = 0;
     }
 
-    return lines.join('\n');
+    return { lines, actualDist };
   }
 
-  mapLabelToCategory(label) {
-    const lower = label.toLowerCase();
-    if (lower.includes('warm')) return 'warmup';
-    if (lower.includes('build')) return 'build';
-    if (lower.includes('drill')) return 'drill';
-    if (lower.includes('kick')) return 'kick';
-    if (lower.includes('pull')) return 'main';
-    if (lower.includes('main')) return 'main';
-    if (lower.includes('cool')) return 'cooldown';
-    return 'main';
+  createFillerSet(distance, category, wallSafe) {
+    const snapped = this.snapToWallSafe(distance, wallSafe);
+    if (snapped <= 0) return '';
+    
+    if (snapped <= 100) {
+      return `${snapped} easy swim`;
+    } else if (snapped <= 200) {
+      return `${snapped} easy choice`;
+    } else if (snapped <= 400) {
+      const reps = Math.floor(snapped / 100);
+      return `${reps}x100 easy`;
+    } else {
+      const reps = Math.floor(snapped / 100);
+      if (category === 'warmup' || category === 'cooldown') {
+        return `${reps}x100 easy`;
+      } else {
+        return `${reps}x100 steady`;
+      }
+    }
   }
 
-  snapToPoolMultiple(dist, poolLen) {
-    if (!poolLen || poolLen <= 0) return dist;
-    const wallSafe = poolLen * 2;
+  snapToWallSafe(dist, wallSafe) {
+    if (!wallSafe || wallSafe <= 0) return dist;
     return Math.round(dist / wallSafe) * wallSafe;
   }
 

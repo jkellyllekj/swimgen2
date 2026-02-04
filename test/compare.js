@@ -1,60 +1,68 @@
 #!/usr/bin/env node
 // ============================================================================
-// Generator Comparison Test
+// Generator Comparison Test - Math Validation
 // ============================================================================
-// Compares legacy algorithmic generator output with template-based generator
-// Run with: node test/compare.js
+// Verifies template generator produces correct totals
 // ============================================================================
 
 const { TemplateGenerator } = require('../src/generator-v2/core.js');
 
 console.log('='.repeat(60));
-console.log('Generator Comparison Test');
+console.log('Template Generator - Math Validation Test');
 console.log('='.repeat(60));
 
-const templateGen = new TemplateGenerator();
+const generator = new TemplateGenerator();
 
-const testParams = {
-  targetTotal: 2000,
-  poolLen: 25,
-  unitsShort: 'm',
-  poolLabel: '25m',
-  thresholdPace: '',
-  opts: { includeKick: false, includePull: false },
-  seed: 12345
-};
+const testCases = [
+  { total: 1000, pool: 25, desc: '1000m in 25m pool' },
+  { total: 2000, pool: 25, desc: '2000m in 25m pool' },
+  { total: 1500, pool: 50, desc: '1500m in 50m pool' }
+];
 
-console.log('\nTest Parameters:');
-console.log(`  Distance: ${testParams.targetTotal}m`);
-console.log(`  Pool: ${testParams.poolLen}m`);
+let allPassed = true;
 
-console.log('\n--- Template Generator Output ---');
-const templateResult = templateGen.generateWorkout(testParams);
+for (const test of testCases) {
+  console.log(`\n--- Test: ${test.desc} ---`);
+  
+  const result = generator.generateWorkout({
+    targetTotal: test.total,
+    poolLen: test.pool,
+    unitsShort: 'm',
+    poolLabel: `${test.pool}m`,
+    thresholdPace: '',
+    opts: {},
+    seed: 12345
+  });
 
-console.log(`Name: ${templateResult.name}`);
-console.log(`Total: ${templateResult.total}m`);
-console.log(`Sections: ${templateResult.sections.length}`);
-templateResult.sections.forEach(s => {
-  console.log(`  ${s.label}: ${s.dist}m`);
-  console.log(`    ${s.body.split('\n')[0]}...`);
-});
-
-console.log('\n--- Structure Validation ---');
-const hasText = typeof templateResult.text === 'string' && templateResult.text.length > 0;
-const hasSections = Array.isArray(templateResult.sections) && templateResult.sections.length > 0;
-const hasName = typeof templateResult.name === 'string' && templateResult.name.length > 0;
-const hasTotal = typeof templateResult.total === 'number' && templateResult.total > 0;
-
-console.log(`  Has text: ${hasText}`);
-console.log(`  Has sections: ${hasSections}`);
-console.log(`  Has name: ${hasName}`);
-console.log(`  Has total: ${hasTotal}`);
-
-const structureValid = hasText && hasSections && hasName && hasTotal;
-console.log(`\nStructure valid: ${structureValid}`);
+  let sectionTotal = 0;
+  console.log(`Sections:`);
+  for (const s of result.sections) {
+    console.log(`  ${s.label}: ${s.dist}m`);
+    const bodyPreview = s.body.split('\n').slice(0, 2).join('; ');
+    console.log(`    Sets: ${bodyPreview}...`);
+    sectionTotal += s.dist;
+  }
+  
+  console.log(`\nReported total: ${result.total}m`);
+  console.log(`Section sum: ${sectionTotal}m`);
+  console.log(`Target: ${test.total}m`);
+  
+  const wallSafe = test.pool * 2;
+  const expectedSnapped = Math.round(test.total / wallSafe) * wallSafe;
+  
+  const mathCorrect = sectionTotal === result.total;
+  const closeToTarget = Math.abs(result.total - expectedSnapped) <= wallSafe;
+  const passed = mathCorrect && closeToTarget;
+  
+  console.log(`Math correct: ${mathCorrect}`);
+  console.log(`Close to target: ${closeToTarget}`);
+  console.log(`Result: ${passed ? 'PASS' : 'FAIL'}`);
+  
+  if (!passed) allPassed = false;
+}
 
 console.log('\n' + '='.repeat(60));
-console.log(structureValid ? 'PASS: Template generator produces valid output' : 'FAIL: Structure issues detected');
+console.log(allPassed ? 'ALL TESTS PASSED' : 'SOME TESTS FAILED');
 console.log('='.repeat(60));
 
-process.exit(structureValid ? 0 : 1);
+process.exit(allPassed ? 0 : 1);
