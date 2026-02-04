@@ -1,0 +1,642 @@
+/* Extracted from index.js template <style> blocks */
+
+:root {
+        /* 35% white for chips and buttons */
+        --white35: rgba(255,255,255,0.35);
+        --whiteBorder: rgba(255,255,255,0.42);
+        /* Dolphin icon sizes */
+        --dolphin-size: 50px;
+        --dolphin-size-generate: 68px;
+        /* Zone colors: BLUE=Easy, GREEN=Moderate, YELLOW=Strong, ORANGE=Hard, RED=Full Gas */
+        /* CardGym pastel colors */
+        --zone-easy-bg: #b9f0fd;
+        --zone-easy-bar: #7ac8db;
+        --zone-moderate-bg: #cfffc0;
+        --zone-moderate-bar: #8fcc80;
+        --zone-strong-bg: #fcf3d5;
+        --zone-strong-bar: #d4c9a0;
+        --zone-hard-bg: #ffc374;
+        --zone-hard-bar: #cc9a4a;
+        --zone-fullgas-bg: #fe0000;
+        --zone-fullgas-bar: #cc0000;
+      }
+      @keyframes dolphinSpin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .dolphinSpin {
+        display: inline-block;
+        animation: dolphinSpin 800ms linear infinite;
+      }
+      /* Dolphin icon sizing */
+      .dolphinIcon {
+        width: var(--dolphin-size);
+        height: var(--dolphin-size);
+        object-fit: contain;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .dolphinIcon--generate {
+        width: var(--dolphin-size-generate);
+        height: var(--dolphin-size-generate);
+      }
+      /* Effort strip wrapper: swipe only when needed */
+      .effortScrollWrap {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Effort strip: fills big phones, scrolls on tiny */
+      .effortStrip {
+        display: flex;
+        flex-wrap: nowrap;
+        width: 100%;
+        min-width: 320px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      }
+
+      /* True square tiles + dead-centre content */
+      .effortTile {
+        flex: 1 1 0;
+        aspect-ratio: 1 / 1;
+        box-sizing: border-box;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Bigger icons, no margin tricks */
+      .effortIcon {
+        width: 62px;
+        height: 62px;
+        object-fit: contain;
+        display: block;
+        margin: 0;
+        filter: none !important;
+      }
+
+      /* Micro nudges to counter uneven transparent padding in PNGs */
+      .effortStrip .effortTile:nth-child(2) .effortIcon { transform: translateX(3px); }
+      .effortStrip .effortTile:nth-child(3) .effortIcon { transform: translateX(-3px); }
+      .effortStrip .effortTile:nth-child(4) .effortIcon { transform: translateX(-2px); }
+      /* Splash fixed angle - never spins */
+      .splashFixed {
+        transform: rotate(-130deg);
+        animation: none !important;
+        will-change: opacity;
+        filter: none;
+      }
+      /* Glass chip for text legibility */
+      .glassChip {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.24);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        color: #111;
+      }
+      .glassChipStrong {
+        background: rgba(255,255,255,0.38);
+        border-color: rgba(255,255,255,0.40);
+      }
+      /* Glass panel with reflection and depth borders */
+      .glassPanel {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.42);
+        border-radius: 18px;
+        box-shadow:
+          0 12px 32px rgba(0,0,0,0.18),
+          inset 0 1px 0 rgba(255,255,255,0.40),
+          inset 0 -1px 0 rgba(0,0,0,0.10);
+        position: relative;
+        overflow: hidden;
+      }
+      .glassPanel::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg,
+          rgba(255,255,255,0.34) 0%,
+          rgba(255,255,255,0.10) 18%,
+          rgba(255,255,255,0.00) 45%);
+        pointer-events: none;
+      }
+      /* Readable text on any background, without panel tint */
+      .glassTextReadable,
+      .glassPanel h3,
+      .glassPanel label,
+      .glassPanel button,
+      .glassPanel input,
+      .glassPanel a,
+      #toggleAdvanced {
+        text-shadow:
+          0 1px 2px rgba(0,0,0,0.35),
+          0 0 1px rgba(255,255,255,0.35);
+      }
+
+      /* Small chip only behind critical text, not whole panel */
+      .textChipLite {
+        display:inline-block;
+        padding:2px 8px;
+        border-radius:8px;
+        background: rgba(255,255,255,0.14);
+        border: 1px solid rgba(255,255,255,0.20);
+      }
+
+      /* Slightly soften all inline text color */
+      .glassPanel,
+      .glassPanel * {
+        color: #0b0b0b;
+      }
+
+      /* White chip for buttons and advanced toggle */
+      .whiteChip {
+        display:inline-block;
+        padding:6px 10px;
+        border-radius: 8px;
+        background: var(--white35);
+        border: 1px solid var(--whiteBorder);
+        color:#0b0b0b;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.10);
+      }
+
+      .whiteChipActive {
+        box-shadow:
+          0 6px 16px rgba(0,0,0,0.10),
+          0 0 0 3px rgba(64,201,224,0.50);
+      }
+
+      /* Unified white button style for pool and generate */
+      #controlsGrid button,
+      .poolRow button {
+        background: var(--white35);
+        border: 1px solid var(--whiteBorder);
+        color: #0b0b0b;
+        font-weight: 700;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.10);
+      }
+
+      /* Selected is a glow ring, not a background change */
+      #controlsGrid button.active,
+      .poolRow button.active {
+        box-shadow:
+          0 6px 16px rgba(0,0,0,0.10),
+          0 0 0 3px rgba(255,215,0,0.55);
+      }
+
+      /* Controls grid stays 2 columns even on small screens */
+      #controlsGrid {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: start;
+      }
+
+      /* Generate column width should hug content */
+      #generateStack {
+        width: auto;
+        min-width: 110px;
+      }
+
+      /* Pool buttons should not force wrap into weird shapes */
+      .poolRow {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* Make the pool buttons slightly tighter vertically */
+      .poolRow button {
+        padding-top:5px !important;
+        padding-bottom:5px !important;
+      }
+
+      /* Generate button box with dolphin inside */
+      .generateBox {
+        background: var(--white35);
+        border: 1px solid var(--whiteBorder);
+        color: #0b0b0b;
+        font-weight: 800;
+        border-radius: 10px;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.14);
+        padding: 6px 10px;
+        width: auto;
+        min-width: 110px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        cursor: pointer;
+      }
+
+      .genLabel {
+        line-height: 1;
+        font-size: 15px;
+      }
+
+      .genDolphin {
+        display: inline-block;
+        font-size: 40px;
+        line-height: 1;
+        pointer-events: none;
+      }
+
+      /* Generate active: glow ring not background change */
+      .generateBox.active {
+        box-shadow:
+          0 10px 24px rgba(0,0,0,0.14),
+          0 0 0 3px rgba(64,201,224,0.55);
+      }
+
+      /* Readable white glass chip */
+      .readChip {
+        background: var(--white35);
+        border: 1px solid var(--whiteBorder);
+        color: #0b0b0b;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+      }
+
+      /* Advanced wrap pointer events and styling */
+      #advancedWrap input,
+      #advancedWrap select,
+      #advancedWrap button,
+      #advancedWrap label {
+        pointer-events: auto;
+      }
+      #advancedWrap {
+        position: relative;
+        z-index: 2;
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.26);
+        border-radius: 12px;
+        box-shadow: 0 10px 26px rgba(0,0,0,0.12);
+      }
+      #advancedWrap * {
+        text-shadow: 0 1px 2px rgba(0,0,0,0.28);
+      }
+
+      .glassSummary {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.42);
+        border-radius: 10px;
+        box-shadow:
+          0 10px 26px rgba(0,0,0,0.14),
+          inset 0 1px 0 rgba(255,255,255,0.30),
+          inset 0 -1px 0 rgba(0,0,0,0.08);
+      }
+
+      @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .workout-fade-in {
+        animation: fade-in-up 0.7s ease-out forwards;
+      }
+      @keyframes fade-out-down {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(16px); }
+      }
+      .workout-fade-out {
+        animation: fade-out-down 0.7s ease-in forwards;
+      }
+      @keyframes reroll-spin {
+        0% { transform: rotate(0deg); }
+        25% { transform: rotate(90deg); }
+        50% { transform: rotate(180deg); }
+        75% { transform: rotate(270deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .reroll-dolphin {
+        display: inline-block;
+        font-size: 28px;
+      }
+      /* Set card dolphin spin target - GPU optimized */
+      .setDolphinSpinTarget {
+        will-change: transform;
+        backface-visibility: hidden;
+        transform: translateZ(0);
+      }
+      .setDolphinSpinTarget.spinning {
+        animation: reroll-spin 1.25s linear;
+      }
+      button[data-reroll-set] {
+        opacity: 1 !important;
+        filter: none !important;
+      }
+      button[data-reroll-set]:active,
+      button[data-reroll-set]:focus,
+      button[data-reroll-set]:focus-visible {
+        opacity: 1 !important;
+        filter: none !important;
+        outline: none;
+      }
+      .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .form-col {
+        width: 100%;
+      }
+      .bgCycleBtn {
+        width: 34px;
+        height: 28px;
+        border-radius: 6px;
+        border: 1px solid rgba(0,0,0,0.18);
+        background: rgba(255,255,255,0.18);
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+      .bgCycleBtn:hover { background: rgba(255,255,255,0.28); }
+      .bgCycleBtn:disabled { opacity: 0.5; cursor: default; }
+      .bgCycleIcon {
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: rgba(0,0,0,0.75);
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      #bgWrap {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+      }
+      .bgLayer {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0;
+        transition: opacity 260ms ease;
+        will-change: opacity;
+      }
+      .bgLayer.isActive {
+        opacity: 1;
+      }
+      .distance-slider {
+        width: 100%;
+        max-width: 100%;
+      }
+      /* Set cards with depth border */
+      .setCard {
+        border-radius: 8px;
+        box-shadow:
+          0 4px 12px rgba(0,0,0,0.10),
+          inset 0 1px 0 rgba(255,255,255,0.25),
+          inset 0 -1px 0 rgba(0,0,0,0.06);
+      }
+      @media (max-width: 680px) {
+        .advanced-grid {
+          grid-template-columns: 1fr !important;
+        }
+      }
+      .setHeaderRow {
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:12px;
+      }
+      .setRightCol {
+        display:flex;
+        flex-direction:column;
+        align-items:flex-end;
+        justify-content:flex-start;
+        gap:10px;
+      }
+      .setRightCol .setDolphin {
+        font-size:22px;
+        line-height:1;
+      }
+      .setRightCol .setMeters {
+        font-weight:700;
+      }
+      .workoutTitleRow {
+        display:flex;
+        align-items:center;
+        gap:10px;
+        justify-content:flex-end;
+      }
+      /* Unboxed icon style (no background) */
+      .iconBtnBare {
+        background: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        line-height: 1;
+        text-shadow: 0 6px 14px rgba(0,0,0,0.20);
+      }
+      /* Boxed icon style (chip background) */
+      .iconBtnChip {
+        background: var(--white35);
+        border: 1px solid var(--whiteBorder);
+        border-radius: 10px;
+        padding: 6px 8px;
+        cursor: pointer;
+        line-height: 1;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+      }
+      .iconSm { font-size: 22px; }
+      .iconLg { font-size: 26px; }
+      /* Pure silhouette icon button */
+      .iconBtnSilhouette {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        outline: none !important;
+        border-radius: 0 !important;
+        line-height: 1;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .iconBtnSilhouette:focus,
+      .iconBtnSilhouette:active {
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+
+/* Viewport Lab scoped styles */
+
+#viewportLab body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 16px; background: #f8f9fa; }
+#viewportLab h1 { margin: 0 0 8px; font-size: 20px; }
+#viewportLab p { margin: 0 0 14px; opacity: .75; max-width: 980px; }
+#viewportLab h2 { margin: 18px 0 10px; font-size: 13px; opacity: .85; font-weight: 650; }
+#viewportLab a.back { font-size: 13px; color: #666; text-decoration: underline; }
+#viewportLab .row {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      margin: 10px 0 16px;
+    }
+#viewportLab .row-pair {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      margin: 10px 0 16px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      -webkit-overflow-scrolling: touch;
+    }
+#viewportLab .row-wide {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0 16px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      -webkit-overflow-scrolling: touch;
+    }
+#viewportLab .frame {
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      width: var(--w, 390px);
+      max-width: 100%;
+      flex: 0 0 auto;
+    }
+#viewportLab .bar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding: 8px 10px;
+      font-size: 12px;
+      opacity:.88;
+      border-bottom:1px solid rgba(0,0,0,.08);
+      background: #fff;
+      gap: 10px;
+      user-select: none;
+      cursor: grab;
+    }
+#viewportLab .bar:active { cursor: grabbing; }
+#viewportLab .meta { display:flex; align-items:center; gap: 8px; min-width: 0; }
+#viewportLab .name { font-weight: 750; letter-spacing: 0.1px; }
+#viewportLab .tag {
+      padding: 2px 8px;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 999px;
+      font-size: 11px;
+      opacity: .75;
+      white-space: nowrap;
+    }
+#viewportLab .controls { display:flex; align-items:center; gap: 8px; white-space: nowrap; opacity: .95; }
+#viewportLab .controls input[type="range"] { width: 120px; }
+#viewportLab .controls .num { font-variant-numeric: tabular-nums; min-width: 52px; text-align: right; }
+#viewportLab iframe {
+      width: 100%;
+      height: var(--h, 760px);
+      border: 0;
+      display: block;
+      background: #e5edf5;
+    }
+#viewportLab .hint { font-size: 12px; opacity: .7; margin-top: -6px; }
+#viewportLab #colorPicker {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 8px 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      z-index: 9999;
+      font-size: 11px;
+      max-width: 240px;
+    }
+#viewportLab #colorPicker.collapsed { padding: 6px 10px; }
+#viewportLab #colorPicker .picker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: move;
+      user-select: none;
+    }
+#viewportLab #colorPicker.collapsed .picker-content { display: none; }
+#viewportLab #colorPicker .zone-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+      padding: 4px 6px;
+      border-radius: 5px;
+    }
+#viewportLab #colorPicker .zone-label {
+      width: 60px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+#viewportLab #colorPicker input[type="color"] {
+      width: 26px;
+      height: 20px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 0;
+    }
+#viewportLab #colorPicker .hex-display {
+      font-family: monospace;
+      font-size: 9px;
+      color: #666;
+      width: 46px;
+    }
+
+/* Phone stability: prevent S24 Plus style wrap caused by font scaling */
+@media (max-width: 460px) {
+  /* The grid that contains pool row + generate tile */
+  #controlsGrid {
+    gap: 8px;
+  }
+
+  /* Pool buttons row */
+  .poolRow {
+    gap: 6px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  /* Unit buttons */
+  .poolRow button {
+    padding: 6px 10px !important;
+    font-size: 14px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* Generate tile */
+  .generateBox {
+    width: 100px;
+    min-width: 100px;
+    padding: 8px 10px;
+  }
+
+  .genLabel {
+    font-size: 13px;
+  }
+
+  .genDolphin {
+    font-size: 32px;
+  }
+}
