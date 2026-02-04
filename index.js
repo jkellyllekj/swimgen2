@@ -17,6 +17,18 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ============================================================================
+// FEATURE FLAG: Template-based generator v2
+// Set to true to use template library instead of algorithmic generation
+// ============================================================================
+const USE_TEMPLATE_GENERATOR = false; // Legacy is default
+let TemplateGenerator = null;
+try {
+  TemplateGenerator = require('./src/generator-v2/core.js').TemplateGenerator;
+} catch (e) {
+  console.log('Template generator not loaded:', e.message);
+}
+
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -5785,17 +5797,35 @@ app.post("/generate-workout", (req, res) => {
     let workout = null;
     let usedSeed = nowSeed();
 
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-      workout = buildWorkout({
+    // ========================================================================
+    // GENERATOR SELECTION: Template v2 vs Legacy Algorithmic
+    // ========================================================================
+    if (USE_TEMPLATE_GENERATOR && TemplateGenerator) {
+      // Template-based generator v2
+      const generator = new TemplateGenerator();
+      workout = generator.generateWorkout({
         targetTotal,
         poolLen,
         unitsShort,
         poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
         thresholdPace: String(body.thresholdPace || ""),
         opts,
-        seed: usedSeed + attempt
+        seed: usedSeed
       });
-      if (workout && workout.text) break;
+    } else {
+      // Legacy algorithmic generator
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        workout = buildWorkout({
+          targetTotal,
+          poolLen,
+          unitsShort,
+          poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
+          thresholdPace: String(body.thresholdPace || ""),
+          opts,
+          seed: usedSeed + attempt
+        });
+        if (workout && workout.text) break;
+      }
     }
 
     if (!workout || !workout.text) {

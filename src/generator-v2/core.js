@@ -1,76 +1,148 @@
 // ============================================================================
 // Generator v2 - Template-Based Workout Generation
 // ============================================================================
-// NO algorithmic invention - uses real-world templates only
-// Preserves all UI/gesture functionality through orchestration layer
+// Uses ONLY real-world templates from the template library
+// Returns EXACT same structure as legacy buildOneSetBodyServer()
 // ============================================================================
 
-class GeneratorV2 {
-  constructor(templateLibrary) {
-    this.templates = templateLibrary;
+const { TemplateLibrary, TEMPLATE_LIBRARY } = require('../template-library/core/initial-templates.js');
+const { TemplateImportPipeline } = require('../template-library/import-pipeline.js');
+
+let templatesLoaded = false;
+
+class TemplateGenerator {
+  constructor() {
+    if (!templatesLoaded) {
+      const pipeline = new TemplateImportPipeline();
+      const batch = pipeline.getInitialBatch();
+      pipeline.importBatch(batch, TEMPLATE_LIBRARY);
+      templatesLoaded = true;
+    }
+    this.library = new TemplateLibrary();
     this.generationCount = 0;
   }
-  
-  generateWorkout(totalDistance, poolLength) {
-    console.log(`GeneratorV2: Generating ${totalDistance}m workout for ${poolLength}m pool`);
+
+  generateWorkout({ targetTotal, poolLen, unitsShort, poolLabel, thresholdPace, opts, seed }) {
     this.generationCount++;
+    const base = poolLen;
     
-    // This will be replaced with full template selection logic
-    // For now, return a structure that preserves UI compatibility
+    const rawTotal = this.snapToPoolMultiple(targetTotal, base);
+    const lengths = Math.round(rawTotal / base);
+    const evenLengths = lengths % 2 === 0 ? lengths : lengths + 1;
+    const total = evenLengths * base;
+
+    let rngState = seed || Date.now();
+    const seededRng = () => {
+      rngState = ((rngState * 1103515245 + 12345) >>> 0) % 2147483648;
+      return rngState / 2147483648;
+    };
+
+    const minSectionDist = base * 4;
+    const sections = [];
+    let usedDist = 0;
+
+    const warmDist = Math.max(this.snapToPoolMultiple(Math.round(total * 0.15), base), minSectionDist);
+    const coolDist = Math.max(this.snapToPoolMultiple(Math.round(total * 0.10), base), minSectionDist);
+    const mainDist = total - warmDist - coolDist;
+
+    sections.push({ label: 'Warm up', dist: warmDist });
+    sections.push({ label: 'Main', dist: mainDist });
+    sections.push({ label: 'Cool down', dist: coolDist });
+
+    const textLines = [];
+    const parsedSections = [];
+
+    for (const section of sections) {
+      const sectionKey = this.mapLabelToCategory(section.label);
+      const body = this.buildSectionBody(sectionKey, section.dist, base, seededRng);
+      
+      textLines.push(`${section.label}: ${section.dist}`);
+      textLines.push(body);
+      textLines.push('');
+
+      parsedSections.push({
+        label: section.label,
+        dist: section.dist,
+        body: body
+      });
+    }
+
+    const workoutName = this.generateWorkoutName(total, seededRng);
+
     return {
-      success: true,
-      workout: {
-        sections: this.generatePlaceholderSections(),
-        totalDistance: totalDistance,
-        poolLength: poolLength,
-        generatedBy: 'template-v2',
-        generationId: this.generationCount
-      },
-      // Preserve UI compatibility
-      metadata: {
-        preservesUI: true,
-        templateBased: true,
-        legacyUISupport: true
-      }
+      text: textLines.join('\n'),
+      sections: parsedSections,
+      name: workoutName,
+      total: total,
+      poolLen: poolLen,
+      generatedBy: 'template-v2'
     };
   }
-  
-  generatePlaceholderSections() {
-    // Placeholder that maintains UI structure
-    return [
-      {
-        label: "Warm up",
-        color: "#1e90ff",
-        sets: ["200 swim easy"],
-        total: 200
-      },
-      {
-        label: "Main",
-        color: "#f39c12", 
-        sets: ["10x100 @ 1:40 moderate"],
-        total: 1000
-      },
-      {
-        label: "Cool down",
-        color: "#1e90ff",
-        sets: ["200 easy choice"],
-        total: 200
+
+  buildSectionBody(category, targetDistance, poolLen, rng) {
+    const lines = [];
+    let remaining = targetDistance;
+    const minDist = poolLen * 2;
+    let attempts = 0;
+    const maxAttempts = 20;
+
+    while (remaining >= minDist && attempts < maxAttempts) {
+      attempts++;
+      
+      const allTemplates = this.library.getTemplatesBySection(category);
+      const validTemplates = allTemplates.filter(t => {
+        const snapped = this.snapToPoolMultiple(t.distance, poolLen);
+        return snapped > 0 && snapped <= remaining;
+      });
+
+      if (validTemplates.length === 0) {
+        const fallbackDist = this.snapToPoolMultiple(remaining, poolLen);
+        if (fallbackDist >= minDist) {
+          lines.push(`${fallbackDist} easy swim`);
+          remaining -= fallbackDist;
+        }
+        break;
       }
-    ];
-  }
-  
-  // Will be expanded to handle THOUSANDS of templates
-  selectTemplateForSection(section, targetDistance, effortProfile) {
-    // Future: Intelligent selection from thousands of validated templates
-    // For now, return first matching template
-    const available = this.templates.getTemplatesBySection(section.toLowerCase().replace(' ', ''));
-    if (available && available.length > 0) {
-      return available[0];
+
+      const template = validTemplates[Math.floor(rng() * validTemplates.length)];
+      const snappedDist = this.snapToPoolMultiple(template.distance, poolLen);
+      
+      lines.push(template.structure);
+      remaining -= snappedDist;
     }
-    return null;
+
+    if (remaining >= minDist) {
+      lines.push(`${remaining} easy swim`);
+    }
+
+    return lines.join('\n');
+  }
+
+  mapLabelToCategory(label) {
+    const lower = label.toLowerCase();
+    if (lower.includes('warm')) return 'warmup';
+    if (lower.includes('build')) return 'build';
+    if (lower.includes('drill')) return 'drill';
+    if (lower.includes('kick')) return 'kick';
+    if (lower.includes('pull')) return 'main';
+    if (lower.includes('main')) return 'main';
+    if (lower.includes('cool')) return 'cooldown';
+    return 'main';
+  }
+
+  snapToPoolMultiple(dist, poolLen) {
+    if (!poolLen || poolLen <= 0) return dist;
+    const wallSafe = poolLen * 2;
+    return Math.round(dist / wallSafe) * wallSafe;
+  }
+
+  generateWorkoutName(total, rng) {
+    const adjectives = ['Power', 'Speed', 'Endurance', 'Tempo', 'Threshold', 'Sprint', 'Distance', 'Mixed'];
+    const types = ['Session', 'Workout', 'Set', 'Practice', 'Training'];
+    const adj = adjectives[Math.floor(rng() * adjectives.length)];
+    const type = types[Math.floor(rng() * types.length)];
+    return `${adj} ${type} - ${total}m`;
   }
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { GeneratorV2 };
-}
+module.exports = { TemplateGenerator };
