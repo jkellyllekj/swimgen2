@@ -17,18 +17,6 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ============================================================================
-// FEATURE FLAG: Template-based generator v2
-// Set to true to use template library instead of algorithmic generation
-// ============================================================================
-const USE_TEMPLATE_GENERATOR = true; // Template generator is now default
-let TemplateGenerator = null;
-try {
-  TemplateGenerator = require('./src/generator-v2/core.js').TemplateGenerator;
-} catch (e) {
-  console.log('Template generator not loaded:', e.message);
-}
-
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -3461,11 +3449,10 @@ app.get("/", (req, res) => {
         try {
           const lastFp = loadLastWorkoutFingerprint();
 
-          const useTemplateGen = localStorage.getItem('useTemplateGenerator') === 'true';
           const res = await fetch("/generate-workout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...payload, lastWorkoutFp: lastFp, useTemplateGenerator: useTemplateGen })
+            body: JSON.stringify({ ...payload, lastWorkoutFp: lastFp })
           });
 
           let data = null;
@@ -4834,32 +4821,6 @@ ${HOME_JS_RENDER}
 ${HOME_JS_EVENTS}
 ${HOME_JS_GESTURES}
 ${HOME_JS_CLOSE}
-
-<!-- Generator Test Toggle -->
-<div id="generatorTogglePanel" style="position: fixed; bottom: 10px; right: 10px; z-index: 1000; background: white; padding: 10px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-family: system-ui, sans-serif;">
-  <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-    <input type="checkbox" id="templateGeneratorToggle" style="width: 18px; height: 18px;">
-    <span style="font-size: 14px;">Template Generator</span>
-  </label>
-  <div id="generatorStatus" style="font-size: 11px; color: #666; margin-top: 4px;">Current: Template</div>
-</div>
-<script>
-(function() {
-  const toggle = document.getElementById('templateGeneratorToggle');
-  const status = document.getElementById('generatorStatus');
-  if (toggle && status) {
-    const saved = localStorage.getItem('useTemplateGenerator');
-    const useTemplate = saved === null ? true : saved === 'true';
-    toggle.checked = useTemplate;
-    status.textContent = 'Current: ' + (useTemplate ? 'Template' : 'Legacy');
-    toggle.addEventListener('change', function() {
-      localStorage.setItem('useTemplateGenerator', this.checked);
-      status.textContent = 'Current: ' + (this.checked ? 'Template' : 'Legacy');
-    });
-  }
-})();
-</script>
-
 </body>
 </html>`;
 
@@ -5259,29 +5220,7 @@ app.post("/reroll-set", (req, res) => {
     // Use rerollCount to generate deterministically different seeds each click
     const rerollCount = Number(body.rerollCount) || 1;
     
-    // Try template generator if enabled, fall back to legacy on failure
-    if (USE_TEMPLATE_GENERATOR && TemplateGenerator) {
-      try {
-        const generator = new TemplateGenerator();
-        for (let i = 0; i < 10; i++) {
-          const seed = ((rerollCount * 7919) + (i * 9973) + Date.now()) >>> 0;
-          const result = generator.generateSingleSet 
-            ? generator.generateSingleSet({ label, targetDistance, poolLen, avoidText, seed })
-            : null;
-          
-          if (!result || !result.structure) continue;
-          if (avoidText && result.structure.trim() === avoidText.trim()) continue;
-          
-          return res.json({ ok: true, setBody: result.structure });
-        }
-        // Template generator didn't produce a result, fall through to legacy
-      } catch (templateErr) {
-        console.log('[REROLL] Template generator failed, using legacy:', templateErr.message);
-        // Fall through to legacy generator
-      }
-    }
-    
-    // Legacy: Generate a replacement body with the same label and distance
+    // Generate a replacement body with the same label and distance
     // Use rerollCount to cycle through effort levels, plus seed for variety within each level
     for (let i = 0; i < 10; i++) {
       // Combine rerollCount with iteration to guarantee different seed each attempt
@@ -5846,42 +5785,17 @@ app.post("/generate-workout", (req, res) => {
     let workout = null;
     let usedSeed = nowSeed();
 
-    // ========================================================================
-    // GENERATOR SELECTION: Template v2 vs Legacy Algorithmic
-    // ========================================================================
-    // Check request body for useTemplateGenerator flag (UI toggle) or fallback to server flag
-    const useTemplateGen = body.useTemplateGenerator === true || USE_TEMPLATE_GENERATOR;
-    
-    console.log('[GENERATOR] useTemplateGen:', useTemplateGen, '| TemplateGenerator loaded:', !!TemplateGenerator, '| targetTotal:', targetTotal);
-    
-    if (useTemplateGen && TemplateGenerator) {
-      // Template-based generator v2
-      console.log('[GENERATOR] Using TEMPLATE generator');
-      const generator = new TemplateGenerator();
-      workout = generator.generateWorkout({
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      workout = buildWorkout({
         targetTotal,
         poolLen,
         unitsShort,
         poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
         thresholdPace: String(body.thresholdPace || ""),
         opts,
-        seed: usedSeed
+        seed: usedSeed + attempt
       });
-    } else {
-      // Legacy algorithmic generator
-      console.log('[GENERATOR] Using LEGACY generator (template not available or disabled)');
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        workout = buildWorkout({
-          targetTotal,
-          poolLen,
-          unitsShort,
-          poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
-          thresholdPace: String(body.thresholdPace || ""),
-          opts,
-          seed: usedSeed + attempt
-        });
-        if (workout && workout.text) break;
-      }
+      if (workout && workout.text) break;
     }
 
     if (!workout || !workout.text) {
@@ -5920,11 +5834,7 @@ app.post("/generate-workout", (req, res) => {
           if (distMatch) dist = Number(distMatch[2]);
 
           current = { label, dist, bodyLines: [] };
-          // Only add tail to body if it contains more than just a distance number
-          // This prevents the distance from being counted twice
-          if (tail && !/^\d+$/.test(tail.trim())) {
-            current.bodyLines.push(tail);
-          }
+          if (tail) current.bodyLines.push(tail);
           continue;
         }
 
@@ -6029,12 +5939,9 @@ app.post("/generate-workout", (req, res) => {
       }
     }
 
-    // Use workout.sections directly if available (template generator), otherwise parse
-    const finalSections = workout.sections && workout.sections.length > 0
-      ? workout.sections
-      : parseWorkoutTextToSections(workout.text).sections;
+    const parsed = parseWorkoutTextToSections(workout.text);
 
-    const sectionMeta = finalSections.map((s) => {
+    const sectionMeta = parsed.sections.map((s) => {
       const zone = inferZoneFromText(s.body);
       const isStriated = inferIsStriatedFromText(s.body);
       return { zone, isStriated };
@@ -6051,7 +5958,7 @@ app.post("/generate-workout", (req, res) => {
       ok: true,
       workoutText: workout.text,
       workoutName: workout.name || "",
-      sections: finalSections,
+      sections: parsed.sections,
       sectionMeta,
       workoutMeta
     });
