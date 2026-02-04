@@ -28,34 +28,38 @@ Additional project-specific preferences:
 ## System Architecture
 
 ### Migration Status
-**Date:** 2026-02-04 - Analysis Complete, Ready for Incremental Migration
+**Date:** 2026-02-04 - Connection Phase Complete
 
-The app is fully working. Analysis identified what to keep vs replace:
+**COMPLETED:**
+- Template library with 125 validated sets (warmup: 25, build: 15, kick: 15, drill: 15, main: 40, cooldown: 15)
+- Generator v2 (`src/generator-v2/core.js`) uses templates from library
+- Feature flag `USE_TEMPLATE_GENERATOR` in index.js (line 27) - set to false (legacy default)
+- /generate-workout route branches on feature flag (lines 5803-5831)
+- Both generators work side-by-side
+
+**Feature Flag:**
+```javascript
+const USE_TEMPLATE_GENERATOR = false; // Set to true to test template generator
+```
 
 **KEEP (UI Layer ~3000 lines):**
 - UI Initialization: `setDistance()`, `loadUserSettings()`, slider handlers
-- Gesture System: `setupGestureEditing()`, drag/swipe handlers (lines 3615-4280)
+- Gesture System: `setupGestureEditing()`, drag/swipe handlers
 - Render System: `renderCards()`, zone colors, dolphin animations
 - Routes: `GET /`, `GET /styles.css`
 
-**REPLACE (Generator ~1500 lines):**
-- `buildOneSetBodyShared()` (line 959)
-- `buildOneSetBodyServer()` (line 5343)
-- `buildOneSetBodyServerLocal()` (line 6179)
-- `generateWorkoutName()`, `generateDrillSetDynamic()`
-- Routes: `POST /generate-workout`, `POST /reroll-set`
-
-**Prepared template structure:**
-- `src/template-library/core/initial-templates.js` - Scale-ready structure
-- `src/generator-v2/core.js` - Generator v2 foundation
-- `src/ui/preserved-layer.js` - UI preservation bridge
-- `legacy-index.js` - Full backup (7304 lines)
+**Template Files:**
+- `src/template-library/core/initial-templates.js` - 125 validated templates
+- `src/template-library/import-pipeline.js` - Batch import system
+- `src/generator-v2/core.js` - Template-based generator
+- `test/compare.js` - Structure validation test
+- `legacy-index.js` - Full backup (DO NOT MODIFY)
 
 **Next Steps:**
-1. Extract UI functions to modules (app keeps working)
-2. Build template generator to replace `buildOneSetBody*`
-3. Connect new generator to POST routes
-4. Remove old algorithmic code
+1. Test with `USE_TEMPLATE_GENERATOR = true` to verify UI renders correctly
+2. Add /reroll-set feature flag support
+3. Scale template library to 500+ sets
+4. Remove old algorithmic code when template generator is validated
 
 ### Application Structure
 Directory structure for template-based rebuild:
