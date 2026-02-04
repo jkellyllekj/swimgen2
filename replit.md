@@ -28,16 +28,44 @@ Additional project-specific preferences:
 ## System Architecture
 
 ### Migration Status
-The application is undergoing a template-based rebuild. The current UI/gesture layer is preserved while the generator is being replaced with a real-world template library.
+**Date:** 2026-02-04 - Template-Based Rebuild Foundation COMPLETE
 
-**Legacy (current):** Monolithic index.js with algorithmic generation  
-**Target (SwimGen2):** Template-based engine with thousands of validated swim sets
+The application has begun the template-based rebuild. The original UI/gesture layer is preserved in `legacy-index.js` while the new template system foundation is in place.
+
+**Completed:**
+- `legacy-index.js` - Full backup of working Express server with UI (7304 lines)
+- `index.js` - New orchestrator (browser-side, to be connected)
+- `src/template-library/core/initial-templates.js` - Template library foundation
+- `src/generator-v2/core.js` - Generator v2 foundation
+- `src/ui/preserved-layer.js` - UI preservation bridge
+
+**Next Steps:**
+1. Populate initial batch of 50+ validated templates per section
+2. Connect template library to generator-v2
+3. Connect generator-v2 to preserved UI layer
+4. Begin continuous collection pipeline for thousands of sets
 
 ### Application Structure
-Currently a single-file architecture (`index.js`) with Express server, routes, and inline frontend. The template-based rebuild will modularize into:
-- `src/generator-v2.js` - Template-based engine
-- `src/template-library/` - Real-world sets (thousands)
-- `ui/` - Preserved gesture and animation layer
+Directory structure for template-based rebuild:
+```
+src/
+  template-library/
+    core/
+      initial-templates.js   # Scale-ready template structure
+    sets/
+      warmup/    # Section-specific templates
+      build/
+      kick/
+      drill/
+      main/
+      cooldown/
+  generator-v2/
+    core.js      # Template-based workout generation
+  ui/
+    preserved-layer.js  # Bridge to legacy UI
+legacy-index.js  # Backup of working Express + UI (DO NOT MODIFY)
+index.js         # Orchestrator (to be connected)
+```
 
 ### Frontend
 The frontend features an inline HTML interface with preserved UI during migration. Users can select pool type (25m, 50m, 25yd, Custom) and target distance via a slider (500-10000m, snapping to 100). Workouts are displayed as chips with zone-based colored backgrounds (Easy blue, Moderate green, Strong yellow, Hard orange, Full Gas red).
