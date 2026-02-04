@@ -5259,21 +5259,26 @@ app.post("/reroll-set", (req, res) => {
     // Use rerollCount to generate deterministically different seeds each click
     const rerollCount = Number(body.rerollCount) || 1;
     
-    // Use template generator if enabled
+    // Try template generator if enabled, fall back to legacy on failure
     if (USE_TEMPLATE_GENERATOR && TemplateGenerator) {
-      const generator = new TemplateGenerator();
-      for (let i = 0; i < 10; i++) {
-        const seed = ((rerollCount * 7919) + (i * 9973) + Date.now()) >>> 0;
-        const result = generator.generateSingleSet 
-          ? generator.generateSingleSet({ label, targetDistance, poolLen, avoidText, seed })
-          : null;
-        
-        if (!result || !result.structure) continue;
-        if (avoidText && result.structure.trim() === avoidText.trim()) continue;
-        
-        return res.json({ ok: true, setBody: result.structure });
+      try {
+        const generator = new TemplateGenerator();
+        for (let i = 0; i < 10; i++) {
+          const seed = ((rerollCount * 7919) + (i * 9973) + Date.now()) >>> 0;
+          const result = generator.generateSingleSet 
+            ? generator.generateSingleSet({ label, targetDistance, poolLen, avoidText, seed })
+            : null;
+          
+          if (!result || !result.structure) continue;
+          if (avoidText && result.structure.trim() === avoidText.trim()) continue;
+          
+          return res.json({ ok: true, setBody: result.structure });
+        }
+        // Template generator didn't produce a result, fall through to legacy
+      } catch (templateErr) {
+        console.log('[REROLL] Template generator failed, using legacy:', templateErr.message);
+        // Fall through to legacy generator
       }
-      return res.status(500).json({ ok: false, error: "Template reroll failed." });
     }
     
     // Legacy: Generate a replacement body with the same label and distance

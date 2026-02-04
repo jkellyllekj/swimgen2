@@ -57,9 +57,9 @@ const USE_TEMPLATE_GENERATOR = true; // Template generator is now active
 - `legacy-index.js` - Full backup (DO NOT MODIFY)
 
 **Next Steps:**
-1. Add /reroll-set feature flag support for template generator
-2. Scale template library to 200+ sets from real coaching sources
-3. Add more section types (build, kick, drill)
+1. Scale template library to 200+ sets from real coaching sources
+2. Add more section types (build, kick, drill)
+3. Integrate new-architecture UI components into main app
 4. Remove old algorithmic code when template generator is fully validated
 
 ### Application Structure
@@ -68,20 +68,24 @@ Directory structure for template-based rebuild:
 src/
   template-library/
     core/
-      initial-templates.js   # Scale-ready template structure
-    sets/
-      warmup/    # Section-specific templates
-      build/
-      kick/
-      drill/
-      main/
-      cooldown/
+      initial-templates.js   # 55 validated templates
   generator-v2/
-    core.js      # Template-based workout generation
+    core.js                  # Template-based generator (active)
+
+new-architecture/            # Modular rebuild (parallel development)
+  core/
+    generator.js             # Same interface as legacy
   ui/
-    preserved-layer.js  # Bridge to legacy UI
-legacy-index.js  # Backup of working Express + UI (DO NOT MODIFY)
-index.js         # Orchestrator (to be connected)
+    WorkoutCard.js           # Card rendering component
+    GestureHandler.js        # Touch/swipe gestures
+    EditModal.js             # Set editing modal
+  tools/
+    catalog-builder.js       # Collect real workouts
+  catalog/
+    sets.json                # Generated template data
+
+legacy-index.js              # Backup of working Express + UI
+index.js                     # Main app (template generator active)
 ```
 
 ### Frontend
