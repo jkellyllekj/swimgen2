@@ -90,7 +90,7 @@ const WORKOUT_TEMPLATES = [
     sections: [
       { label: "Warm up", desc: "400 easy", distance: 400 },
       { label: "Build", desc: "6x50 build", distance: 300 },
-      { label: "Main", desc: "8x100 strong\nOdd: fast, Even: easy", distance: 800 },
+      { label: "Main", desc: "8x100 strong (odd fast, even easy)", distance: 800 },
       { label: "Sprint", desc: "4x50 FAST with rest", distance: 200 },
       { label: "Cool down", desc: "300 easy", distance: 300 }
     ],
