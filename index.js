@@ -4925,38 +4925,20 @@ app.post("/generate-workout", (req, res) => {
 
     const targetTotal = snapToPoolMultiple(distance, poolLen);
 
-    // Retry loop for workout generation (handles null returns from validity check)
-    // Set to 100 to handle validator rejections + target lock corrections + edge cases
-    const maxRetries = 100;
     let workout = null;
     let usedSeed = nowSeed();
 
-    // Template-based generation (cleaner workouts from real patterns)
-    if (useTemplates) {
-      workout = buildWorkoutFromTemplate({
-        targetTotal,
-        poolLen,
-        unitsShort,
-        poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
-        thresholdPace: String(body.thresholdPace || ""),
-        opts,
-        seed: usedSeed
-      });
-    } else {
-      // Original algorithmic generation
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        workout = buildWorkout({
-          targetTotal,
-          poolLen,
-          unitsShort,
-          poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
-          thresholdPace: String(body.thresholdPace || ""),
-          opts,
-          seed: usedSeed + attempt
-        });
-        if (workout && workout.text) break;
-      }
-    }
+    // TEMPLATE-ONLY GENERATION - No algorithmic fallback
+    // All workouts use real coach patterns from templates
+    workout = buildWorkoutFromTemplate({
+      targetTotal,
+      poolLen,
+      unitsShort,
+      poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
+      thresholdPace: String(body.thresholdPace || ""),
+      opts,
+      seed: usedSeed
+    });
 
     if (!workout || !workout.text) {
       return res.status(500).json({ ok: false, error: "Failed to build workout." });
@@ -4964,20 +4946,16 @@ app.post("/generate-workout", (req, res) => {
 
     const fp = fingerprintWorkoutText(workout.text);
     if (lastWorkoutFp && fp === lastWorkoutFp) {
-      let workout2 = null;
-      const seed2Base = nowSeed();
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        workout2 = buildWorkout({
-          targetTotal,
-          poolLen,
-          unitsShort,
-          poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
-          thresholdPace: String(body.thresholdPace || ""),
-          opts,
-          seed: seed2Base + attempt
-        });
-        if (workout2 && workout2.text) break;
-      }
+      // Regenerate with different seed to avoid duplicate - ALSO uses templates
+      const workout2 = buildWorkoutFromTemplate({
+        targetTotal,
+        poolLen,
+        unitsShort,
+        poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
+        thresholdPace: String(body.thresholdPace || ""),
+        opts,
+        seed: nowSeed() + 1000
+      });
 
       if (workout2 && workout2.text) {
         const parsed2 = parseWorkoutTextToSections(workout2.text);

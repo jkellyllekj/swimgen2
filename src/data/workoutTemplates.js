@@ -13,6 +13,52 @@
 
 const WORKOUT_TEMPLATES = [
   // ============================================================
+  // MINI WORKOUTS (500-1200m) - Quick Sessions
+  // ============================================================
+  {
+    name: "Quick Dip",
+    totalDistance: 500,
+    sections: [
+      { label: "Warm up", desc: "100 easy", distance: 100 },
+      { label: "Main", desc: "4x75 steady\nbuild each 75 by 25", distance: 300 },
+      { label: "Cool down", desc: "100 easy", distance: 100 }
+    ],
+    tags: ["short", "quick"]
+  },
+  {
+    name: "Express Swim",
+    totalDistance: 800,
+    sections: [
+      { label: "Warm up", desc: "200 easy choice", distance: 200 },
+      { label: "Main", desc: "4x100 moderate\nfocus on technique", distance: 400 },
+      { label: "Cool down", desc: "200 easy", distance: 200 }
+    ],
+    tags: ["short", "express"]
+  },
+  {
+    name: "Lunch Break",
+    totalDistance: 1000,
+    sections: [
+      { label: "Warm up", desc: "200 easy", distance: 200 },
+      { label: "Build", desc: "4x50 build by 25", distance: 200 },
+      { label: "Main", desc: "4x100 strong", distance: 400 },
+      { label: "Cool down", desc: "200 easy", distance: 200 }
+    ],
+    tags: ["short", "moderate"]
+  },
+  {
+    name: "Quick Technique",
+    totalDistance: 1200,
+    sections: [
+      { label: "Warm up", desc: "300 easy", distance: 300 },
+      { label: "Drill", desc: "4x50 drill choice", distance: 200 },
+      { label: "Main", desc: "4x125 steady\nbuild last 25", distance: 500 },
+      { label: "Cool down", desc: "200 easy", distance: 200 }
+    ],
+    tags: ["short", "technique"]
+  },
+
+  // ============================================================
   // SHORT WORKOUTS (1500-2000m) - Recovery/Technique Focus
   // ============================================================
   {
