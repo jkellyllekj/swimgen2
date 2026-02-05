@@ -1789,6 +1789,7 @@ app.get("/", (req, res) => {
           const t = String(line || "").trim();
           if (!t) return false;
           return (
+            /^Total\\s+\\d+/.test(t) ||
             t.startsWith("Total lengths:") ||
             t.startsWith("Ends at start end:") ||
             t.startsWith("Requested:") ||
