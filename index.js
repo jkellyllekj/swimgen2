@@ -74,7 +74,7 @@ const SECTION_TARGET_BUCKETS = {
   kick:     [200, 300, 400, 500],
   drill:    [200, 300, 400],
   main:     [400, 600, 800, 1000, 1200, 1600],
-  cooldown: [100, 200, 300, 400, 500],
+  cooldown: [100, 150, 200, 300, 400, 500],
 };
 
 function resolveSectionTarget({ sectionLabel, desiredDistance, poolLen, seed }) {
@@ -5768,24 +5768,9 @@ app.post("/generate-workout", (req, res) => {
       sets.push({ label: "Main", dist: snapToCleanMain(mainTotal) });
     }
 
-    // FINAL BALANCE: Set cooldown to exactly what's needed to hit targetTotal
-    // This absorbs any drift from snapping main sections
-    const preBalanceTotal = sets.reduce((sum, s) => sum + s.dist, 0);
-    let finalCoolDist = targetTotal - preBalanceTotal;
-    
-    // Ensure cooldown stays at minimum 4 lengths (2 round trips)
-    const minCoolDist = base * 4;
-    if (finalCoolDist < minCoolDist) {
-      // If cooldown would be too small, we can't hit the target exactly
-      // Set to minimum and let target lock fix it later, or retry
-      finalCoolDist = minCoolDist;
-    }
-    // Only snap if not already a pool multiple (to preserve exact target when possible)
-    if (finalCoolDist % base !== 0) {
-      finalCoolDist = snapToPoolMultiple(finalCoolDist, base);
-    }
-
-    sets.push({ label: "Cool down", dist: finalCoolDist });
+    // Use the sensible cooldown calculated earlier (10% of total, standard values, max 16 reps)
+    // Main absorbs any rounding drift, NOT cooldown
+    sets.push({ label: "Cool down", dist: coolDist });
 
     // Short workout section gating from project-state.md
     // Below 1200: Drill may be omitted
@@ -5933,30 +5918,10 @@ app.post("/generate-workout", (req, res) => {
           section.body = fallbackBody;
         }
         
-        // Try cooldown first
-        if (cooldownIdx >= 0) {
-          const cooldownSet = sets[cooldownIdx];
-          const currentCool = cooldownSet.dist;
-          const currentBody = cooldownSet.body;
-          const newCool = currentCool + delta;
-          // Snap to pool length and check minimum
-          const snappedNewCool = snapToPoolMultiple(newCool, poolLen);
-          if (snappedNewCool >= minCooldown && snappedNewCool > 0) {
-            cooldownSet.dist = snappedNewCool;
-            actualTotalMeters = sets.reduce((sum, s) => sum + s.dist, 0);
-            if (actualTotalMeters === targetTotal) {
-              regenerateSectionBody(cooldownSet);
-              corrected = true;
-            } else {
-              // Revert if snap didn't give exact match
-              cooldownSet.dist = currentCool;
-              cooldownSet.body = currentBody;
-              actualTotalMeters = sets.reduce((sum, s) => sum + s.dist, 0);
-            }
-          }
-        }
+        // COOLDOWN IS FIXED - do not adjust it. Use sensible value from calculateSensibleCoolDown.
+        // Adjust warmup first instead, then main if needed.
         
-        // Try warmup if cooldown didn't work
+        // Try warmup first (NOT cooldown - cooldown is now calculated sensibly)
         if (!corrected && warmupIdx >= 0) {
           const warmupSet = sets[warmupIdx];
           const currentWarm = warmupSet.dist;
@@ -5973,6 +5938,30 @@ app.post("/generate-workout", (req, res) => {
               warmupSet.dist = currentWarm;
               warmupSet.body = currentBody;
               actualTotalMeters = sets.reduce((sum, s) => sum + s.dist, 0);
+            }
+          }
+        }
+        
+        // Try main set if warmup didn't work
+        if (!corrected) {
+          const mainIdx = sets.findIndex(s => String(s.label).toLowerCase().includes("main"));
+          if (mainIdx >= 0) {
+            const mainSet = sets[mainIdx];
+            const currentMain = mainSet.dist;
+            const currentBody = mainSet.body;
+            const newMain = currentMain + delta;
+            const snappedNewMain = snapToPoolMultiple(newMain, poolLen);
+            if (snappedNewMain >= 200 && snappedNewMain > 0) {
+              mainSet.dist = snappedNewMain;
+              actualTotalMeters = sets.reduce((sum, s) => sum + s.dist, 0);
+              if (actualTotalMeters === targetTotal) {
+                regenerateSectionBody(mainSet);
+                corrected = true;
+              } else {
+                mainSet.dist = currentMain;
+                mainSet.body = currentBody;
+                actualTotalMeters = sets.reduce((sum, s) => sum + s.dist, 0);
+              }
             }
           }
         }

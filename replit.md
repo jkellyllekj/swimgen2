@@ -20,7 +20,7 @@ Additional project-specific preferences:
 ## System Architecture
 
 ### Application Structure
-The application uses Express with inline HTML/CSS/JavaScript. The main file is `index.js` (6,354 lines), with modularized components in `src/modules/`. No build step; relies on plain Node.js and Express.
+The application uses Express with inline HTML/CSS/JavaScript. The main file is `index.js` (6,343 lines), with modularized components in `src/modules/`. No build step; relies on plain Node.js and Express.
 
 **Extracted Modules:**
 - `src/modules/dragDropManager.js` (707 lines): Contains all drag-and-drop/touch gesture logic for workout cards including setupCardGestures, state variables, drop zone highlighting, and DOM reordering. Exports template strings that get concatenated into the HTML response.
