@@ -15,6 +15,9 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const { DRAG_DROP_JS } = require("./src/modules/dragDropManager");
+const setMath = require("./src/modules/setMath");
+const workoutLibrary = require("./src/modules/workoutLibrary");
+const workoutGenerator = require("./src/modules/workoutGenerator");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
