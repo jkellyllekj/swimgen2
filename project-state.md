@@ -1,7 +1,7 @@
 # Project: Swim Workout Generator
 
 Working title(s): SwimDice / SetRoll / PacePalette (TBD)  
-Last updated: 2026-02-04  
+Last updated: 2026-02-05  
 Status: Active Development - Template-Based Rebuild
 
 ============================================================================
@@ -19,6 +19,14 @@ If there is any uncertainty about:
 Then STOP and read this file in full before doing anything else.
 
 Chat memory is disposable. This file is not.
+
+============================================================================
+CURRENT BUGS (ACTIVE)
+============================================================================
+
+🐛 BUG: Template metadata appearing as swim sets (FIXED 2026-02-05)
+   - "Workout total: Xm" was parsed as a section due to colon format
+   - Fixed by changing to "Total Xm" (no colon)
 
 ============================================================================
 ACTIVE DEVELOPMENT - SWIMGEN2
@@ -290,7 +298,30 @@ Rules:
 RECENT WORK (FACTS, NOT PLANS)
 ============================================================================
 
-## Recent Work (2026-02-04)
+## Recent Work (2026-02-05)
+1. ✅ COMPLETED: **Template-Only Generation System**
+   - Created src/data/workoutTemplates.js with 27 real workout templates
+   - Mini templates: Quick Dip (500m), Express Swim (800m), Lunch Break (1000m), Quick Technique (1200m)
+   - Full templates: Easy Recovery, Sprint Prep, Threshold Builder, Endurance Builder, Volume Day, etc.
+   - findClosestTemplate() + scaleTemplate() for intelligent distance matching
+   - All algorithmic fallback REMOVED - 100% template-based generation
+   - No more "6x200 easy" warmups or "16x100 moderate" algorithmic patterns
+
+2. ✅ COMPLETED: **Cooldown Logic Fix**
+   - Uses 10% of total distance with sensible rounding
+   - Standard values: [100, 150, 200, 300, 400, 500]
+   - Max 16 reps limit enforced
+
+3. ✅ COMPLETED: **6000m+ Workout Support**
+   - Extended warmup buckets to [200-800]
+   - Smart rep distances (100m/200m for longer sets)
+   - Prevents 30-rep validator limit violations
+
+4. ✅ FIXED: **Template Metadata Bug**
+   - "Workout total: Xm" was parsed as swim section
+   - Fixed by changing format to "Total Xm" (no colon)
+
+## Previous Work (2026-02-04)
 1. **Generator Analysis Complete:**
    - Critical flaw identified: produces unrealistic sets (e.g., 76x25 cooldown)
    - Edit functionality broken: changes don't persist mathematically
@@ -326,77 +357,81 @@ REBUILD & FEATURE STRATEGY (ACTIVE)
 ============================================================================
 
 **PHASE 1: FOUNDATION OVERHAUL (IMMEDIATE)**
-1. **Real-World Template Library** (Thousands of sets)
+1. ✅ COMPLETED: **Real-World Template Library** (27 templates, 500m-10000m)
    - Sources: USA Swimming, Swim England, SwimSwam, coaching publications
    - No algorithmic invention - only real patterns
    - Continuous collection & validation pipeline
 
-2. **Generator-v2 Engine**
+2. ✅ COMPLETED: **Generator-v2 Engine**
    - Template matching only, no algorithmic generation
    - Outputs only coach-plausible, wall-safe sets
    - Preserves current UI/gesture layer
 
-3. **Fixed Edit System with Tabs**
+3. ⏳ PENDING: **Fixed Edit System with Tabs**
    - Tabbed interface: Drill, Main, Kick, Pull, Warmup, Cooldown tabs
    - Each tab has type-specific controls
    - Edit changes persist mathematically
 
 **PHASE 2: SET EDITOR ENHANCEMENTS**
-1. **Drill Editor Tab**
+1. ⏳ PENDING: **Drill Editor Tab**
    - Database of 30+ drills with categorization (catch, cadence, turns, etc.)
    - Custom drill entry field
    - Drill selection matching interval count
 
-2. **Main Set Editor Tab**
+2. ⏳ PENDING: **Main Set Editor Tab**
    - Pyramid configuration (100-200-300-200-100 patterns)
    - Multiple interval types within single set (e.g., 12x100 + 8x50)
    - Mixed effort levels within sets
 
-3. **Effort Customization**
+3. ⏳ PENDING: **Effort Customization**
    - Build from X to Y (selectable start/end efforts)
    - Alternate between A and B (selectable pairs)
    - Gradient options across full spectrum (easy to full gas)
 
-4. **Interval/Rest System**
+4. ⏳ PENDING: **Interval/Rest System**
    - CSS-based auto-calculation with 5/10 second rounding
    - Rest-based alternative (20s rest, etc.)
    - Send-off vs rest interval options
    - Display intervals per set
 
 **PHASE 3: UI & GESTURE POLISH**
-1. **Animation Fixes**
+1. ⏳ PENDING: **Animation Fixes**
    - Smooth 200ms drop animations (not instant)
    - Cards flow into position, not teleport
    - Other cards scroll up/down smoothly during reorder
 
-2. **Gesture Enhancements**
+2. ✅ COMPLETED: **Drag-and-Drop Module Extraction**
+   - src/modules/dragDropManager.js (707 lines) extracted
+   - Contains all drag-and-drop/touch gesture logic
+
+3. ⏳ PENDING: **Gesture Enhancements**
    - Phone: Two-finger spread to add set between cards
    - Web: Alternative add-set method (plus button or gesture)
    - Mobile drag without requiring horizontal swipe first
    - Auto-scroll when dragging to off-screen positions
 
-3. **Visual Customization**
+4. ⏳ PENDING: **Visual Customization**
    - Solid color square backgrounds (white, black, color picker)
    - Variable image backgrounds from existing collection
    - Consistent color coding per effort level
 
 **PHASE 4: ADVANCED FEATURES**
-1. **Regeneration Improvements**
+1. ⏳ PENDING: **Regeneration Improvements**
    - Greater set variation (not repetitive patterns)
    - Favorites/heart system for preferred sets
    - Tag-based generation (endurance, sprint, technique focus)
 
-2. **Pace/CSS Integration**
+2. ⏳ PENDING: **Pace/CSS Integration**
    - CSS input for pace-aware intervals
    - Adjustments for different strokes (IM vs freestyle)
    - Rest period customization per set
 
-3. **Equipment Integration**
+3. ⏳ PENDING: **Equipment Integration**
    - Fins, paddles, snorkel, pull buoy toggles
    - Equipment-aware set suggestions
    - Display equipment icons in sets
 
-4. **Workout Management**
+4. ⏳ PENDING: **Workout Management**
    - Save favorite workouts
    - Upload workout results/times
    - Progress tracking over time
@@ -543,10 +578,12 @@ KNOWN BUGS & LIMITATIONS (MUST FIX)
 ============================================================================
 
 **CRITICAL BUGS (MUST FIX):**
-- Generator creates unrealistic/never-used sets (e.g., 76x25 cooldown)
-- Edit modal changes don't persist to workout mathematics
-- Mobile vertical drag fails without horizontal swipe first
-- Set regeneration produces limited variation (same patterns)
+- ✅ FIXED: Generator creates unrealistic/never-used sets (e.g., 76x25 cooldown)
+   - Now uses template-only generation with 27 real workout patterns
+- 🔄 IN PROGRESS: Edit modal changes don't persist to workout mathematics
+- ⏳ PENDING: Mobile vertical drag fails without horizontal swipe first
+- ✅ FIXED: Set regeneration produces limited variation (same patterns)
+   - Template library provides variety via findClosestTemplate()
 
 **MAJOR ISSUES:**
 - Drop animation instant (not 200ms smooth)
@@ -564,10 +601,11 @@ KNOWN BUGS & LIMITATIONS (MUST FIX)
 - No visual indication for add-set functionality on web
 
 **GENERATOR REALISM ISSUES:**
-- Produces sets that would never be used in real coaching
-- Limited variation in set patterns
-- No connection to real-world swimming practice
-- Mathematical correctness but coaching implausibility
+- ✅ FIXED: Produces sets that would never be used in real coaching
+- ✅ FIXED: Limited variation in set patterns
+- ✅ FIXED: No connection to real-world swimming practice
+- ✅ FIXED: Mathematical correctness but coaching implausibility
+   - All issues resolved via template-only generation (Phase 5 complete)
 
 ============================================================================
 TESTING AND TOOLING
