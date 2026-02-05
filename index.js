@@ -5649,37 +5649,198 @@ app.post("/generate-workout", (req, res) => {
   
   // Helper: Generate a simple body description from distance and label
   function generateSimpleBody(dist, label, base) {
+    return generateVariedBody(dist, label, base, 0);
+  }
+  
+  function varyTemplateDesc(originalDesc, dist, label, base, seed) {
+    const s = seed >>> 0;
     const labelLower = String(label).toLowerCase();
+    const desc = String(originalDesc || "");
     
-    // Determine rep distance based on section type and distance
+    const intensitySwaps = {
+      "strong": ["moderate", "strong", "threshold pace", "@ strong effort"],
+      "moderate": ["steady", "moderate", "strong"],
+      "steady": ["steady", "moderate", "relaxed pace"],
+      "easy": ["easy", "easy freestyle", "easy choice", "relaxed swim"],
+      "build": ["build", "build by 25", "build to fast"],
+      "fast": ["fast", "race pace", "sprint"],
+      "FAST": ["FAST", "sprint", "max effort", "race pace"],
+      "FAST with rest": ["FAST with rest", "sprint with rest", "max effort with recovery"]
+    };
+    
+    const repMatch = desc.match(/^(\d+)x(\d+)\s+(.+)$/);
+    if (repMatch) {
+      const origReps = Number(repMatch[1]);
+      const origRepDist = Number(repMatch[2]);
+      const origIntensity = repMatch[3];
+      
+      const repDistOptions = [];
+      if (dist >= 800 && dist % 200 === 0) repDistOptions.push(200);
+      if (dist >= 300 && dist % 100 === 0) repDistOptions.push(100);
+      if (dist >= 150 && dist % 50 === 0) repDistOptions.push(50);
+      if (dist >= 50 && dist % base === 0) repDistOptions.push(base);
+      
+      const validRepDists = repDistOptions.filter(rd => {
+        const r = dist / rd;
+        return r >= 2 && r <= 16 && workoutTemplates.validateRepScheme(r, rd);
+      });
+      
+      let newRepDist = origRepDist;
+      let newReps = origReps;
+      if (validRepDists.length > 1) {
+        newRepDist = validRepDists[((s * 9973) >>> 0) % validRepDists.length];
+        newReps = Math.round(dist / newRepDist);
+      }
+      
+      const baseIntensity = origIntensity.replace(/\s*\(.*\)$/, "").trim();
+      const parenthetical = origIntensity.match(/\(.*\)$/);
+      let newIntensity = baseIntensity;
+      if (intensitySwaps[baseIntensity]) {
+        newIntensity = intensitySwaps[baseIntensity][((s * 2654435761) >>> 0) % intensitySwaps[baseIntensity].length];
+      }
+      if (parenthetical) {
+        newIntensity += " " + parenthetical[0];
+      }
+      
+      return newReps + "x" + newRepDist + " " + newIntensity;
+    }
+    
+    const straightMatch = desc.match(/^(\d+)\s+(.+)$/);
+    if (straightMatch) {
+      const origIntensity = straightMatch[2].trim();
+      if (intensitySwaps[origIntensity]) {
+        const swapped = intensitySwaps[origIntensity][((s * 2654435761) >>> 0) % intensitySwaps[origIntensity].length];
+        return dist + " " + swapped;
+      }
+      return dist + " " + origIntensity;
+    }
+    
+    return desc;
+  }
+  
+  function generateVariedBody(dist, label, base, seed) {
+    const labelLower = String(label).toLowerCase();
+    const s = seed >>> 0;
+    
+    const warmDescriptions = [
+      "easy", "easy freestyle", "easy choice", "relaxed swim",
+      "easy mix", "easy FC", "easy swim"
+    ];
+    const coolDescriptions = [
+      "easy", "easy choice", "easy freestyle", "relaxed swim",
+      "easy mix"
+    ];
+    const mainIntensities = [
+      "steady", "moderate", "strong", "threshold pace",
+      "@ strong effort", "negative split", "descend 1-4"
+    ];
+    const mainPatterns = [
+      "odd fast, even easy", "build each rep", "descend within set",
+      "hold pace", "negative split", "last 25 fast"
+    ];
+    const buildDescriptions = [
+      "build", "build by 25", "build to fast", "build each rep"
+    ];
+    const drillStrokes = [
+      "drill FC", "drill choice", "drill mix", "technique focus",
+      "catch-up drill", "drill IM"
+    ];
+    const kickDescriptions = [
+      "kick moderate", "kick choice", "kick with board",
+      "kick streamline", "kick easy"
+    ];
+    const pullDescriptions = [
+      "pull moderate", "pull with paddles", "pull steady",
+      "pull with buoy", "pull strong"
+    ];
+    const sprintIntensities = [
+      "FAST", "FAST with rest", "sprint", "max effort",
+      "race pace", "all out"
+    ];
+    
+    const pick = (arr) => arr[((s * 2654435761) >>> 0) % arr.length];
+    const pick2 = (arr) => arr[((s * 1103515245 + 12345) >>> 0) % arr.length];
+    
+    // Warmup and cooldown prefer straight swims
+    if (labelLower.includes("warm") || labelLower.includes("cool")) {
+      const descPool = labelLower.includes("warm") ? warmDescriptions : coolDescriptions;
+      if (dist <= 600) {
+        return dist + " " + pick(descPool);
+      }
+      // Longer warmups: split into easy + build
+      const easyDist = snapToPoolMultiple(Math.round(dist * 0.6), base);
+      const buildDist = dist - easyDist;
+      const buildReps = Math.round(buildDist / (base * 2));
+      const buildRepDist = buildReps > 0 ? Math.round(buildDist / buildReps) : buildDist;
+      if (buildReps > 1) {
+        return easyDist + " " + pick(descPool) + "\n" + buildReps + "x" + snapToPoolMultiple(buildRepDist, base) + " build";
+      }
+      return dist + " " + pick(descPool);
+    }
+    
+    // Determine rep distance options based on total distance
+    const repOptions = [];
+    if (dist >= 800 && dist % 200 === 0) repOptions.push(200);
+    if (dist >= 400 && dist % 100 === 0) repOptions.push(100);
+    if (dist >= 200 && dist % 50 === 0) repOptions.push(50);
+    if (dist >= 100 && dist % base === 0) repOptions.push(base);
+    
+    // Filter to valid rep counts (coaching constraints)
+    const validOptions = repOptions.filter(rd => {
+      const reps = dist / rd;
+      return reps >= 2 && reps <= 16 && workoutTemplates.validateRepScheme(reps, rd);
+    });
+    
     let repDist = base;
-    if (dist >= 600) repDist = 200;
-    else if (dist >= 300) repDist = 100;
-    else if (dist >= 100) repDist = 50;
-    else repDist = base;
-    
-    repDist = snapToPoolMultiple(repDist, base);
-    if (repDist <= 0) repDist = base;
+    if (validOptions.length > 0) {
+      repDist = validOptions[((s * 9973) >>> 0) % validOptions.length];
+    } else {
+      if (dist >= 600) repDist = 200;
+      else if (dist >= 300) repDist = 100;
+      else if (dist >= 100) repDist = 50;
+      repDist = snapToPoolMultiple(repDist, base);
+      if (repDist <= 0) repDist = base;
+    }
     
     const reps = Math.round(dist / repDist);
     
-    // Check if straight swim makes sense (1 rep)
-    if (reps === 1 || dist <= 400) {
-      if (labelLower.includes("warm") || labelLower.includes("cool")) {
-        return dist + " easy";
-      } else if (labelLower.includes("main")) {
-        return dist + " steady";
-      }
+    // Straight swim for small distances
+    if (reps <= 1) {
+      if (labelLower.includes("main")) return dist + " " + pick(mainIntensities);
+      return dist + " " + pick(warmDescriptions);
     }
     
-    // Generate rep scheme body
-    let intensity = "easy";
-    if (labelLower.includes("main")) intensity = "steady";
-    else if (labelLower.includes("build")) intensity = "build";
-    else if (labelLower.includes("drill")) intensity = "drill choice";
-    else if (labelLower.includes("kick")) intensity = "kick moderate";
-    else if (labelLower.includes("pull")) intensity = "pull moderate";
-    else if (labelLower.includes("sprint")) intensity = "fast";
+    // Build section descriptions
+    if (labelLower.includes("build")) {
+      return reps + "x" + repDist + " " + pick(buildDescriptions);
+    }
+    
+    // Drill sections
+    if (labelLower.includes("drill")) {
+      return reps + "x" + repDist + " " + pick(drillStrokes);
+    }
+    
+    // Kick sections
+    if (labelLower.includes("kick")) {
+      return reps + "x" + repDist + " " + pick(kickDescriptions);
+    }
+    
+    // Pull sections
+    if (labelLower.includes("pull")) {
+      return reps + "x" + repDist + " " + pick(pullDescriptions);
+    }
+    
+    // Sprint sections
+    if (labelLower.includes("sprint")) {
+      return reps + "x" + repDist + " " + pick(sprintIntensities);
+    }
+    
+    // Main sections - add pattern variations
+    const intensity = pick(mainIntensities);
+    const addPattern = ((s * 7919) >>> 0) % 3 === 0;
+    if (addPattern && reps >= 4) {
+      return reps + "x" + repDist + " " + intensity + " (" + pick2(mainPatterns) + ")";
+    }
     
     return reps + "x" + repDist + " " + intensity;
   }
@@ -5691,20 +5852,30 @@ app.post("/generate-workout", (req, res) => {
     const evenLengths = lengths % 2 === 0 ? lengths : lengths + 1;
     const total = evenLengths * base;
     
-    // Find closest template - prefer exact match
-    const { template, scaleFactor } = workoutTemplates.findClosestTemplate(total);
-    const useOriginalDesc = Math.abs(scaleFactor - 1.0) < 0.15; // Within 15% of original
+    // Find template with seed-based randomization for variety
+    const { template, scaleFactor } = workoutTemplates.findClosestTemplate(total, [], seed);
+    const useOriginalDesc = Math.abs(scaleFactor - 1.0) < 0.15;
     
     const scaled = workoutTemplates.scaleTemplate(template, total, base);
     
     // Build sets from template sections
     const sets = [];
     let actualTotal = 0;
+    let sectionSeed = seed;
     
     for (const section of scaled.sections) {
       const dist = snapToPoolMultiple(section.distance, base);
-      // Use original description if scale is close, otherwise regenerate
-      const body = useOriginalDesc ? section.desc : generateSimpleBody(dist, section.label, base);
+      sectionSeed = ((sectionSeed * 1103515245 + 12345) >>> 0);
+      const labelLower = section.label.toLowerCase();
+      const isFixed = labelLower.includes("warm") || labelLower.includes("cool");
+      let body;
+      if (useOriginalDesc && isFixed) {
+        body = section.desc;
+      } else if (useOriginalDesc) {
+        body = varyTemplateDesc(section.desc, dist, section.label, base, sectionSeed);
+      } else {
+        body = generateVariedBody(dist, section.label, base, sectionSeed);
+      }
       sets.push({
         label: section.label,
         dist: dist,

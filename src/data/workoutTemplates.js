@@ -390,10 +390,11 @@ function getCooldownPercent(totalDistance) {
 }
 
 /**
- * Find the closest template to target distance
- * Returns template and scaling factor
+ * Find a template for the target distance with seed-based randomization.
+ * Collects all templates within a reasonable scaling range and picks one
+ * using the seed so each Generate click produces a different workout.
  */
-function findClosestTemplate(targetDistance, tags = []) {
+function findClosestTemplate(targetDistance, tags = [], seed = 0) {
   let candidates = WORKOUT_TEMPLATES;
   
   if (tags.length > 0) {
@@ -403,23 +404,55 @@ function findClosestTemplate(targetDistance, tags = []) {
     if (candidates.length === 0) candidates = WORKOUT_TEMPLATES;
   }
   
-  let best = candidates[0];
-  let bestDelta = Math.abs(best.totalDistance - targetDistance);
-  
+  const viable = [];
   for (const template of candidates) {
-    const delta = Math.abs(template.totalDistance - targetDistance);
-    if (delta < bestDelta) {
-      best = template;
-      bestDelta = delta;
+    const sf = targetDistance / template.totalDistance;
+    if (sf >= 0.5 && sf <= 2.0) {
+      const delta = Math.abs(sf - 1.0);
+      viable.push({ template, scaleFactor: sf, delta });
     }
   }
   
-  const scaleFactor = targetDistance / best.totalDistance;
+  if (viable.length === 0) {
+    let best = candidates[0];
+    let bestDelta = Math.abs(best.totalDistance - targetDistance);
+    for (const t of candidates) {
+      const d = Math.abs(t.totalDistance - targetDistance);
+      if (d < bestDelta) { best = t; bestDelta = d; }
+    }
+    return {
+      template: best,
+      scaleFactor: targetDistance / best.totalDistance,
+      originalDistance: best.totalDistance,
+      targetDistance
+    };
+  }
+  
+  viable.sort((a, b) => a.delta - b.delta);
+  
+  const weights = viable.map(v => {
+    if (v.delta < 0.05) return 10;
+    if (v.delta < 0.15) return 6;
+    if (v.delta < 0.30) return 3;
+    return 1;
+  });
+  const totalWeight = weights.reduce((s, w) => s + w, 0);
+  
+  const pick = ((seed >>> 0) * 2654435761 >>> 0) % totalWeight;
+  let cumulative = 0;
+  let chosen = viable[0];
+  for (let i = 0; i < viable.length; i++) {
+    cumulative += weights[i];
+    if (pick < cumulative) {
+      chosen = viable[i];
+      break;
+    }
+  }
   
   return {
-    template: best,
-    scaleFactor,
-    originalDistance: best.totalDistance,
+    template: chosen.template,
+    scaleFactor: chosen.scaleFactor,
+    originalDistance: chosen.template.totalDistance,
     targetDistance
   };
 }
