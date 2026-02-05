@@ -153,13 +153,13 @@ function computeRestSecondsFromBody(body) {
   return sum;
 }
 
-// Check if total ends at home wall (even number of lengths)
-function endsAtHomeEnd(total, poolLen) {
-  const t = Number(total);
+// Check if total distance ends at home end (even number of lengths)
+function endsAtHomeEnd(totalDistance, poolLen) {
+  const d = Number(totalDistance);
   const p = Number(poolLen);
-  if (!t || !p || p <= 0) return false;
-  const lengths = Math.round(t / p);
-  return lengths % 2 === 0;
+  if (!Number.isFinite(d) || !Number.isFinite(p) || p <= 0) return false;
+  const lengths = d / p;
+  return Number.isInteger(lengths) && lengths % 2 === 0;
 }
 
 // EVEN REP SCHEME PICKER - Enforces even rep counts for Drill/Kick sets
@@ -234,29 +234,22 @@ function pickEvenRepScheme(targetDistance, poolLen, kind) {
   return null;
 }
 
-// Check if rep count is within allowed bounds for a given distance
-function isAllowedRepCount(reps, dist) {
-  const r = Number(reps);
-  const d = Number(dist);
+// Allowed rep counts by rep distance (coach-plausible patterns)
+// Expanded to include common counts like 11, 14, 15 that occur with odd pools
+function isAllowedRepCount(repCount, repDistance) {
+  const r = Number(repCount);
+  const d = Number(repDistance);
   if (!Number.isFinite(r) || r < 1) return false;
-  if (!Number.isFinite(d) || d < 25) return false;
+  if (!Number.isFinite(d) || d <= 0) return false;
+  
+  // Single rep is always allowed
+  if (r === 1) return true;
 
-  // 25s: max 20
-  if (d <= 25 && r > 20) return false;
-  // 50s: max 20
-  if (d <= 50 && r > 20) return false;
-  // 75s: max 16
-  if (d <= 75 && r > 16) return false;
-  // 100s: max 20
-  if (d <= 100 && r > 20) return false;
-  // 150s: max 12
-  if (d <= 150 && r > 12) return false;
-  // 200s: max 10
-  if (d <= 200 && r > 10) return false;
-  // 300+: max 6
-  if (d >= 300 && r > 6) return false;
+  // Coach-plausible rep counts only.
+  // These are the common shapes a real coach writes.
+  const allowed = new Set([2, 3, 4, 5, 6, 8, 9, 10, 12, 16, 20]);
 
-  return true;
+  return allowed.has(r);
 }
 
 // Fingerprint workout text for comparison

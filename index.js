@@ -18,6 +18,32 @@ const { DRAG_DROP_JS } = require("./src/modules/dragDropManager");
 const setMath = require("./src/modules/setMath");
 const workoutLibrary = require("./src/modules/workoutLibrary");
 const workoutGenerator = require("./src/modules/workoutGenerator");
+
+// Aliases for backward compatibility - these functions are now in modules
+const { 
+  fnv1a32, shuffleWithSeed, mulberry32,
+  snapToPoolMultiple, snapRepDist,
+  parsePaceToSecondsPer100, fmtMmSs, paceMultiplierForLabel,
+  parseNxD, computeSetDistanceFromBody, computeRestSecondsFromBody,
+  endsAtHomeEnd, pickEvenRepScheme, isAllowedRepCount, fingerprintWorkoutText, nowSeed
+} = setMath;
+
+// Backward-compat aliases for removed wrappers
+const snapToPoolMultipleShared = snapToPoolMultiple;
+const snapRepDistToPool = snapRepDist;
+
+const {
+  DRILL_NAMES, WORKOUT_NAMES, FOCUS_NAMES, EQUIPMENT_NAMES, FALLBACK_NAMES,
+  SECTION_LABEL_MAP, FREE_ALLOC_RANGES, COACH_NORMAL_BUCKETS,
+  MAIN_EFFORT_DESCRIPTIONS, BUILD_DESCRIPTIONS, KICK_EFFORTS, MAIN_EFFORTS, BUILD_EFFORTS,
+  normalizeSectionLabel
+} = workoutLibrary;
+
+const {
+  isFullGasBody, injectOneFullGas, generateWorkoutName, validateWorkout,
+  normalizeOptions, generateDrillSetDynamic, estimateWorkoutTotalSeconds
+} = workoutGenerator;
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -34,36 +60,6 @@ app.get("/styles.css", (req, res) => {
     res.status(404).send("/* styles.css not found */");
   }
 });
-
-// Universal snapping: ALL pools use 2×poolLen as base unit for home-wall finish
-function snapToPoolMultipleShared(dist, poolLen) {
-  const d = Number(dist);
-  if (!Number.isFinite(d) || d <= 0) return 0;
-  const base = Number(poolLen);
-  if (!Number.isFinite(base) || base <= 0) return d;
-  // Snap to 2×poolLen (round trip) to ensure home-wall finish
-  const base2 = base * 2;
-  return Math.round(d / base2) * base2;
-}
-
-// For rep distances, snap to single pool length multiples
-function snapRepDistToPool(dist, poolLen) {
-  const d = Number(dist);
-  if (!Number.isFinite(d) || d <= 0) return 0;
-  const base = Number(poolLen);
-  if (!Number.isFinite(base) || base <= 0) return d;
-  return Math.round(d / base) * base;
-}
-// Backward-compat wrappers.
-// Some parts of the codebase still call the older names.
-// If these wrappers are missing, generation throws and the UI falls back.
-function snapToPoolMultiple(dist, poolLen) {
-  return snapToPoolMultipleShared(dist, poolLen);
-}
-
-function snapRepDist(dist, poolLen) {
-  return snapRepDistToPool(dist, poolLen);
-}
 
 // ============================================================================
 // SECTION_TARGET_RESOLVER_R020
@@ -119,33 +115,6 @@ function resolveSectionTarget({ sectionLabel, desiredDistance, poolLen, seed }) 
 // VALIDATION HELPERS - Free-tier realism guards
 // ============================================================================
 
-// Allowed rep counts by rep distance (coach-plausible patterns)
-// Expanded to include common counts like 11, 14, 15 that occur with odd pools
-function isAllowedRepCount(repCount, repDistance) {
-  const r = Number(repCount);
-  const d = Number(repDistance);
-  if (!Number.isFinite(r) || r < 1) return false;
-  if (!Number.isFinite(d) || d <= 0) return false;
-  
-  // Single rep is always allowed
-  if (r === 1) return true;
-
-  // Coach-plausible rep counts only.
-  // These are the common shapes a real coach writes.
-  const allowed = new Set([2, 3, 4, 5, 6, 8, 9, 10, 12, 16, 20]);
-
-  return allowed.has(r);
-}
-
-// Check if total distance ends at home end (even number of lengths)
-function endsAtHomeEnd(totalDistance, poolLen) {
-  const d = Number(totalDistance);
-  const p = Number(poolLen);
-  if (!Number.isFinite(d) || !Number.isFinite(p) || p <= 0) return false;
-  const lengths = d / p;
-  return Number.isInteger(lengths) && lengths % 2 === 0;
-}
-
 // Validate warm-up/cool-down line: no hard efforts allowed
 function isValidWarmupCoolLine(text) {
   const t = String(text || "").toLowerCase();
@@ -174,84 +143,6 @@ function isValidKickLine(text, repDistance) {
     return false;
   }
   return true;
-}
-
-// EVEN REP SCHEME PICKER - Enforces even rep counts for Drill/Kick sets
-// Returns { reps, repDist } or null if no valid scheme found
-function pickEvenRepScheme(targetDistance, poolLen, kind) {
-  const target = Number(targetDistance);
-  const base = Number(poolLen);
-  if (!target || target <= 0 || !base || base <= 0) return null;
-  
-  // Snap rep distance to pool multiple
-  const snapRepDist = (d) => {
-    if (d <= 0 || base <= 0) return 0;
-    return Math.round(d / base) * base || base;
-  };
-  
-  // Preferred rep distances by kind (in priority order)
-  const prefDists = kind === "drill" 
-    ? [50, 25, 75, 100] 
-    : [50, 25, 100]; // kick
-  
-  // Allowed even rep counts (coach-plausible)
-  const allowedReps = [4, 6, 8, 10, 12, 16, 20];
-  
-  // First pass: try preferred distances with allowed rep counts
-  for (const pref of prefDists) {
-    const repDist = snapRepDist(pref);
-    if (repDist <= 0) continue;
-    if (target % repDist !== 0) continue;
-    const reps = target / repDist;
-    if (!Number.isInteger(reps)) continue;
-    if (reps % 2 === 0 && allowedReps.includes(reps)) {
-      return { reps, repDist };
-    }
-  }
-  
-  // Second pass: accept any even reps between 4 and 24 (for odd pool edge cases)
-  for (const pref of prefDists) {
-    const repDist = snapRepDist(pref);
-    if (repDist <= 0) continue;
-    if (target % repDist !== 0) continue;
-    const reps = target / repDist;
-    if (!Number.isInteger(reps)) continue;
-    if (reps >= 4 && reps <= 24 && reps % 2 === 0) {
-      return { reps, repDist };
-    }
-  }
-  
-  // Third pass: try pool length multiples directly
-  for (let mult = 1; mult <= 4; mult++) {
-    const repDist = base * mult;
-    if (target % repDist !== 0) continue;
-    const reps = target / repDist;
-    if (!Number.isInteger(reps)) continue;
-    if (reps >= 4 && reps <= 24 && reps % 2 === 0) {
-      return { reps, repDist };
-    }
-  }
-  
-  // Fourth pass: accept even reps 2-30 as last resort
-  for (const pref of prefDists) {
-    const repDist = snapRepDist(pref);
-    if (repDist <= 0) continue;
-    if (target % repDist !== 0) continue;
-    const reps = target / repDist;
-    if (!Number.isInteger(reps)) continue;
-    if (reps >= 2 && reps <= 30 && reps % 2 === 0) {
-      return { reps, repDist };
-    }
-  }
-  
-  return null;
-}
-
-// Parse a line to extract NxD format
-function parseNxD(line) {
-  const match = String(line || "").match(/^(\d+)x(\d+)/i);
-  if (!match) return null;
-  return { reps: Number(match[1]), dist: Number(match[2]) };
 }
 
 // Validate a set body: all lines must parse, total must match target
@@ -328,114 +219,6 @@ function validateSetBody(body, targetDistance, poolLen, sectionLabel) {
   }
   
   return { valid: true };
-}
-
-// Shuffle array deterministically based on seed
-function shuffleWithSeed(arr, seed) {
-  const result = arr.slice();
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = ((seed * (i + 1) * 9973) >>> 0) % (i + 1);
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-}
-
-// FNV-1a 32-bit hash for deterministic randomisation
-function fnv1a32(str) {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = (h + (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)) >>> 0;
-  }
-  return h >>> 0;
-}
-
-// Mulberry32 PRNG for deterministic random
-function mulberry32(a) {
-  return function() {
-    let t = a += 0x6D2B79F5;
-    t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-
-// Check if body contains full gas effort words
-function isFullGasBody(body) {
-  const low = String(body).toLowerCase();
-  return low.includes("sprint") || low.includes("all out") || low.includes("full gas") || low.includes("max effort");
-}
-
-// Inject one full gas into Main or Kick with ~30% probability (reduced for more flat sets)
-function injectOneFullGas(sections, seed) {
-  // If any section already full gas, do nothing
-  const already = sections.some(s => isFullGasBody(s.body));
-  if (already) return sections;
-
-  // 60% probability to ensure red appears regularly in realistic workouts
-  if (mulberry32(seed >>> 0)() >= 0.6) return sections;
-
-  // Only Main (not Kick - kick should stay moderate/strong)
-  const candidates = sections
-    .map((s, i) => ({ s, i, k: String(s.label).toLowerCase() }))
-    .filter(x => x.k.includes("main"));
-
-  if (!candidates.length) return sections;
-
-  const pick = candidates[
-    Math.floor(mulberry32((seed ^ 0x9e3779b9) >>> 0)() * candidates.length)
-  ];
-
-  const idx = pick.i;
-  const lines = String(sections[idx].body).split("\n").filter(Boolean);
-  if (!lines.length) return sections;
-
-  // Prefer to replace an existing effort word on any line, not just line 0.
-  let changed = false;
-  for (let i = 0; i < lines.length; i++) {
-    if (/strong/i.test(lines[i])) {
-      lines[i] = lines[i].replace(/strong/i, "sprint");
-      changed = true;
-      break;
-    }
-    if (/fast/i.test(lines[i])) {
-      lines[i] = lines[i].replace(/fast/i, "sprint");
-      changed = true;
-      break;
-    }
-    if (/hard/i.test(lines[i])) {
-      lines[i] = lines[i].replace(/hard/i, "sprint");
-      changed = true;
-      break;
-    }
-  }
-
-  // If there was no explicit effort word, allow build or descend to become sprint focused.
-  // This keeps it coach shaped without appending sprint blindly.
-  if (!changed) {
-    for (let i = 0; i < lines.length; i++) {
-      if (/\bbuild\b/i.test(lines[i]) && !/sprint/i.test(lines[i])) {
-        lines[i] = lines[i].replace(/\bbuild\b/i, "build to sprint");
-        changed = true;
-        break;
-      }
-      if (/\bdescend\b/i.test(lines[i]) && !/sprint/i.test(lines[i])) {
-        // If it already has "to X", overwrite X with sprint
-        if (/\bdescend\b.*\bto\b/i.test(lines[i])) {
-          lines[i] = lines[i].replace(/\bto\b\s+\w+/i, "to sprint");
-        } else {
-          lines[i] = lines[i].replace(/\bdescend\b/i, "descend to sprint");
-        }
-        changed = true;
-        break;
-      }
-    }
-  }
-
-  if (!changed) return sections;
-
-  sections[idx].body = lines.join("\n");
-  return sections;
 }
 
 // Section templates for coach-plausible workout blocks

@@ -75,7 +75,12 @@ function injectOneFullGas(sections, seed) {
         break;
       }
       if (/\bdescend\b/i.test(lines[i]) && !/sprint/i.test(lines[i])) {
-        lines[i] = lines[i].replace(/\bdescend\b/i, "descend to sprint");
+        // If it already has "to X", overwrite X with sprint
+        if (/\bdescend\b.*\bto\b/i.test(lines[i])) {
+          lines[i] = lines[i].replace(/\bto\b\s+\w+/i, "to sprint");
+        } else {
+          lines[i] = lines[i].replace(/\bdescend\b/i, "descend to sprint");
+        }
         changed = true;
         break;
       }
