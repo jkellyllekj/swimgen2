@@ -482,6 +482,19 @@ function parseWorkoutTextToSections(text) {
   };
 
   const headerRe = /^([A-Za-z][A-Za-z0-9 \-]*?)\s*:\s*(.*)$/;
+  
+  // Only recognize known section labels to avoid false matches like "Odd: fast, Even: easy"
+  const knownLabels = new Set([
+    'warm up', 'warm-up', 'warmup', 'wu',
+    'build', 'builds',
+    'drill', 'drills',
+    'kick', 'kicks',
+    'pull', 'pulls',
+    'main', 'main set',
+    'sprint', 'sprints', 'speed',
+    'cool down', 'cool-down', 'cooldown', 'cd',
+    'workout', 'set', 'recovery'
+  ]);
 
   for (const line of lines) {
     // Skip "Total Xm" footer lines - they are metadata, not section content
@@ -491,8 +504,16 @@ function parseWorkoutTextToSections(text) {
     
     const m = line.match(headerRe);
     if (m) {
-      flush();
       const label = String(m[1] || "").trim();
+      // Only treat as section header if it's a known label
+      if (!knownLabels.has(label.toLowerCase())) {
+        // Not a known label, treat as body line
+        if (current) {
+          current.bodyLines.push(line);
+        }
+        continue;
+      }
+      flush();
       const tail = String(m[2] || "").trim();
 
       let dist = null;
