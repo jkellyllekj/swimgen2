@@ -264,6 +264,18 @@ function nowSeed() {
   return (a ^ b2) >>> 0;
 }
 
+const SWIMMER_COOL_DOWNS = [100, 150, 200, 300, 400, 500];
+
+function calculateSensibleCoolDown(totalDistance, poolLength) {
+  const target = totalDistance * 0.1;
+  let closest = SWIMMER_COOL_DOWNS.reduce((prev, curr) =>
+    Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev
+  );
+  const maxByRepeats = poolLength * 16;
+  if (closest > maxByRepeats) closest = maxByRepeats;
+  return snapToPoolMultiple(closest, poolLength);
+}
+
 module.exports = {
   fnv1a32,
   shuffleWithSeed,
@@ -280,5 +292,6 @@ module.exports = {
   pickEvenRepScheme,
   isAllowedRepCount,
   fingerprintWorkoutText,
-  nowSeed
+  nowSeed,
+  calculateSensibleCoolDown
 };

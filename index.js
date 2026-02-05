@@ -25,7 +25,8 @@ const {
   snapToPoolMultiple, snapRepDist,
   parsePaceToSecondsPer100, fmtMmSs, paceMultiplierForLabel,
   parseNxD, computeSetDistanceFromBody, computeRestSecondsFromBody,
-  endsAtHomeEnd, pickEvenRepScheme, isAllowedRepCount, fingerprintWorkoutText, nowSeed
+  endsAtHomeEnd, pickEvenRepScheme, isAllowedRepCount, fingerprintWorkoutText, nowSeed,
+  calculateSensibleCoolDown
 } = setMath;
 
 // Backward-compat aliases for removed wrappers
@@ -41,7 +42,8 @@ const {
 
 const {
   isFullGasBody, injectOneFullGas, generateWorkoutName, validateWorkout,
-  normalizeOptions, generateDrillSetDynamic, estimateWorkoutTotalSeconds
+  normalizeOptions, generateDrillSetDynamic, estimateWorkoutTotalSeconds,
+  parseWorkoutTextToSections, inferZoneFromText, inferIsStriatedFromText
 } = workoutGenerator;
 
 const app = express();
@@ -1473,8 +1475,15 @@ app.get("/", (req, res) => {
         return Math.round(x / 100) * 100;
       }
 
+      function snapToStandardDistance(value) {
+        const x = Number(value);
+        if (!Number.isFinite(x)) return 1000;
+        if (x < 2000) return Math.round(x / 100) * 100;
+        return Math.round(x / 200) * 200;
+      }
+
       function setDistance(val, skipSave) {
-        const snapped = snap100(val);
+        const snapped = snapToStandardDistance(val);
         distanceSlider.value = String(snapped);
         distanceHidden.value = String(snapped);
         distanceLabel.textContent = String(snapped);
@@ -4937,99 +4946,6 @@ app.post("/generate-workout", (req, res) => {
       return res.status(500).json({ ok: false, error: "Failed to build workout." });
     }
 
-    function parseWorkoutTextToSections(text) {
-      const raw = String(text || "");
-      const lines = raw.split("\n");
-
-      const sections = [];
-      let current = null;
-
-      const flush = () => {
-        if (!current) return;
-        current.body = current.bodyLines.join("\n").trim();
-        delete current.bodyLines;
-        sections.push(current);
-        current = null;
-      };
-
-      // Heuristic: section headers are lines ending with ":" like "Warm up:" or "Main:"
-      // Distance may appear on the same line like "Main: 800" or in brackets, but we keep dist best-effort only.
-      const headerRe = /^([A-Za-z][A-Za-z0-9 \-]*?)\s*:\s*(.*)$/;
-
-      for (const line of lines) {
-        const m = line.match(headerRe);
-        if (m) {
-          flush();
-          const label = String(m[1] || "").trim();
-          const tail = String(m[2] || "").trim();
-
-          // Best-effort distance extraction from the header tail
-          let dist = null;
-          const distMatch = tail.match(/(^|\s)(\d{2,5})(\s|$)/);
-          if (distMatch) dist = Number(distMatch[2]);
-
-          current = { label, dist, bodyLines: [] };
-          if (tail) current.bodyLines.push(tail);
-          continue;
-        }
-
-        if (!current) {
-          // Ignore leading junk until first header
-          continue;
-        }
-
-        current.bodyLines.push(line);
-      }
-
-      flush();
-
-      // If we failed to find headers, fall back to a single section
-      if (!sections.length && raw.trim()) {
-        return {
-          sections: [
-            { label: "Workout", dist: null, body: raw.trim() }
-          ]
-        };
-      }
-
-      return { sections };
-    }
-
-    function inferZoneFromText(body) {
-      const t = String(body || "").toLowerCase();
-
-      if (t.includes("full gas") || t.includes("fullgas") || t.includes("all out") || t.includes("max effort") || t.includes("sprint")) {
-        return "full_gas";
-      }
-
-      if (t.includes("threshold") || t.includes("race pace") || t.includes("hard")) {
-        return "hard";
-      }
-
-      if (t.includes("strong") || t.includes("fast")) {
-        return "strong";
-      }
-
-      if (t.includes("moderate") || t.includes("steady")) {
-        return "moderate";
-      }
-
-      return "easy";
-    }
-
-    function inferIsStriatedFromText(body) {
-      const t = String(body || "").toLowerCase();
-
-      // Coach style striation cues
-      if (t.includes("odds") && t.includes("evens")) return true;
-      if (t.includes("descend")) return true;
-      if (t.includes("build")) return true;
-      if (t.includes("negative split")) return true;
-      if (t.match(/\b(\d+)\s*to\s*(\d+)\b/)) return true;
-
-      return false;
-    }
-
     const fp = fingerprintWorkoutText(workout.text);
     if (lastWorkoutFp && fp === lastWorkoutFp) {
       let workout2 = null;
@@ -5774,7 +5690,6 @@ app.post("/generate-workout", (req, res) => {
     let drillPct = wantDrill ? pickPct(FREE_ALLOC_RANGES.drillPct) : 0;
     let kickPct = includeKick ? pickPct(FREE_ALLOC_RANGES.kickPct) : 0;
     let pullPct = includePull ? pickPct(FREE_ALLOC_RANGES.pullPct) : 0;
-    let cooldownPct = pickPct(FREE_ALLOC_RANGES.cooldownPct);
 
     // Enforce warmup + build <= 30%
     const warmupPlusBuildMax = FREE_ALLOC_RANGES.warmupPlusBuildMaxPct;
@@ -5788,12 +5703,13 @@ app.post("/generate-workout", (req, res) => {
     let drillDist = snapToPoolMultiple(Math.round(total * drillPct) + jitterLengths() * base, base);
     let kickDist = snapToPoolMultiple(Math.round(total * kickPct) + jitterLengths() * base, base);
     let pullDist = snapToPoolMultiple(Math.round(total * pullPct) + jitterLengths() * base, base);
-    let coolDist = snapToPoolMultiple(Math.round(total * cooldownPct) + jitterLengths() * base, base);
+    
+    // Use sensible cool down: 10% of total, snapped to standard swimmer values, max 16 reps
+    let coolDist = calculateSensibleCoolDown(total, base);
 
     // Minimum section distances (2 round trips = 4 lengths)
     const minSectionDist = base * 4;
     warmDist = Math.max(warmDist, minSectionDist);
-    coolDist = Math.max(coolDist, minSectionDist);
 
     // Build sections array
     const sets = [];

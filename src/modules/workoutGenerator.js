@@ -466,6 +466,93 @@ function estimateWorkoutTotalSeconds(workoutText, paceSecPer100, computeSetDista
   return total;
 }
 
+function parseWorkoutTextToSections(text) {
+  const raw = String(text || "");
+  const lines = raw.split("\n");
+
+  const sections = [];
+  let current = null;
+
+  const flush = () => {
+    if (!current) return;
+    current.body = current.bodyLines.join("\n").trim();
+    delete current.bodyLines;
+    sections.push(current);
+    current = null;
+  };
+
+  const headerRe = /^([A-Za-z][A-Za-z0-9 \-]*?)\s*:\s*(.*)$/;
+
+  for (const line of lines) {
+    const m = line.match(headerRe);
+    if (m) {
+      flush();
+      const label = String(m[1] || "").trim();
+      const tail = String(m[2] || "").trim();
+
+      let dist = null;
+      const distMatch = tail.match(/(^|\s)(\d{2,5})(\s|$)/);
+      if (distMatch) dist = Number(distMatch[2]);
+
+      current = { label, dist, bodyLines: [] };
+      if (tail) current.bodyLines.push(tail);
+      continue;
+    }
+
+    if (!current) {
+      continue;
+    }
+
+    current.bodyLines.push(line);
+  }
+
+  flush();
+
+  if (!sections.length && raw.trim()) {
+    return {
+      sections: [
+        { label: "Workout", dist: null, body: raw.trim() }
+      ]
+    };
+  }
+
+  return { sections };
+}
+
+function inferZoneFromText(body) {
+  const t = String(body || "").toLowerCase();
+
+  if (t.includes("full gas") || t.includes("fullgas") || t.includes("all out") || t.includes("max effort") || t.includes("sprint")) {
+    return "full_gas";
+  }
+
+  if (t.includes("threshold") || t.includes("race pace") || t.includes("hard")) {
+    return "hard";
+  }
+
+  if (t.includes("strong") || t.includes("fast")) {
+    return "strong";
+  }
+
+  if (t.includes("moderate") || t.includes("steady")) {
+    return "moderate";
+  }
+
+  return "easy";
+}
+
+function inferIsStriatedFromText(body) {
+  const t = String(body || "").toLowerCase();
+
+  if (t.includes("odds") && t.includes("evens")) return true;
+  if (t.includes("descend")) return true;
+  if (t.includes("build")) return true;
+  if (t.includes("negative split")) return true;
+  if (t.match(/\b(\d+)\s*to\s*(\d+)\b/)) return true;
+
+  return false;
+}
+
 module.exports = {
   isFullGasBody,
   injectOneFullGas,
@@ -473,5 +560,8 @@ module.exports = {
   validateWorkout,
   normalizeOptions,
   generateDrillSetDynamic,
-  estimateWorkoutTotalSeconds
+  estimateWorkoutTotalSeconds,
+  parseWorkoutTextToSections,
+  inferZoneFromText,
+  inferIsStriatedFromText
 };
