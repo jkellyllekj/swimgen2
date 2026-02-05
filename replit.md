@@ -24,6 +24,9 @@ The application uses Express with inline HTML/CSS/JavaScript. The main file is `
 
 **Extracted Modules:**
 - `src/modules/dragDropManager.js` (707 lines): Contains all drag-and-drop/touch gesture logic for workout cards including setupCardGestures, state variables, drop zone highlighting, and DOM reordering. Exports template strings that get concatenated into the HTML response.
+- `src/modules/setMath.js`: Pure calculation utilities including deterministic functions (fnv1a32, shuffleWithSeed, mulberry32), distance snapping, pace calculations, set parsing, and rep scheme selection.
+- `src/modules/workoutLibrary.js`: Static workout data including drill names (13 items), workout name pools, section allocation profiles, and label normalization.
+- `src/modules/workoutGenerator.js`: Workout generation helpers including name generation, validation, full gas injection, and drill set generation.
 
 **Critical Deterministic Functions (must never change):**
 - fnv1a32: `h = (h + (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)) >>> 0`
@@ -40,7 +43,7 @@ The application uses Express with inline HTML/CSS/JavaScript. The main file is `
 ### Frontend
 The frontend features an inline HTML interface. Users can select pool type (25m, 50m, 25yd, Custom) and target distance via a slider (500-10000m, snapping to 100). Workouts are displayed as chips with zone-based colored backgrounds (CardGym-style: Easy blue, Moderate green, Strong yellow, Hard orange, Full Gas red). Readability is ensured with white text on dark backgrounds. Vertical gradients are used for multi-zone sets like builds and descends.
 
-Key UI elements include a snazzy workout name generator, a 16-drill name library, an emoji intensity strip, and a spinning dolphin animation during workout generation. The design uses a controlsGrid layout (grid-template-columns: 1fr auto) that stays 2-column on all screen sizes, with pool buttons on the left and the Generate button on the right. The Generate button contains both the label and dolphin inside as a vertical flex box with cyan glow-ring when active. UI chips use the readChip class (78% white opacity) for readable text on the Swim Gen title, background button, and distance pill. The Advanced options toggle uses a white chip with cyan glow when expanded. The design incorporates a premium outdoor pool photo background, drop shadows for depth, and ~8-10px rounded corners. Individual sets can be rerolled using a dolphin button.
+Key UI elements include a snazzy workout name generator, a 13-drill name library, an emoji intensity strip, and a spinning dolphin animation during workout generation. The design uses a controlsGrid layout (grid-template-columns: 1fr auto) that stays 2-column on all screen sizes, with pool buttons on the left and the Generate button on the right. The Generate button contains both the label and dolphin inside as a vertical flex box with cyan glow-ring when active. UI chips use the readChip class (78% white opacity) for readable text on the Swim Gen title, background button, and distance pill. The Advanced options toggle uses a white chip with cyan glow when expanded. The design incorporates a premium outdoor pool photo background, drop shadows for depth, and ~8-10px rounded corners. Individual sets can be rerolled using a dolphin button.
 
 ### Routes
 - `/`: Main workout generator page.
