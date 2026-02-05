@@ -20,13 +20,18 @@ Additional project-specific preferences:
 ## System Architecture
 
 ### Application Structure
-The application uses Express with inline HTML/CSS/JavaScript. The main file is `index.js` (6,652 lines), with modularized components in `src/modules/`. No build step; relies on plain Node.js and Express.
+The application uses Express with inline HTML/CSS/JavaScript. The main file is `index.js` (6,438 lines), with modularized components in `src/modules/`. No build step; relies on plain Node.js and Express.
 
 **Extracted Modules:**
 - `src/modules/dragDropManager.js` (707 lines): Contains all drag-and-drop/touch gesture logic for workout cards including setupCardGestures, state variables, drop zone highlighting, and DOM reordering. Exports template strings that get concatenated into the HTML response.
 - `src/modules/setMath.js`: Pure calculation utilities including deterministic functions (fnv1a32, shuffleWithSeed, mulberry32), distance snapping, pace calculations, set parsing, and rep scheme selection.
 - `src/modules/workoutLibrary.js`: Static workout data including drill names (13 items), workout name pools, section allocation profiles, and label normalization.
-- `src/modules/workoutGenerator.js`: Workout generation helpers including name generation, validation, full gas injection, and drill set generation.
+- `src/modules/workoutGenerator.js` (477 lines): Workout generation helpers including name generation, validation, full gas injection, and drill set generation.
+
+**Phase 3 Integration Status:**
+- Module-level duplicate functions removed from index.js and replaced with imports (~240 lines removed)
+- Backward-compat aliases added: snapToPoolMultipleShared, snapRepDistToPool
+- Route-handler-internal duplicates remain (normalizeOptions, generateWorkoutName, validateWorkout, generateDrillSetDynamic) - these are locally scoped and don't conflict with imports
 
 **Critical Deterministic Functions (must never change):**
 - fnv1a32: `h = (h + (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)) >>> 0`
