@@ -4973,13 +4973,20 @@ app.post("/generate-workout", (req, res) => {
           return { hasRed, redSectionsCount };
         })();
 
+        const totalMeters2 = workout2.totalMeters || targetTotal;
+        const totalLengths2 = Math.round(totalMeters2 / poolLen);
+        
         return res.json({
           ok: true,
           workoutText: workout2.text,
           workoutName: workout2.name || "",
           sections: parsed2.sections,
           sectionMeta: sectionMeta2,
-          workoutMeta: workoutMeta2
+          workoutMeta: workoutMeta2,
+          totalMeters: totalMeters2,
+          totalLengths: totalLengths2,
+          poolLength: poolLen,
+          poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength)
         });
       }
     }
@@ -4999,13 +5006,21 @@ app.post("/generate-workout", (req, res) => {
       return { hasRed, redSectionsCount };
     })();
 
+    // Calculate total meters and lengths for display
+    const totalMeters = workout.totalMeters || targetTotal;
+    const totalLengths = Math.round(totalMeters / poolLen);
+
     return res.json({
       ok: true,
       workoutText: workout.text,
       workoutName: workout.name || "",
       sections: parsed.sections,
       sectionMeta,
-      workoutMeta
+      workoutMeta,
+      totalMeters,
+      totalLengths,
+      poolLength: poolLen,
+      poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength)
     });
   } catch (e) {
     console.error(`[ERROR] ReqId=${reqId} Time=${new Date().toISOString()}`);

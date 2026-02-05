@@ -484,6 +484,11 @@ function parseWorkoutTextToSections(text) {
   const headerRe = /^([A-Za-z][A-Za-z0-9 \-]*?)\s*:\s*(.*)$/;
 
   for (const line of lines) {
+    // Skip "Total Xm" footer lines - they are metadata, not section content
+    if (/^Total\s+\d+/i.test(line.trim())) {
+      continue;
+    }
+    
     const m = line.match(headerRe);
     if (m) {
       flush();
