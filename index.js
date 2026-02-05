@@ -18,6 +18,7 @@ const { DRAG_DROP_JS } = require("./src/modules/dragDropManager");
 const setMath = require("./src/modules/setMath");
 const workoutLibrary = require("./src/modules/workoutLibrary");
 const workoutGenerator = require("./src/modules/workoutGenerator");
+const workoutTemplates = require("./src/data/workoutTemplates");
 
 // Aliases for backward compatibility - these functions are now in modules
 const { 
@@ -4920,6 +4921,7 @@ app.post("/generate-workout", (req, res) => {
     }
 
     const opts = normalizeOptions(body);
+    const useTemplates = body.useTemplates === true;
 
     const targetTotal = snapToPoolMultiple(distance, poolLen);
 
@@ -4929,17 +4931,31 @@ app.post("/generate-workout", (req, res) => {
     let workout = null;
     let usedSeed = nowSeed();
 
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-      workout = buildWorkout({
+    // Template-based generation (cleaner workouts from real patterns)
+    if (useTemplates) {
+      workout = buildWorkoutFromTemplate({
         targetTotal,
         poolLen,
         unitsShort,
         poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
         thresholdPace: String(body.thresholdPace || ""),
         opts,
-        seed: usedSeed + attempt
+        seed: usedSeed
       });
-      if (workout && workout.text) break;
+    } else {
+      // Original algorithmic generation
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        workout = buildWorkout({
+          targetTotal,
+          poolLen,
+          unitsShort,
+          poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength),
+          thresholdPace: String(body.thresholdPace || ""),
+          opts,
+          seed: usedSeed + attempt
+        });
+        if (workout && workout.text) break;
+      }
     }
 
     if (!workout || !workout.text) {
@@ -5630,6 +5646,150 @@ app.post("/generate-workout", (req, res) => {
     }
 
     return null; // Valid
+  }
+
+  // ============================================================================
+  // TEMPLATE-BASED WORKOUT GENERATION
+  // Uses real swim workout patterns for coach-quality results
+  // ============================================================================
+  
+  // Helper: Generate a simple body description from distance and label
+  function generateSimpleBody(dist, label, base) {
+    const labelLower = String(label).toLowerCase();
+    
+    // Determine rep distance based on section type and distance
+    let repDist = base;
+    if (dist >= 600) repDist = 200;
+    else if (dist >= 300) repDist = 100;
+    else if (dist >= 100) repDist = 50;
+    else repDist = base;
+    
+    repDist = snapToPoolMultiple(repDist, base);
+    if (repDist <= 0) repDist = base;
+    
+    const reps = Math.round(dist / repDist);
+    
+    // Check if straight swim makes sense (1 rep)
+    if (reps === 1 || dist <= 400) {
+      if (labelLower.includes("warm") || labelLower.includes("cool")) {
+        return dist + " easy";
+      } else if (labelLower.includes("main")) {
+        return dist + " steady";
+      }
+    }
+    
+    // Generate rep scheme body
+    let intensity = "easy";
+    if (labelLower.includes("main")) intensity = "steady";
+    else if (labelLower.includes("build")) intensity = "build";
+    else if (labelLower.includes("drill")) intensity = "drill choice";
+    else if (labelLower.includes("kick")) intensity = "kick moderate";
+    else if (labelLower.includes("pull")) intensity = "pull moderate";
+    else if (labelLower.includes("sprint")) intensity = "fast";
+    
+    return reps + "x" + repDist + " " + intensity;
+  }
+  
+  function buildWorkoutFromTemplate({ targetTotal, poolLen, unitsShort, poolLabel, thresholdPace, opts, seed }) {
+    const base = poolLen;
+    const rawTotal = snapToPoolMultiple(targetTotal, base);
+    const lengths = Math.round(rawTotal / base);
+    const evenLengths = lengths % 2 === 0 ? lengths : lengths + 1;
+    const total = evenLengths * base;
+    
+    // Find closest template - prefer exact match
+    const { template, scaleFactor } = workoutTemplates.findClosestTemplate(total);
+    const useOriginalDesc = Math.abs(scaleFactor - 1.0) < 0.15; // Within 15% of original
+    
+    const scaled = workoutTemplates.scaleTemplate(template, total, base);
+    
+    // Build sets from template sections
+    const sets = [];
+    let actualTotal = 0;
+    
+    for (const section of scaled.sections) {
+      const dist = snapToPoolMultiple(section.distance, base);
+      // Use original description if scale is close, otherwise regenerate
+      const body = useOriginalDesc ? section.desc : generateSimpleBody(dist, section.label, base);
+      sets.push({
+        label: section.label,
+        dist: dist,
+        body: body,
+        originalDesc: section.desc
+      });
+      actualTotal += dist;
+    }
+    
+    // Adjust last section to hit exact total (absorb rounding errors)
+    if (actualTotal !== total && sets.length > 0) {
+      const delta = total - actualTotal;
+      // Find main to adjust (not cooldown)
+      const mainIdx = sets.findIndex(s => s.label.toLowerCase().includes("main"));
+      const adjustIdx = mainIdx >= 0 ? mainIdx : sets.length - 2;
+      if (adjustIdx >= 0) {
+        const newDist = snapToPoolMultiple(sets[adjustIdx].dist + delta, base);
+        if (newDist >= base * 4) {
+          sets[adjustIdx].dist = newDist;
+          if (!useOriginalDesc) {
+            sets[adjustIdx].body = generateSimpleBody(newDist, sets[adjustIdx].label, base);
+          }
+        }
+      }
+    }
+    
+    // Apply sensible cooldown calculation to override template cooldown
+    const cooldownIdx = sets.findIndex(s => s.label.toLowerCase().includes("cool"));
+    if (cooldownIdx >= 0) {
+      const sensibleCool = calculateSensibleCoolDown(total, base);
+      const currentCool = sets[cooldownIdx].dist;
+      const diff = currentCool - sensibleCool;
+      
+      // Only adjust if difference is significant
+      if (Math.abs(diff) > base * 2) {
+        // Find main section to redistribute
+        const mainIdx = sets.findIndex(s => s.label.toLowerCase().includes("main"));
+        if (mainIdx >= 0) {
+          const newMainDist = snapToPoolMultiple(sets[mainIdx].dist + diff, base);
+          // Guard: Only adjust if main stays above minimum (400m)
+          if (newMainDist >= 400) {
+            sets[cooldownIdx].dist = sensibleCool;
+            sets[cooldownIdx].body = generateSimpleBody(sensibleCool, "Cool down", base);
+            sets[mainIdx].dist = newMainDist;
+            if (!useOriginalDesc) {
+              sets[mainIdx].body = generateSimpleBody(newMainDist, sets[mainIdx].label, base);
+            }
+          }
+        }
+      }
+    }
+    
+    // Recalculate total after adjustments
+    const finalTotal = sets.reduce((sum, s) => sum + s.dist, 0);
+    
+    // Generate workout text
+    const workoutName = template.name;
+    
+    let workoutText = workoutName + "\n\n";
+    for (const s of sets) {
+      workoutText += s.label + ": " + s.body + "\n\n";
+    }
+    workoutText += "Workout total: " + finalTotal + unitsShort;
+    
+    // Build sections array for frontend
+    const sectionData = sets.map(s => ({
+      label: s.label,
+      body: s.body,
+      dist: s.dist
+    }));
+    
+    return {
+      name: workoutName,
+      text: workoutText,
+      totalMeters: finalTotal,
+      sections: sectionData,
+      fromTemplate: true,
+      templateName: template.name
+    };
   }
 
   function buildWorkout({ targetTotal, poolLen, unitsShort, poolLabel, thresholdPace, opts, seed }) {

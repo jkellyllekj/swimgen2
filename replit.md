@@ -37,6 +37,15 @@ The application uses Express with inline HTML/CSS/JavaScript. The main file is `
 - Warmup buckets extended to [200-800] to support longer workouts (6000m+)
 - TARGET LOCK fallback now uses smart rep distances (100m/200m for longer sets) to stay under 30-rep limit
 
+**Phase 5: Template-Based Generation (NEW):**
+- Created src/data/workoutTemplates.js with 23 real swim workout templates (1500m-10000m)
+- Templates include: Easy Recovery, Sprint Prep, Threshold Builder, Endurance Builder, Volume Day, etc.
+- findClosestTemplate() matches target distance to nearest template
+- scaleTemplate() intelligently scales sections while preserving proportions
+- REP_LIMITS enforce coaching constraints (200m max 8 reps, 100m max 16, etc.)
+- API: POST /generate-workout with useTemplates=true for template mode
+- When scale factor within 15%, uses original descriptions; otherwise regenerates
+
 **Critical Deterministic Functions (must never change):**
 - fnv1a32: `h = (h + (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)) >>> 0`
 - shuffleWithSeed: `((seed * (i + 1) * 9973) >>> 0) % (i + 1)`
