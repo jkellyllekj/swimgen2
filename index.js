@@ -69,7 +69,7 @@ app.get("/styles.css", (req, res) => {
 // ============================================================================
 
 const SECTION_TARGET_BUCKETS = {
-  warmup:   [200, 300, 400, 500, 600],
+  warmup:   [200, 300, 400, 500, 600, 700, 800],
   build:    [200, 300, 400, 500],
   kick:     [200, 300, 400, 500],
   drill:    [200, 300, 400],
@@ -5904,7 +5904,19 @@ app.post("/generate-workout", (req, res) => {
           const setDist = section.dist;
           const templateKey = setLabel.toLowerCase().replace(/\s+/g, "").replace(/\d+$/, "");
           const templates = SECTION_TEMPLATES[templateKey];
-          const fallbackBody = `${Math.round(setDist / base)}x${base} easy`;
+          
+          // Use longer rep distances for larger sets to stay under rep limits
+          // For warmup/cooldown, prefer 100m or 200m reps for longer distances
+          let repDist = base;
+          if (setDist >= 600) repDist = 200;
+          else if (setDist >= 300) repDist = 100;
+          else repDist = Math.max(base, 50);
+          
+          // Snap repDist to pool multiples
+          repDist = snapToPoolMultiple(repDist, base);
+          const reps = Math.round(setDist / repDist);
+          const fallbackBody = `${reps}x${repDist} easy`;
+          
           if (!templates || templates.length === 0) {
             section.body = fallbackBody;
             return;

@@ -34,6 +34,8 @@ The application uses Express with inline HTML/CSS/JavaScript. The main file is `
 - Route-handler helpers moved to workoutGenerator.js (parseWorkoutTextToSections, inferZoneFromText, inferIsStriatedFromText)
 - Cool down calculation: Now uses calculateSensibleCoolDown (10% of total, snapped to standard values [100,150,200,300,400,500], max 16 reps)
 - Slider snapping: 100m increments below 2000m, 200m increments at/above 2000m
+- Warmup buckets extended to [200-800] to support longer workouts (6000m+)
+- TARGET LOCK fallback now uses smart rep distances (100m/200m for longer sets) to stay under 30-rep limit
 
 **Critical Deterministic Functions (must never change):**
 - fnv1a32: `h = (h + (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24)) >>> 0`
