@@ -5747,11 +5747,11 @@ app.post("/generate-workout", (req, res) => {
     // Generate workout text
     const workoutName = template.name;
     
-    let workoutText = workoutName + "\n\n";
+    let workoutText = "";
     for (const s of sets) {
       workoutText += s.label + ": " + s.body + "\n\n";
     }
-    workoutText += "Workout total: " + finalTotal + unitsShort;
+    workoutText += "Total " + finalTotal + unitsShort;
     
     // Build sections array for frontend
     const sectionData = sets.map(s => ({
