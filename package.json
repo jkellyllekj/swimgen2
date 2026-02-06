@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/node": "^22.19.5",
     "express": "^5.2.1",
+    "node-fetch": "^3.3.2",
     "openai": "^6.16.0"
   }
 }
