@@ -730,5 +730,16 @@ GESTURE EDITING STATUS
 - All gestures work together with conflict prevention
 
 ============================================================================
+COMMENTS & FEEDBACK
+============================================================================
+
+### Team Notes
+- [11/2023] JK: Fixed template parsing bugs - cool down no longer shows "Total Xm", odd/even sets now display correctly
+- [11/2023] JK: Working on template randomization to prevent identical 2000m workouts
+
+### User Feedback
+- [To be implemented]
+
+============================================================================
 END OF DOCUMENT
 ============================================================================

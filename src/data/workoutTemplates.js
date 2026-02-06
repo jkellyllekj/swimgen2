@@ -438,7 +438,7 @@ function findClosestTemplate(targetDistance, tags = [], seed = 0) {
   });
   const totalWeight = weights.reduce((s, w) => s + w, 0);
   
-  const pick = ((seed >>> 0) * 2654435761 >>> 0) % totalWeight;
+  const pick = Math.floor(Math.random() * totalWeight);
   let cumulative = 0;
   let chosen = viable[0];
   for (let i = 0; i < viable.length; i++) {
