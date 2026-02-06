@@ -132,6 +132,22 @@ function parseProjectState(filePath) {
     }
   }
 
+  const commentsSection = content.match(
+    /={3,}\nCOMMENTS & FEEDBACK.*?\n={3,}\n([\s\S]*?)(?=\n={3,})/
+  );
+  if (commentsSection) {
+    const lines = commentsSection[1].split("\n");
+    for (const line of lines) {
+      const item = line.match(/^\s*-\s+\[.*?\]\s+(.+)/);
+      if (item) {
+        tasks.push({
+          title: `FEEDBACK: ${item[1].trim()}`,
+          status: "Comments & Feedback",
+        });
+      }
+    }
+  }
+
   const ideaSection = content.match(
     /={3,}\nIDEA PARKING LOT.*?\n={3,}\n([\s\S]*?)(?=\n={3,})/
   );
