@@ -1,3 +1,45 @@
+============================================================================
+APP STORE RELEASE STRATEGY
+============================================================================
+
+DECISION: Release "SwimGen2 Lite" to App Store
+Goal: Get a functional basic version to the App Store quickly
+Approach: Hide advanced features, basic ad-supported model
+Future: Collect emails for update notifications, premium features in updates
+Code Strategy: Keep everything in same project, copy original math for reference
+
+CURRENT READY FEATURES (V1.0 Base):
+- Template-based generation with 27 real workout templates
+- Randomization working (no identical workouts)
+- Core bug fixes completed (cool down, odd/even parsing)
+- Project board with automated sync
+- Comments & Feedback column added for team collaboration
+
+IMMEDIATE PRE-LAUNCH TASKS (V1.0):
+
+HIGH PRIORITY:
+- Fix pool length math - CRITICAL ISSUE: 27m+ pools broken (was working in original code)
+- Need to preserve original math from index.js before modularization
+- Consider copying original pool length logic into backup file
+- Hide advanced options & set editor - Simplify UI for basic users
+- Add ad placement framework - Basic banner/interstitial ads
+- Add email signup collection - For update notifications
+- Comprehensive testing - All distances (500-10000m), all pool lengths
+
+MEDIUM PRIORITY:
+- Add "Idea parking" column to board for 8 pending idea items
+- Update sync script to recognize new board columns
+
+POST-LAUNCH ENHANCEMENTS (V1.1+):
+- Premium tier features (advanced editing, more templates)
+- Interval and pace calculations
+- Expanded template library (100+ templates)
+- Mobile drag gesture improvements
+- Social sharing features
+- Restore pool length math for all pool sizes
+
+============================================================================
+
 # Project: Swim Workout Generator
 
 Working title(s): SwimDice / SetRoll / PacePalette (TBD)  
