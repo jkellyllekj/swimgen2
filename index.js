@@ -1178,15 +1178,12 @@ app.get("/", (req, res) => {
               </div>
 
               <div style="flex:1; display:flex; justify-content:center;">
-                <div style="display:flex; align-items:center; gap:6px;">
-  <div class="color-swatches" style="display:flex; gap:6px; margin-right:4px;">
-    <button type="button" onclick="setBgColor('#ffffff')" title="White" style="width:24px; height:24px; background:#ffffff; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
-    <button type="button" onclick="setBgColor('#121212')" title="Black" style="width:24px; height:24px; background:#121212; border:1px solid rgba(255,255,255,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
-    <button type="button" onclick="setBgColor('#f5f5dc')" title="Cream" style="width:24px; height:24px; background:#f5f5dc; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
-    <button type="button" onclick="setBgColor('#e3f2fd')" title="Pastel Blue" style="width:24px; height:24px; background:#e3f2fd; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
-    <button type="button" onclick="setBgColor('#fce4ec')" title="Pastel Pink" style="width:24px; height:24px; background:#fce4ec; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
+                <div style="display:flex; align-items:center; gap:10px;">
+  <div style="position:relative; width:28px; height:28px; overflow:hidden; border-radius:6px; border:1px solid rgba(0,0,0,0.1); box-shadow: var(--boulder-shadow);">
+    <input type="color" id="solidColorPicker" oninput="setBgColor(this.value)" value="#ffffff" title="Choose background color" style="position:absolute; top:-5px; left:-5px; width:40px; height:40px; cursor:pointer; border:none; background:none;">
+    <span style="position:absolute; pointer-events:none; top:50%; left:50%; transform:translate(-50%,-50%); font-size:14px;">&#127912;</span>
   </div>
-  <button id="bgCycleBtn" type="button" aria-label="Change background" class="iconBtnBare iconSm">🖼️</button>
+  <button id="bgCycleBtn" type="button" aria-label="Change background" class="iconBtnBare iconSm" style="width:28px; height:28px; display:flex; align-items:center; justify-content:center;">&#128444;&#65039;</button>
 </div>
               </div>
 
@@ -1384,15 +1381,12 @@ app.get("/", (req, res) => {
         <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:10px; scroll-margin-top:20px;">
           <div class="workoutTitleRow">
             <button id="regenBtn2" type="button" aria-label="Regenerate" class="iconBtnBare iconSm"><img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" alt=""></button>
-            <div style="display:flex; align-items:center; gap:6px;">
-  <div class="color-swatches" style="display:flex; gap:6px; margin-right:4px;">
-    <button type="button" onclick="setBgColor('#ffffff')" title="White" style="width:24px; height:24px; background:#ffffff; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
-    <button type="button" onclick="setBgColor('#121212')" title="Black" style="width:24px; height:24px; background:#121212; border:1px solid rgba(255,255,255,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
-    <button type="button" onclick="setBgColor('#f5f5dc')" title="Cream" style="width:24px; height:24px; background:#f5f5dc; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
-    <button type="button" onclick="setBgColor('#e3f2fd')" title="Pastel Blue" style="width:24px; height:24px; background:#e3f2fd; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
-    <button type="button" onclick="setBgColor('#fce4ec')" title="Pastel Pink" style="width:24px; height:24px; background:#fce4ec; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
+            <div style="display:flex; align-items:center; gap:10px;">
+  <div style="position:relative; width:28px; height:28px; overflow:hidden; border-radius:6px; border:1px solid rgba(0,0,0,0.1); box-shadow: var(--boulder-shadow);">
+    <input type="color" id="solidColorPicker2" oninput="setBgColor(this.value)" value="#ffffff" title="Choose background color" style="position:absolute; top:-5px; left:-5px; width:40px; height:40px; cursor:pointer; border:none; background:none;">
+    <span style="position:absolute; pointer-events:none; top:50%; left:50%; transform:translate(-50%,-50%); font-size:14px;">&#127912;</span>
   </div>
-  <button id="bgCycleBtn2" type="button" aria-label="Change background" class="iconBtnSilhouette iconSm">🖼️</button>
+  <button id="bgCycleBtn2" type="button" aria-label="Change background" class="iconBtnSilhouette iconSm" style="width:28px; height:28px; display:flex; align-items:center; justify-content:center;">&#128444;&#65039;</button>
 </div>
             <span id="workoutNameText" style="display:inline-block; font-weight:700; font-size:15px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow:0 2px 6px rgba(0,0,0,0.25);"></span>
           </div>
@@ -1794,8 +1788,11 @@ app.get("/", (req, res) => {
         bgA.style.backgroundColor = color;
         bgB.style.backgroundColor = color;
         
-        const isDark = color === '#121212';
-        document.body.style.color = isDark ? '#ffffff' : '#333333';
+        const r = parseInt(color.slice(1,3), 16);
+        const g = parseInt(color.slice(3,5), 16);
+        const b = parseInt(color.slice(5,7), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        document.body.style.color = brightness < 128 ? '#ffffff' : '#111111';
       };
 
       initBackgroundLayers();
