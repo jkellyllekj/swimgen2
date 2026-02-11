@@ -1106,3 +1106,9 @@ User Feedback
 - Added "How to Use SwimGen" gesture guide card below generator form.
 - Upgraded ad removal to 1-year subscription expiry logic with premiumExpiry timestamp.
 - Added Premium Info popup listing upcoming premium features.
+
+[2026-02-11] PREMIUM PAGE & BG CYCLER: 
+- Created dedicated Premium landing page at /premium route.
+- Premium teaser button now navigates to /premium page instead of alert.
+- Updated How to Use guide with regeneration, frame icon, and feedback instructions.
+- Enhanced background cycler with solid color modes (White, Black, Light Blue, Light Green pastels).

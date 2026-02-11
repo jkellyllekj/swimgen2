@@ -1214,7 +1214,7 @@ app.get("/", (req, res) => {
                 </div>
 
                 <div id="premiumTeaserRow" style="display:flex; align-items:center; justify-content:flex-start; gap:10px; margin-top:10px; position:relative;">
-                  <button type="button" id="showPremiumInfo" style="background:transparent; border:none; text-align:left; font-size:14px; opacity:0.85; display:flex; align-items:center; gap:8px; cursor:pointer; padding:0; font-weight:600; color:#0055aa;">
+                  <button type="button" id="showPremiumInfo" onclick="window.location.href='/premium'" style="background:transparent; border:none; text-align:left; font-size:14px; opacity:0.85; display:flex; align-items:center; gap:8px; cursor:pointer; padding:0; font-weight:600; color:#0055aa;">
                     <span class="whiteChip">✨ Premium Options (Coming Soon)</span>
                   </button>
                 </div>
@@ -1368,9 +1368,11 @@ app.get("/", (req, res) => {
       <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:12px; padding:12px; font-size:13px; border-left:4px solid #f1c40f; background:rgba(255,255,255,0.4);">
         <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to Use SwimGen</h4>
         <ul style="margin:0; padding-left:18px; line-height:1.5; color:#333;">
-          <li><strong>Swipe Right:</strong> Remove a set from this workout.</li>
-          <li><strong>Swipe Left:</strong> Move a set to the bottom of the list.</li>
-          <li><strong>Dolphin Button:</strong> Reroll just that specific set.</li>
+          <li><strong>🐬 Top Dolphin:</strong> Regenerate the entire workout.</li>
+          <li><strong>🖼️ Frame Icon:</strong> Switch between images and solid backgrounds (White, Black, Pastel).</li>
+          <li><strong>Swipe Right:</strong> Remove a specific set.</li>
+          <li><strong>Swipe Left:</strong> Move a set to the bottom.</li>
+          <li><strong>💬 Feedback:</strong> <a href="mailto:feedback@swimgen.com" style="color:#0055aa; text-decoration:underline;">Leave a comment here.</a></li>
         </ul>
       </div>
     </div>
@@ -1727,60 +1729,32 @@ app.get("/", (req, res) => {
         activeBgLayer = "A";
       }
 
+      const bgModes = [
+        ...backgroundImages,
+        'COLOR:#ffffff', // White
+        'COLOR:#121212', // Dark/Black
+        'COLOR:#e3f2fd', // Light Blue Pastel
+        'COLOR:#f1f8e9'  // Light Green Pastel
+      ];
+      let bgModeIndex = 0;
+
       async function cycleBackgroundManually() {
         const btn = document.getElementById("bgCycleBtn");
         const bgA = document.getElementById("bgA");
-        const bgB = document.getElementById("bgB");
-        if (!btn || !bgA || !bgB) return;
+        if (!btn || !bgA) return;
 
-        btn.disabled = true;
+        bgModeIndex = (bgModeIndex + 1) % bgModes.length;
+        const currentMode = bgModes[bgModeIndex];
 
-        const nextIndex = (bgIndex + 1) % backgroundImages.length;
-        const nextUrl = backgroundImages[nextIndex];
-
-        console.log("[BG CYCLE] BEFORE:", {
-          bgIndex: bgIndex,
-          nextIndex: nextIndex,
-          activeBgLayer: activeBgLayer,
-          nextUrl: nextUrl
-        });
-
-        try {
-          await preloadImage(nextUrl);
-        } catch (e) {
-          console.log("[BG CYCLE] preload FAILED:", e);
-          btn.disabled = false;
-          return;
+        if (currentMode.startsWith('COLOR:')) {
+          const color = currentMode.split(':')[1];
+          bgA.style.backgroundImage = 'none';
+          document.body.style.background = color;
+          bgA.style.backgroundColor = color;
+        } else {
+          bgA.style.backgroundImage = 'url("' + currentMode + '")';
+          document.body.style.background = 'linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%)';
         }
-
-        const fromLayer = activeBgLayer === "A" ? bgA : bgB;
-        const toLayer = activeBgLayer === "A" ? bgB : bgA;
-
-        console.log("[BG CYCLE] LAYERS:", {
-          fromLayerId: fromLayer.id,
-          toLayerId: toLayer.id
-        });
-
-        setLayerImage(toLayer, nextUrl);
-
-        toLayer.classList.add("isActive");
-        fromLayer.classList.remove("isActive");
-
-        console.log("[BG CYCLE] AFTER TOGGLE:", {
-          bgA_classList: bgA.className,
-          bgB_classList: bgB.className,
-          bgA_opacity: getComputedStyle(bgA).opacity,
-          bgB_opacity: getComputedStyle(bgB).opacity,
-          bgA_bgImage: bgA.style.backgroundImage.slice(0, 60),
-          bgB_bgImage: bgB.style.backgroundImage.slice(0, 60)
-        });
-
-        window.setTimeout(function() {
-          bgIndex = nextIndex;
-          activeBgLayer = activeBgLayer === "A" ? "B" : "A";
-          btn.disabled = false;
-          console.log("[BG CYCLE] COMMITTED:", { bgIndex: bgIndex, activeBgLayer: activeBgLayer });
-        }, 300);
       }
 
       function wireBackgroundCycleButton() {
@@ -4374,6 +4348,10 @@ app.get("/viewport-lab", (req, res) => {
 // Test version route - serves test.html with stripped client JS
 app.get("/test", (req, res) => {
   res.sendFile(__dirname + '/public/test.html');
+});
+
+app.get("/premium", (req, res) => {
+  res.sendFile(__dirname + '/public/premium.html');
 });
 
 app.post("/reroll-set", (req, res) => {
