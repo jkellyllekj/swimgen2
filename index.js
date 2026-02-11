@@ -1179,12 +1179,12 @@ app.get("/", (req, res) => {
 
               <div style="flex:1; display:flex; justify-content:center;">
                 <div style="display:flex; align-items:center; gap:6px;">
-  <div class="color-swatches" style="display:flex; gap:4px;">
-    <button type="button" onclick="setBgColor('#ffffff')" style="width:16px; height:16px; background:#ffffff; border:1px solid #ccc; border-radius:2px; cursor:pointer; padding:0;"></button>
-    <button type="button" onclick="setBgColor('#121212')" style="width:16px; height:16px; background:#121212; border:1px solid #333; border-radius:2px; cursor:pointer; padding:0;"></button>
-    <button type="button" onclick="setBgColor('#f5f5dc')" style="width:16px; height:16px; background:#f5f5dc; border:1px solid #dcdcaa; border-radius:2px; cursor:pointer; padding:0;"></button>
-    <button type="button" onclick="setBgColor('#e3f2fd')" style="width:16px; height:16px; background:#e3f2fd; border:1px solid #bbdefb; border-radius:2px; cursor:pointer; padding:0;"></button>
-    <button type="button" onclick="setBgColor('#fce4ec')" style="width:16px; height:16px; background:#fce4ec; border:1px solid #f8bbd0; border-radius:2px; cursor:pointer; padding:0;"></button>
+  <div class="color-swatches" style="display:flex; gap:6px; margin-right:4px;">
+    <button type="button" onclick="setBgColor('#ffffff')" title="White" style="width:24px; height:24px; background:#ffffff; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
+    <button type="button" onclick="setBgColor('#121212')" title="Black" style="width:24px; height:24px; background:#121212; border:1px solid rgba(255,255,255,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
+    <button type="button" onclick="setBgColor('#f5f5dc')" title="Cream" style="width:24px; height:24px; background:#f5f5dc; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
+    <button type="button" onclick="setBgColor('#e3f2fd')" title="Pastel Blue" style="width:24px; height:24px; background:#e3f2fd; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
+    <button type="button" onclick="setBgColor('#fce4ec')" title="Pastel Pink" style="width:24px; height:24px; background:#fce4ec; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
   </div>
   <button id="bgCycleBtn" type="button" aria-label="Change background" class="iconBtnBare iconSm">🖼️</button>
 </div>
@@ -1385,12 +1385,12 @@ app.get("/", (req, res) => {
           <div class="workoutTitleRow">
             <button id="regenBtn2" type="button" aria-label="Regenerate" class="iconBtnBare iconSm"><img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" alt=""></button>
             <div style="display:flex; align-items:center; gap:6px;">
-  <div class="color-swatches" style="display:flex; gap:4px;">
-    <button type="button" onclick="setBgColor('#ffffff')" style="width:16px; height:16px; background:#ffffff; border:1px solid #ccc; border-radius:2px; cursor:pointer; padding:0;"></button>
-    <button type="button" onclick="setBgColor('#121212')" style="width:16px; height:16px; background:#121212; border:1px solid #333; border-radius:2px; cursor:pointer; padding:0;"></button>
-    <button type="button" onclick="setBgColor('#f5f5dc')" style="width:16px; height:16px; background:#f5f5dc; border:1px solid #dcdcaa; border-radius:2px; cursor:pointer; padding:0;"></button>
-    <button type="button" onclick="setBgColor('#e3f2fd')" style="width:16px; height:16px; background:#e3f2fd; border:1px solid #bbdefb; border-radius:2px; cursor:pointer; padding:0;"></button>
-    <button type="button" onclick="setBgColor('#fce4ec')" style="width:16px; height:16px; background:#fce4ec; border:1px solid #f8bbd0; border-radius:2px; cursor:pointer; padding:0;"></button>
+  <div class="color-swatches" style="display:flex; gap:6px; margin-right:4px;">
+    <button type="button" onclick="setBgColor('#ffffff')" title="White" style="width:24px; height:24px; background:#ffffff; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
+    <button type="button" onclick="setBgColor('#121212')" title="Black" style="width:24px; height:24px; background:#121212; border:1px solid rgba(255,255,255,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
+    <button type="button" onclick="setBgColor('#f5f5dc')" title="Cream" style="width:24px; height:24px; background:#f5f5dc; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
+    <button type="button" onclick="setBgColor('#e3f2fd')" title="Pastel Blue" style="width:24px; height:24px; background:#e3f2fd; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
+    <button type="button" onclick="setBgColor('#fce4ec')" title="Pastel Pink" style="width:24px; height:24px; background:#fce4ec; border:1px solid rgba(0,0,0,0.1); border-radius:4px; cursor:pointer; padding:0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"></button>
   </div>
   <button id="bgCycleBtn2" type="button" aria-label="Change background" class="iconBtnSilhouette iconSm">🖼️</button>
 </div>

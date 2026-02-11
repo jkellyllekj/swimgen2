@@ -444,6 +444,10 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Enhanced Glass UI with layered shadows for better definition on light backgrounds.
+
+✅ COMPLETED: Resized color swatches to 24px to match icon standard.
+
 ✅ COMPLETED: Implemented Perpetual (Sticky) Ad Banner.
 
 ✅ COMPLETED: Added Background Color Swatches (White, Black, Cream, Blue, Pink) to UI.
