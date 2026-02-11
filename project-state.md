@@ -444,6 +444,10 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Implemented Perpetual (Sticky) Ad Banner.
+
+✅ COMPLETED: Added Background Color Swatches (White, Black, Cream, Blue, Pink) to UI.
+
 ✅ COMPLETED: Lite Mode Implementation
 
 Added IS_LITE_MODE flag to client script.

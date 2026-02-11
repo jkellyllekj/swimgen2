@@ -1161,7 +1161,7 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
 app.get("/", (req, res) => {
   const HOME_HTML = `
     <link rel="stylesheet" href="/styles.css">
-    <div id="adBanner" style="width:100%; max-width:520px; height:50px; margin-bottom:10px; background:rgba(200,200,200,0.3); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#888; position:relative;">
+    <div id="adBanner" style="width:100%; max-width:520px; height:50px; margin-bottom:10px; background:rgba(255,255,255,0.9); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#888; position:sticky; top:0; z-index:1000; backdrop-filter:blur(4px); border:1px solid rgba(0,0,0,0.1);">
       <span style="letter-spacing:1px; font-weight:bold;">ADVERTISEMENT</span>
       <button type="button" style="position:absolute; right:8px; background:rgba(255,255,255,0.5); border:1px solid #ccc; border-radius:4px; padding:2px 6px; font-size:9px; cursor:pointer; color:#444;">Remove Ads</button>
     </div>
@@ -1178,7 +1178,16 @@ app.get("/", (req, res) => {
               </div>
 
               <div style="flex:1; display:flex; justify-content:center;">
-                <button id="bgCycleBtn" type="button" aria-label="Change background" class="iconBtnBare iconSm">🖼️</button>
+                <div style="display:flex; align-items:center; gap:6px;">
+  <div class="color-swatches" style="display:flex; gap:4px;">
+    <button type="button" onclick="setBgColor('#ffffff')" style="width:16px; height:16px; background:#ffffff; border:1px solid #ccc; border-radius:2px; cursor:pointer; padding:0;"></button>
+    <button type="button" onclick="setBgColor('#121212')" style="width:16px; height:16px; background:#121212; border:1px solid #333; border-radius:2px; cursor:pointer; padding:0;"></button>
+    <button type="button" onclick="setBgColor('#f5f5dc')" style="width:16px; height:16px; background:#f5f5dc; border:1px solid #dcdcaa; border-radius:2px; cursor:pointer; padding:0;"></button>
+    <button type="button" onclick="setBgColor('#e3f2fd')" style="width:16px; height:16px; background:#e3f2fd; border:1px solid #bbdefb; border-radius:2px; cursor:pointer; padding:0;"></button>
+    <button type="button" onclick="setBgColor('#fce4ec')" style="width:16px; height:16px; background:#fce4ec; border:1px solid #f8bbd0; border-radius:2px; cursor:pointer; padding:0;"></button>
+  </div>
+  <button id="bgCycleBtn" type="button" aria-label="Change background" class="iconBtnBare iconSm">🖼️</button>
+</div>
               </div>
 
               <span class="glassChip readChip" style="white-space:nowrap; border-radius:8px; padding:6px 12px;">
@@ -1375,7 +1384,16 @@ app.get("/", (req, res) => {
         <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:10px; scroll-margin-top:20px;">
           <div class="workoutTitleRow">
             <button id="regenBtn2" type="button" aria-label="Regenerate" class="iconBtnBare iconSm"><img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" alt=""></button>
-            <button id="bgCycleBtn2" type="button" aria-label="Change background" class="iconBtnSilhouette iconSm">🖼️</button>
+            <div style="display:flex; align-items:center; gap:6px;">
+  <div class="color-swatches" style="display:flex; gap:4px;">
+    <button type="button" onclick="setBgColor('#ffffff')" style="width:16px; height:16px; background:#ffffff; border:1px solid #ccc; border-radius:2px; cursor:pointer; padding:0;"></button>
+    <button type="button" onclick="setBgColor('#121212')" style="width:16px; height:16px; background:#121212; border:1px solid #333; border-radius:2px; cursor:pointer; padding:0;"></button>
+    <button type="button" onclick="setBgColor('#f5f5dc')" style="width:16px; height:16px; background:#f5f5dc; border:1px solid #dcdcaa; border-radius:2px; cursor:pointer; padding:0;"></button>
+    <button type="button" onclick="setBgColor('#e3f2fd')" style="width:16px; height:16px; background:#e3f2fd; border:1px solid #bbdefb; border-radius:2px; cursor:pointer; padding:0;"></button>
+    <button type="button" onclick="setBgColor('#fce4ec')" style="width:16px; height:16px; background:#fce4ec; border:1px solid #f8bbd0; border-radius:2px; cursor:pointer; padding:0;"></button>
+  </div>
+  <button id="bgCycleBtn2" type="button" aria-label="Change background" class="iconBtnSilhouette iconSm">🖼️</button>
+</div>
             <span id="workoutNameText" style="display:inline-block; font-weight:700; font-size:15px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow:0 2px 6px rgba(0,0,0,0.25);"></span>
           </div>
         </div>
@@ -1763,6 +1781,22 @@ app.get("/", (req, res) => {
         if (!btn) return;
         btn.addEventListener("click", cycleBackgroundManually);
       }
+
+      window.setBgColor = function(color) {
+        const bgA = document.getElementById("bgA");
+        const bgB = document.getElementById("bgB");
+        if (!bgA || !bgB) return;
+        
+        bgA.style.backgroundImage = 'none';
+        bgB.style.backgroundImage = 'none';
+        
+        document.body.style.background = color;
+        bgA.style.backgroundColor = color;
+        bgB.style.backgroundColor = color;
+        
+        const isDark = color === '#121212';
+        document.body.style.color = isDark ? '#ffffff' : '#333333';
+      };
 
       initBackgroundLayers();
       wireBackgroundCycleButton();
