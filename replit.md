@@ -23,7 +23,7 @@ Additional project-specific preferences:
 The application uses Express with inline HTML/CSS/JavaScript. The main file is `index.js` (6,343 lines), with modularized components in `src/modules/`. No build step; relies on plain Node.js and Express.
 
 **Extracted Modules:**
-- `src/modules/dragDropManager.js`: Live-Reorder drag model with strict Scroll-Lock (e.preventDefault on touchmove). Replaced Ghost Card clone-based approach. Includes setupCardGestures (long-press drag, swipe left/right, double-tap edit), liveReorderCheck for real-time DOM reordering, and cleanupLiveDrag. Cards use transition: transform 0.2s for smooth movement. Exports template strings concatenated into HTML response.
+- `src/modules/dragDropManager.js`: Ghost Card drag-and-drop with S24 Scroll-Lock (e.preventDefault on touchmove). Includes setupCardGestures (long-press drag, swipe left/right, double-tap edit), highlightDropTarget, handleGhostDrop for reordering, and cleanupGhostDrag. Exports template strings concatenated into HTML response.
 - `src/modules/setMath.js`: Pure calculation utilities including deterministic functions (fnv1a32, shuffleWithSeed, mulberry32), distance snapping, pace calculations, set parsing, and rep scheme selection.
 - `src/modules/workoutLibrary.js`: Static workout data including drill names (13 items), workout name pools, section allocation profiles, and label normalization.
 - `src/modules/workoutGenerator.js` (567 lines): Workout generation helpers including name generation, validation, full gas injection, drill set generation, and workout text parsing (parseWorkoutTextToSections, inferZoneFromText, inferIsStriatedFromText).
@@ -106,8 +106,7 @@ The application is currently stateless and does not use any persistent storage.
 ## Recent Changes
 
 ### S24 Stability & Footer Fix (Feb 2026)
-- Reverted drag model from Ghost Card (clone-based) to Live-Reorder with strict Scroll-Lock (e.preventDefault on touchmove) to fix Samsung S24 mobile pop-back
-- Added 200ms transform transitions for smooth "flowing" set movement during reorder
-- Fixed Math Footer bug: deleteWorkoutSet now calls renderFooterTotalsAndMeta to rebuild yellow Total box and effort icons after set deletion
-- Added CSS rules for consistent card spacing (margin-bottom: 10px) and persistent shadow on workout cards
-- Added .live-drag-active class for visual feedback during drag (scale + enhanced shadow)
+- Restored original Ghost Card drag logic with S24 Scroll-Lock fix (e.preventDefault on cancelable touchmove)
+- Restored original card spacing (margin-bottom: 0px) and boulder-shadow, removed scaling bugs
+- Fixed Math Footer bug: deleteWorkoutSet now calls renderFooterTotalsAndMeta via splitWorkout(convertArrayToWorkoutText()) to rebuild yellow Total box and effort icons after set deletion
+- Added convertArrayToWorkoutText() helper to reconstruct workout text from currentWorkoutArray for footer rebuilds

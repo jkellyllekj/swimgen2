@@ -1,16 +1,17 @@
 /**
  * Drag and Drop Manager Module
  * 
- * Live-Reorder pattern: On long-press drag, the card stays in place
- * while we track finger position and reorder the DOM in real-time.
- * Uses strict Scroll-Lock via e.preventDefault() on touchmove to
- * prevent Samsung S24 (and similar high-sensitivity) pop-back issues.
+ * Ghost Card pattern: On long-press drag, clone the card as a floating
+ * .dragging-clone that follows the finger, while the original becomes a
+ * .ghost-card placeholder. On drop, calculate new index via elementFromPoint,
+ * update array, remove clone, and re-render.
  * 
  * Includes:
  * - Card gesture setup (touch/pointer event handlers)
  * - Swipe left/right for defer/delete
  * - Double-tap to edit
- * - Live-Reorder drag-and-drop with scroll-lock
+ * - Ghost Card drag-and-drop reordering
+ * - S24 Scroll-Lock: e.preventDefault() on touchmove during drag
  * 
  * Note: setupCardGestures calls external functions (openGestureEditModal, 
  * deleteWorkoutSet, moveSetToBottom, rerenderWorkoutFromArray) that remain in index.js
@@ -27,18 +28,30 @@ const CARD_GESTURE_SETUP = `
         
         let pressTimer = null;
         let isLongPressDragging = false;
+        let dragClone = null;
+        let cloneOffsetX = 0;
+        let cloneOffsetY = 0;
 
         function startPressTimer() {
           pressTimer = setTimeout(() => {
             isLongPressDragging = true;
             isSwiping = false;
             
-            card.classList.add('live-drag-active');
-            card.style.zIndex = '9999';
+            const rect = card.getBoundingClientRect();
+            cloneOffsetX = currentX - rect.left;
+            cloneOffsetY = currentY - rect.top;
+            
+            dragClone = card.cloneNode(true);
+            dragClone.classList.add('dragging-clone');
+            dragClone.style.width = rect.width + 'px';
+            dragClone.style.left = (currentX - cloneOffsetX) + 'px';
+            dragClone.style.top = (currentY - cloneOffsetY) + 'px';
+            document.body.appendChild(dragClone);
+            
+            card.classList.add('ghost-card');
             card.style.touchAction = 'none';
             document.body.style.overflow = 'hidden';
             document.body.style.touchAction = 'none';
-            lockScroll();
             
             if (navigator.vibrate) navigator.vibrate(30);
           }, 300);
@@ -54,20 +67,11 @@ const CARD_GESTURE_SETUP = `
           }
         }
 
-        let docTouchHandler = null;
-        
-        function lockScroll() {
-          if (docTouchHandler) return;
-          docTouchHandler = function(e) { e.preventDefault(); };
-          document.addEventListener('touchmove', docTouchHandler, { passive: false });
+        function handleTouchMove(e) {
+          if (isLongPressDragging) { if (e.cancelable) e.preventDefault(); }
         }
         
-        function unlockScroll() {
-          if (docTouchHandler) {
-            document.removeEventListener('touchmove', docTouchHandler);
-            docTouchHandler = null;
-          }
-        }
+        card.addEventListener('touchmove', handleTouchMove, { passive: false });
         
         card.addEventListener('pointerdown', function(e) {
           if (typeof checkLock === 'function' && checkLock()) return;
@@ -105,7 +109,21 @@ const CARD_GESTURE_SETUP = `
           if (isLongPressDragging) {
             e.preventDefault();
             
-            liveReorderCheck(card, currentY);
+            if (dragClone) {
+              dragClone.style.left = (currentX - cloneOffsetX) + 'px';
+              dragClone.style.top = (currentY - cloneOffsetY) + 'px';
+              dragClone.style.transform = 'rotate(2deg)';
+            }
+            
+            const autoScrollMargin = 100;
+            const viewportHeight = window.innerHeight;
+            if (currentY > viewportHeight - autoScrollMargin) {
+              window.scrollBy({ top: 30, behavior: 'instant' });
+            } else if (currentY < autoScrollMargin && window.scrollY > 0) {
+              window.scrollBy({ top: -30, behavior: 'instant' });
+            }
+            
+            highlightDropTarget(card, currentX, currentY);
             return;
           }
           
@@ -134,15 +152,13 @@ const CARD_GESTURE_SETUP = `
             document.body.style.overflow = '';
             document.body.style.touchAction = '';
             
-            unlockScroll();
-            
             const dragOffsetX = currentX - startX;
             const dragOffsetY = currentY - startY;
             
             const isHorizontalSwipe = Math.abs(dragOffsetX) > 80 && Math.abs(dragOffsetX) > Math.abs(dragOffsetY) * 1.5;
             
             if (isHorizontalSwipe) {
-              cleanupLiveDrag(card);
+              cleanupGhostDrag(card);
               const currentIndex = parseInt(card.getAttribute('data-index'));
               if (!isNaN(currentIndex)) {
                 if (dragOffsetX > 0) {
@@ -152,8 +168,7 @@ const CARD_GESTURE_SETUP = `
                 }
               }
             } else {
-              cleanupLiveDrag(card);
-              rerenderWorkoutFromArray();
+              handleGhostDrop(card, currentX, currentY);
             }
             return;
           }
@@ -182,69 +197,97 @@ const CARD_GESTURE_SETUP = `
           if (!isLongPressDragging) return;
           
           isLongPressDragging = false;
-          unlockScroll();
           document.body.style.overflow = '';
           document.body.style.touchAction = '';
-          cleanupLiveDrag(card);
+          cleanupGhostDrag(card);
         });
       }
 `;
 
 const DRAG_DROP_STATE = `
-      let lastReorderIndex = -1;
+      let lastHighlightedDropIndex = -1;
 `;
 
 const DRAG_DROP_FUNCTIONS = `
-      function cleanupLiveDrag(card) {
-        card.classList.remove('live-drag-active');
-        card.style.zIndex = '';
-        card.style.touchAction = '';
-        card.style.transform = '';
+      function cleanupGhostDrag(originalCard) {
+        const clone = document.querySelector('.dragging-clone');
+        if (clone) clone.remove();
+        originalCard.classList.remove('ghost-card');
+        originalCard.style.touchAction = '';
+        originalCard.style.transform = '';
         document.body.style.overflow = '';
         document.body.style.touchAction = '';
-        lastReorderIndex = -1;
+        
+        document.querySelectorAll('.drop-target').forEach(c => {
+          c.classList.remove('drop-target');
+        });
+        lastHighlightedDropIndex = -1;
       }
       
-      function liveReorderCheck(draggedCard, fingerY) {
-        const container = draggedCard.parentNode;
-        if (!container) return;
+      function highlightDropTarget(draggedCard, x, y) {
+        const cards = Array.from(document.querySelectorAll('[data-effort][data-index]'));
+        const draggedIndex = parseInt(draggedCard.getAttribute('data-index'));
         
-        const cards = Array.from(container.querySelectorAll('[data-effort][data-index]'));
-        const draggedPos = cards.indexOf(draggedCard);
-        if (draggedPos === -1) return;
-        
-        const otherCards = cards.filter(c => c !== draggedCard);
-        let insertPos = otherCards.length;
-        for (let i = 0; i < otherCards.length; i++) {
-          const rect = otherCards[i].getBoundingClientRect();
+        let targetIndex = -1;
+        for (let i = 0; i < cards.length; i++) {
+          const c = cards[i];
+          if (c === draggedCard) continue;
+          
+          const rect = c.getBoundingClientRect();
           const midY = rect.top + rect.height / 2;
-          if (fingerY < midY) {
-            insertPos = i;
+          const cardIndex = parseInt(c.getAttribute('data-index'));
+          
+          if (y < midY) {
+            targetIndex = cardIndex;
             break;
           }
         }
         
-        const newArrayIndex = insertPos;
+        if (targetIndex === lastHighlightedDropIndex) return;
+        lastHighlightedDropIndex = targetIndex;
         
-        if (newArrayIndex === lastReorderIndex) return;
-        lastReorderIndex = newArrayIndex;
+        cards.forEach(c => c.classList.remove('drop-target'));
         
-        if (!currentWorkoutArray || draggedPos >= currentWorkoutArray.length) return;
+        if (targetIndex !== -1 && targetIndex !== draggedIndex) {
+          const targetCard = cards.find(c => parseInt(c.getAttribute('data-index')) === targetIndex);
+          if (targetCard) targetCard.classList.add('drop-target');
+        }
+      }
+      
+      function handleGhostDrop(draggedCard, dropX, dropY) {
+        const cards = Array.from(document.querySelectorAll('[data-effort][data-index]'));
+        const draggedIndex = parseInt(draggedCard.getAttribute('data-index'));
+        let insertBeforeIndex = -1;
         
-        const [removed] = currentWorkoutArray.splice(draggedPos, 1);
-        const clampedIndex = Math.min(newArrayIndex, currentWorkoutArray.length);
-        currentWorkoutArray.splice(clampedIndex, 0, removed);
-        
-        if (insertPos < otherCards.length) {
-          container.insertBefore(draggedCard, otherCards[insertPos]);
-        } else {
-          container.appendChild(draggedCard);
+        for (let i = 0; i < cards.length; i++) {
+          const c = cards[i];
+          if (c === draggedCard) continue;
+          
+          const rect = c.getBoundingClientRect();
+          const midY = rect.top + rect.height / 2;
+          
+          if (dropY < midY) {
+            insertBeforeIndex = i;
+            break;
+          }
         }
         
-        const updatedCards = Array.from(container.querySelectorAll('[data-effort][data-index]'));
-        updatedCards.forEach((c, i) => {
-          c.setAttribute('data-index', i);
-        });
+        let newIndex;
+        if (insertBeforeIndex === -1) {
+          newIndex = cards.length - 1;
+        } else if (insertBeforeIndex > draggedIndex) {
+          newIndex = insertBeforeIndex - 1;
+        } else {
+          newIndex = insertBeforeIndex;
+        }
+        
+        cleanupGhostDrag(draggedCard);
+        
+        if (newIndex !== draggedIndex && currentWorkoutArray && currentWorkoutArray.length > draggedIndex) {
+          const [removed] = currentWorkoutArray.splice(draggedIndex, 1);
+          currentWorkoutArray.splice(newIndex, 0, removed);
+          rerenderWorkoutFromArray();
+        }
       }
 `;
 

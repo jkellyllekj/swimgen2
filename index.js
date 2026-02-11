@@ -3646,59 +3646,46 @@ app.get("/", (req, res) => {
         }
       }
 
-      function deleteWorkoutSet(index) {
-        if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
-        
-        console.log('Deleting set at index', index);
-        
-        currentWorkoutArray.splice(index, 1);
-        
-        const cardsContainer = document.getElementById('cards');
-        if (cardsContainer) {
-          const setElements = Array.from(cardsContainer.querySelectorAll('[data-index]'));
-          if (index < setElements.length) {
-            setElements[index].remove();
-            console.log('Removed set from DOM');
-            
-            const remaining = Array.from(cardsContainer.querySelectorAll('[data-index]'));
-            remaining.forEach((el, i) => {
-              el.setAttribute('data-index', i);
-            });
+      function convertArrayToWorkoutText(arr) {
+        if (!arr || arr.length === 0) return '';
+        let lines = [];
+        arr.forEach(section => {
+          if (section.label && section.bodyText) {
+            const bodyLines = section.bodyText.split('\\n');
+            lines.push(section.label + ': ' + bodyLines[0]);
+            for (let i = 1; i < bodyLines.length; i++) {
+              if (bodyLines[i].trim()) lines.push(bodyLines[i]);
+            }
+            lines.push('');
           }
-        }
-        
-        updateMathTotals();
-        
-        const totalTextEl = document.getElementById('totalText');
-        const totalStr = totalTextEl ? totalTextEl.textContent.replace('Total ', '') : '';
+        });
+        if (lines.length && lines[lines.length - 1] === '') lines.pop();
+        let totalDistance = 0;
+        arr.forEach(section => {
+          if (section.bodyText) {
+            const firstLine = section.bodyText.split('\\n')[0];
+            const setMatch = firstLine.match(/^(\\d+)x(\\d+)/);
+            const singleMatch = firstLine.match(/^(\\d+)\\s/);
+            if (setMatch) totalDistance += parseInt(setMatch[1]) * parseInt(setMatch[2]);
+            else if (singleMatch) totalDistance += parseInt(singleMatch[1]);
+          }
+        });
         const s = window.__swgSummary || { units: 'm', poolLen: 25 };
         const poolLen = s.poolLen || 25;
-        const distNum = parseInt(totalStr) || 0;
-        const totalLengths = Math.round(distNum / poolLen);
-        const rebuiltFooter = [
-          'Total distance: ' + totalStr,
-          'Total lengths: ' + totalLengths + ' lengths'
-        ];
-        renderFooterTotalsAndMeta(rebuiltFooter);
-        
-        const totalBox = document.getElementById('totalBox');
-        if (totalBox) {
-          totalBox.style.opacity = '1';
-          totalBox.style.transform = 'none';
-          totalBox.style.display = 'block';
-        }
-        const footerBox = document.getElementById('footerBox');
-        if (footerBox) {
-          footerBox.style.opacity = '1';
-          footerBox.style.transform = 'none';
-          footerBox.style.display = 'block';
-        }
-        
-        setTimeout(() => {
-          if (typeof setupGestureEditing === 'function') {
-            setupGestureEditing(currentWorkoutArray);
-          }
-        }, 50);
+        const units = s.units || 'm';
+        const totalLengths = Math.round(totalDistance / poolLen);
+        lines.push('');
+        lines.push('Total distance: ' + totalDistance + units);
+        lines.push('Total lengths: ' + totalLengths + ' lengths');
+        return lines.join('\\n');
+      }
+
+      function deleteWorkoutSet(index) {
+        if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
+        currentWorkoutArray.splice(index, 1);
+        updateMathTotals();
+        renderFooterTotalsAndMeta(splitWorkout(convertArrayToWorkoutText(currentWorkoutArray)).footerLines);
+        setupGestureEditing(currentWorkoutArray);
       }
 
       function moveSetToBottom(index) {

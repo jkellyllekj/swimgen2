@@ -462,17 +462,12 @@
           grid-template-columns: 1fr !important;
         }
       }
-      [data-effort][data-index] {
-        margin-bottom: 10px;
-        transition: transform 0.2s ease;
-        box-shadow: 0 6px 16px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.25);
+      [data-effort] {
+        box-shadow: var(--boulder-shadow) !important;
+        margin-bottom: 0px;
+        transition: transform 0.2s ease-in-out;
       }
-      [data-effort][data-index].live-drag-active {
-        opacity: 0.85;
-        transform: scale(1.03);
-        box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.3);
-        z-index: 9999;
-      }
+      .live-drag-active { transform: none !important; }
       .setHeaderRow {
         display:flex;
         align-items:flex-start;
