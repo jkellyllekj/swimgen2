@@ -1161,20 +1161,15 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
 app.get("/", (req, res) => {
   const HOME_HTML = `
     <link rel="stylesheet" href="/styles.css">
-    <div id="adBanner" style="width:100vw; height:75px; background:#f8f9fa; display:flex; align-items:center; justify-content:center; font-size:11px; color:#555; position:fixed; top:0; left:0; z-index:9999; border-bottom:2px solid #ccc; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow:hidden;">
-      <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
-        <div id="fakeAdContent" style="font-weight:bold; color:#0055aa; text-transform:uppercase; letter-spacing:1px; animation: pulse 2s infinite;">Get SwimGen Pro: No Ads and Custom Pools</div>
-        <div style="font-size:9px; color:#888;">Limited Time Offer -- Click Remove Ads to Upgrade</div>
+    <div id="adBanner" style="position:fixed; top:0; left:0; width:100vw; height:75px; background:#121212; color:#e0e0e0; display:flex; flex-direction:column; justify-content:center; padding:0 12px; box-sizing:border-box; z-index:9999; border-bottom:2px solid #333; box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+      <div style="display:flex; flex-direction:column; gap:2px; align-items:flex-start;">
+        <div id="fakeAdContent" style="font-weight:800; color:#40c9e0; text-transform:uppercase; letter-spacing:0.5px; font-size:12px; animation: pulse 2s infinite;">Get SwimGen Pro: No Ads and Custom Pools</div>
+        <div style="font-size:10px; color:#aaa;">Limited Time Offer -- Upgrade Now</div>
       </div>
-      <button type="button" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:#0055aa; color:white; border:none; border-radius:4px; padding:6px 10px; font-size:10px; font-weight:bold; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Remove Ads</button>
+      <button type="button" style="position:absolute; bottom:6px; right:8px; background:#e0e0e0; color:#121212; border:none; border-radius:4px; padding:4px 10px; font-size:10px; font-weight:800; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">REMOVE ADS</button>
     </div>
-
     <style>
-      @keyframes pulse {
-        0% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.7; transform: scale(0.98); }
-        100% { opacity: 1; transform: scale(1); }
-      }
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
       body { padding-top: 75px !important; }
     </style>
 
@@ -1391,17 +1386,17 @@ app.get("/", (req, res) => {
         <div id="errorBox" style="display:none; margin-bottom:10px; padding:10px; background:#fff; border:1px solid #e7e7e7; border-radius:8px;"></div>
 
         <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:20px;">
-          <div class="workoutTitleRow" style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:520px; height:40px;">
-            <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="color:#2ecc71; font-size:20px;">&#128275;</button>
-            <div style="display:flex; align-items:center; gap:12px;">
+          <div class="workoutTitleRow" style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:520px; height:44px;">
+            <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="color:#2ecc71; font-size:26px; margin-right:4px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128275;</button>
+            <div style="display:flex; align-items:center; gap:10px;">
               <button id="regenBtn2" class="icon-silhouette" aria-label="Regenerate">
-                <img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" style="width:32px; height:32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+                <img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" style="width:38px; height:38px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
               </button>
-              <div style="position:relative; width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+              <div style="position:relative; width:22px; height:22px; display:flex; align-items:center; justify-content:center;">
                 <input type="color" oninput="setBgColor(this.value)" style="position:absolute; width:100%; height:100%; opacity:0.01; cursor:pointer; z-index:2;">
-                <span style="font-size:20px; z-index:1; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));">&#128167;</span>
+                <span style="font-size:18px; z-index:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128167;</span>
               </div>
-              <button id="bgCycleBtn2" class="icon-silhouette" style="font-size:20px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));">&#128444;&#65039;</button>
+              <button id="bgCycleBtn2" class="icon-silhouette" style="font-size:20px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128444;&#65039;</button>
             </div>
             <span id="workoutNameText" style="font-weight:700; font-size:14px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow: var(--boulder-shadow);"></span>
           </div>
@@ -1480,6 +1475,8 @@ app.get("/", (req, res) => {
       </div>
     </div>
     <!-- GESTURE EDIT MODAL END -->
+
+    <div id="toastContainer" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:white; padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:opacity 0.3s ease; pointer-events:none; z-index:10000; white-space:nowrap;"></div>
   `;
   const HOME_JS_OPEN = `
     <script>
@@ -3119,35 +3116,53 @@ app.get("/", (req, res) => {
   `;
   const HOME_JS_RENDER = HOME_JS_RENDER_CORE + HOME_JS_RENDER_CARDS + HOME_JS_RENDER_GLUE;
   const HOME_JS_EVENTS = `
+      function showToast(msg) {
+        const toast = document.getElementById("toastContainer");
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.style.opacity = "1";
+        setTimeout(() => { toast.style.opacity = "0"; }, 2500);
+      }
+
       let isUILocked = false;
       const lockBtn = document.getElementById("lockBtn");
       let lockTimer;
 
-      function handleUnlockStart() {
+      function handleUnlockStart(e) {
         if (!isUILocked) return;
+        if (e.type === 'touchstart') e.preventDefault();
+        
+        showToast("Hold for 2 seconds to unlock...");
+        lockBtn.style.transform = "scale(1.1)";
+
         lockTimer = setTimeout(() => {
           isUILocked = false;
           lockBtn.style.color = "#2ecc71";
           lockBtn.textContent = "\\u{1F513}";
-          console.log("UI Unlocked");
+          lockBtn.style.transform = "scale(1)";
+          showToast("Unlocked!");
+          if (navigator.vibrate) navigator.vibrate(50);
         }, 2000);
       }
 
-      function handleUnlockEnd() {
+      function handleUnlockEnd(e) {
         clearTimeout(lockTimer);
+        if (isUILocked && lockBtn) lockBtn.style.transform = "scale(1)";
       }
 
-      lockBtn?.addEventListener("click", () => {
+      lockBtn?.addEventListener("click", (e) => {
         if (!isUILocked) {
           isUILocked = true;
           lockBtn.style.color = "#e74c3c";
           lockBtn.textContent = "\\u{1F512}";
-          alert("Interaction Locked. Long-press the lock for 2s to unlock.");
+          showToast("Screen Locked");
+          if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
         }
       });
 
-      lockBtn?.addEventListener("touchstart", handleUnlockStart);
+      lockBtn?.addEventListener("touchstart", handleUnlockStart, { passive: false });
       lockBtn?.addEventListener("touchend", handleUnlockEnd);
+      lockBtn?.addEventListener("touchcancel", handleUnlockEnd);
       lockBtn?.addEventListener("mousedown", handleUnlockStart);
       lockBtn?.addEventListener("mouseup", handleUnlockEnd);
       lockBtn?.addEventListener("mouseleave", handleUnlockEnd);

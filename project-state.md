@@ -444,6 +444,14 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Redesigned Ad Banner to dark theme with bottom-right button placement.
+
+✅ COMPLETED: Adjusted title icon sizes for better visual balance.
+
+✅ COMPLETED: Fixed mobile unlock issue by isolating touch events and adding haptic feedback.
+
+✅ COMPLETED: Replaced intrusive alerts with subtle Toast notifications.
+
 ✅ COMPLETED: Implemented Fixed "Frame" Ad Banner (75px depth) with pulse animation.
 
 ✅ COMPLETED: Fixed scroll-to-workout logic to account for header offset.
