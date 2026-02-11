@@ -69,6 +69,7 @@ const CARD_GESTURE_SETUP = `
         function preventScroll(e) {
           if (isLongPressDragging) {
             e.preventDefault();
+            document.body.style.overflow = 'hidden';
           }
         }
         
@@ -188,6 +189,7 @@ const CARD_GESTURE_SETUP = `
           // Handle long-press drag drop - decide swipe vs drop at the END
           if (isLongPressDragging) {
             isLongPressDragging = false;
+            document.body.style.overflow = '';
             
             const dragOffsetX = currentX - dragStartX;
             const dragOffsetY = currentY - dragStartY;
@@ -252,6 +254,7 @@ const CARD_GESTURE_SETUP = `
           
           // Delay reset to allow any in-progress drop to complete
           isLongPressDragging = false;
+          document.body.style.overflow = '';
           setTimeout(() => {
             resetDragStyles(card);
           }, 50);

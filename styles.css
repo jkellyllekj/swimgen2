@@ -140,6 +140,10 @@
         box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), var(--boulder-shadow) !important;
         color: #111 !important;
       }
+      [data-effort] {
+        box-shadow: var(--boulder-shadow) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
       #workoutNameText {
         max-width: 45%;
         text-align: center;

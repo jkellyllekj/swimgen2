@@ -450,6 +450,12 @@ Total Footer now sums actual section distances for "Honest Total."
 
 ✅ COMPLETED: Corrected Ad Banner copy (Removed "Pro/Limited Time" references).
 
+✅ COMPLETED: Fixed mobile "Reset Jump" by disabling body scroll during drag.
+
+✅ COMPLETED: Implemented "Cooldown Shield" -- deferred sets now move above the Cool down.
+
+✅ COMPLETED: Fixed shadow-loss bug by forcing Boulder Shadows globally on cards.
+
 ✅ COMPLETED: Replaced lock emoji with SVG for cross-device consistency.
 
 ✅ COMPLETED: Fixed web auto-relock using unlockInProgress flag and stopImmediatePropagation.

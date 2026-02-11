@@ -3695,44 +3695,17 @@ app.get("/", (req, res) => {
       function moveSetToBottom(index) {
         if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
         
-        console.log('Moving set', index, 'to bottom');
-        
-        // 1. Get the set and move in array
         const [movedSet] = currentWorkoutArray.splice(index, 1);
-        currentWorkoutArray.push(movedSet);
         
-        // 2. Update DOM - remove from current position and append to container
-        const cardsContainer = document.getElementById('cards');
-        if (cardsContainer) {
-          const setElements = Array.from(cardsContainer.querySelectorAll('[data-index]'));
-          if (index < setElements.length) {
-            const setToMove = setElements[index];
-            // Find the wrapper container (first child with flex column)
-            const wrapper = cardsContainer.querySelector('div[style*="flex-direction:column"]');
-            if (wrapper) {
-              wrapper.appendChild(setToMove);
-            } else {
-              cardsContainer.appendChild(setToMove);
-            }
-            console.log('Moved set in DOM');
-            
-            // 3. Renumber all sets to match new array order
-            const newSetElements = cardsContainer.querySelectorAll('[data-index]');
-            newSetElements.forEach((el, i) => {
-              el.setAttribute('data-index', i);
-            });
-          }
+        let coolIdx = currentWorkoutArray.findIndex(s => s.label.toLowerCase().includes("cool"));
+        
+        if (coolIdx !== -1) {
+          currentWorkoutArray.splice(coolIdx, 0, movedSet);
+        } else {
+          currentWorkoutArray.push(movedSet);
         }
         
-        // 4. Update math totals (total doesn't change but keeps consistency)
-        updateMathTotals();
-        
-        // 5. Re-attach gesture listeners
-        setTimeout(() => {
-          if (typeof setupGestureEditing === 'function') {
-            setupGestureEditing(currentWorkoutArray);
-          }
-        }, 50);
+        rerenderWorkoutFromArray();
       }
 
       function rerenderWorkoutFromArray() {
