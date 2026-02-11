@@ -1161,10 +1161,9 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
 app.get("/", (req, res) => {
   const HOME_HTML = `
     <link rel="stylesheet" href="/styles.css">
-    <div id="adBanner" style="width:100%; max-width:520px; height:50px; margin-bottom:10px; background:rgba(200,200,200,0.5); border-radius:6px; display:flex; align-items:center; justify-content:center; gap:16px; font-size:12px; color:#666;">
-      <a href="/viewport-lab" style="color:inherit; text-decoration:underline; font-weight:600;">Viewport Lab</a>
-      <span style="margin:0 8px;">|</span>
-      <a href="/test" style="color:inherit; text-decoration:underline; font-weight:600;">Test Version</a>
+    <div id="adBanner" style="width:100%; max-width:520px; height:50px; margin-bottom:10px; background:rgba(200,200,200,0.3); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#888; position:relative;">
+      <span style="letter-spacing:1px; font-weight:bold;">ADVERTISEMENT</span>
+      <button type="button" style="position:absolute; right:8px; background:rgba(255,255,255,0.5); border:1px solid #ccc; border-radius:4px; padding:2px 6px; font-size:9px; cursor:pointer; color:#444;">Remove Ads</button>
     </div>
 
     <div style="max-width:520px;">
@@ -1214,7 +1213,7 @@ app.get("/", (req, res) => {
                   <button type="button" data-pool="25yd" style="padding:6px 14px; border-radius:5px; cursor:pointer;">25yd</button>
                 </div>
 
-                <div id="advancedRow" style="display:none; align-items:center; justify-content:flex-start; gap:10px; margin-top:10px; position:relative;">
+                <div id="advancedRow" style="display:none !important; align-items:center; justify-content:flex-start; gap:10px; margin-top:10px; position:relative;">
                   <button type="button" id="toggleAdvanced" style="background:transparent; border:none; text-align:left; font-size:16px; opacity:0.95; display:flex; align-items:center; gap:8px; cursor:pointer; padding:0; font-weight:700;">
                     <span id="advancedChip" class="whiteChip">▶ Advanced options</span>
                   </button>
@@ -1445,6 +1444,7 @@ app.get("/", (req, res) => {
     <script>
   `;
   const HOME_JS_DOM = `
+      const IS_LITE_MODE = true; 
       const form = document.getElementById("genForm");
       const errorBox = document.getElementById("errorBox");
       const statusPill = document.getElementById("statusPill");

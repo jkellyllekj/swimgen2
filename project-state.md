@@ -1090,3 +1090,8 @@ User Feedback
 - Hard-coded IS_LITE_MODE = true in index.js.
 - Set display:none on advancedRow to remove Advanced options from active UI.
 - Gated openGestureEditModal to disable the set editor for Lite release.
+
+[2026-02-11] LITE MODE v2 FIXES: 
+- Injected IS_LITE_MODE = true into client-side HOME_JS_DOM script block.
+- Replaced adBanner dev links with perpetual ADVERTISEMENT placeholder + Remove Ads button.
+- Strengthened advancedRow hide with display:none !important.
