@@ -75,6 +75,7 @@ const CARD_GESTURE_SETUP = `
         card.addEventListener('touchmove', preventScroll, { passive: false });
         
         card.addEventListener('pointerdown', function(e) {
+          if (typeof checkLock === 'function' && checkLock()) return;
           startX = e.clientX;
           startY = e.clientY;
           currentX = e.clientX;

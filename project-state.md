@@ -444,6 +444,14 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Implemented Edge-to-Edge Perpetual Banner (100vw).
+
+✅ COMPLETED: Unified Eyedropper and Frame buttons with Boulder Shadows.
+
+✅ COMPLETED: Added Interaction Lock with 2s hold-to-unlock.
+
+✅ COMPLETED: Implemented 300ms long-press delay for gesture movement.
+
 ✅ COMPLETED: Implemented "Boulder Shadow" logic globally for heavy UI presence.
 
 ✅ COMPLETED: Replaced swatch row with unified Color Picker to prevent mobile crowding.

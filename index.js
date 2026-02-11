@@ -1161,9 +1161,9 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
 app.get("/", (req, res) => {
   const HOME_HTML = `
     <link rel="stylesheet" href="/styles.css">
-    <div id="adBanner" style="width:100%; max-width:520px; height:50px; margin-bottom:10px; background:rgba(255,255,255,0.9); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#888; position:sticky; top:0; z-index:1000; backdrop-filter:blur(4px); border:1px solid rgba(0,0,0,0.1);">
+    <div id="adBanner" style="width:100vw; height:50px; margin: 0 0 12px 0; background:rgba(255,255,255,0.95); display:flex; align-items:center; justify-content:center; font-size:10px; color:#888; position:sticky; top:0; left:0; right:0; z-index:5000; backdrop-filter:blur(6px); border-bottom:1px solid rgba(0,0,0,0.1); box-sizing:border-box;">
       <span style="letter-spacing:1px; font-weight:bold;">ADVERTISEMENT</span>
-      <button type="button" style="position:absolute; right:8px; background:rgba(255,255,255,0.5); border:1px solid #ccc; border-radius:4px; padding:2px 6px; font-size:9px; cursor:pointer; color:#444;">Remove Ads</button>
+      <button type="button" style="position:absolute; right:12px; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.1); border-radius:4px; padding:4px 8px; font-size:10px; cursor:pointer;">Remove Ads</button>
     </div>
 
     <div style="max-width:520px;">
@@ -1178,12 +1178,12 @@ app.get("/", (req, res) => {
               </div>
 
               <div style="flex:1; display:flex; justify-content:center;">
-                <div style="display:flex; align-items:center; gap:10px;">
-  <div style="position:relative; width:28px; height:28px; overflow:hidden; border-radius:6px; border:1px solid rgba(0,0,0,0.1); box-shadow: var(--boulder-shadow);">
-    <input type="color" id="solidColorPicker" oninput="setBgColor(this.value)" value="#ffffff" title="Choose background color" style="position:absolute; top:-5px; left:-5px; width:40px; height:40px; cursor:pointer; border:none; background:none;">
-    <span style="position:absolute; pointer-events:none; top:50%; left:50%; transform:translate(-50%,-50%); font-size:14px;">&#127912;</span>
+                <div style="display:flex; align-items:center; gap:12px;">
+  <div style="position:relative; width:28px; height:28px; border-radius:6px; background:#fff; box-shadow: var(--boulder-shadow); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+    <input type="color" id="solidColorPicker" oninput="setBgColor(this.value)" value="#ffffff" title="Choose color" style="position:absolute; width:150%; height:150%; cursor:pointer; opacity:0.01; z-index:2;">
+    <span style="font-size:16px; z-index:1;">&#129514;</span>
   </div>
-  <button id="bgCycleBtn" type="button" aria-label="Change background" class="iconBtnBare iconSm" style="width:28px; height:28px; display:flex; align-items:center; justify-content:center;">&#128444;&#65039;</button>
+  <button id="bgCycleBtn" type="button" class="iconBtnBare" style="width:28px; height:28px; background:#fff; border-radius:6px; box-shadow: var(--boulder-shadow); display:flex; align-items:center; justify-content:center; padding:0;">&#128444;&#65039;</button>
 </div>
               </div>
 
@@ -1381,13 +1381,14 @@ app.get("/", (req, res) => {
         <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:10px; scroll-margin-top:20px;">
           <div class="workoutTitleRow">
             <button id="regenBtn2" type="button" aria-label="Regenerate" class="iconBtnBare iconSm"><img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" alt=""></button>
-            <div style="display:flex; align-items:center; gap:10px;">
-  <div style="position:relative; width:28px; height:28px; overflow:hidden; border-radius:6px; border:1px solid rgba(0,0,0,0.1); box-shadow: var(--boulder-shadow);">
-    <input type="color" id="solidColorPicker2" oninput="setBgColor(this.value)" value="#ffffff" title="Choose background color" style="position:absolute; top:-5px; left:-5px; width:40px; height:40px; cursor:pointer; border:none; background:none;">
-    <span style="position:absolute; pointer-events:none; top:50%; left:50%; transform:translate(-50%,-50%); font-size:14px;">&#127912;</span>
+            <div style="display:flex; align-items:center; gap:12px;">
+  <div style="position:relative; width:28px; height:28px; border-radius:6px; background:#fff; box-shadow: var(--boulder-shadow); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+    <input type="color" id="solidColorPicker2" oninput="setBgColor(this.value)" value="#ffffff" title="Choose color" style="position:absolute; width:150%; height:150%; cursor:pointer; opacity:0.01; z-index:2;">
+    <span style="font-size:16px; z-index:1;">&#129514;</span>
   </div>
-  <button id="bgCycleBtn2" type="button" aria-label="Change background" class="iconBtnSilhouette iconSm" style="width:28px; height:28px; display:flex; align-items:center; justify-content:center;">&#128444;&#65039;</button>
+  <button id="bgCycleBtn2" type="button" class="iconBtnBare" style="width:28px; height:28px; background:#fff; border-radius:6px; box-shadow: var(--boulder-shadow); display:flex; align-items:center; justify-content:center; padding:0;">&#128444;&#65039;</button>
 </div>
+            <button id="lockBtn" type="button" style="background:#2ecc71; border-radius:6px; width:28px; height:28px; border:none; color:white; font-size:14px; cursor:pointer; box-shadow: var(--boulder-shadow);">&#128275;</button>
             <span id="workoutNameText" style="display:inline-block; font-weight:700; font-size:15px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow:0 2px 6px rgba(0,0,0,0.25);"></span>
           </div>
         </div>
@@ -1401,13 +1402,16 @@ app.get("/", (req, res) => {
     </div>
 
     <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:12px; padding:12px; font-size:13px; border-left:4px solid #f1c40f; background:rgba(255,255,255,0.4);">
-      <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to Use SwimGen</h4>
-      <ul style="margin:0; padding-left:18px; line-height:1.5; color:#333;">
-        <li><strong>Top Dolphin:</strong> Regenerate the entire workout.</li>
-        <li><strong>Frame Icon:</strong> Switch between images and solid backgrounds (White, Black, Pastel).</li>
-        <li><strong>Swipe Right:</strong> Remove a specific set.</li>
-        <li><strong>Swipe Left:</strong> Move a set to the bottom.</li>
-        <li><strong>Feedback:</strong> <a href="mailto:feedback@swimgen.com" style="color:#0055aa; text-decoration:underline;">Leave a comment here.</a></li>
+      <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to use SwimGen</h4>
+      <p style="margin:0 0 8px 0; font-size:12px;">1. Choose your distance and pool size.<br>2. Click <strong>Generate</strong> and voila!</p>
+      <ul style="margin:0; padding-left:18px; line-height:1.4; color:#333; font-size:12px;">
+        <li><strong>Top Dolphin:</strong> New full workout.</li>
+        <li><strong>Set Dolphin:</strong> Reroll just that set.</li>
+        <li><strong>Long Press (300ms):</strong> Drag and drop sets.</li>
+        <li><strong>Swipe Right:</strong> Remove a set.</li>
+        <li><strong>Swipe Left:</strong> Send set to bottom.</li>
+        <li><strong>Eyedropper/Frame Icons:</strong> Custom colors or image backgrounds.</li>
+        <li><strong>Feedback:</strong> <a href="mailto:feedback@swimgen.com" target="_blank" style="color:#0055aa;">Leave a comment here.</a></li>
       </ul>
     </div>
 
@@ -3101,6 +3105,32 @@ app.get("/", (req, res) => {
   `;
   const HOME_JS_RENDER = HOME_JS_RENDER_CORE + HOME_JS_RENDER_CARDS + HOME_JS_RENDER_GLUE;
   const HOME_JS_EVENTS = `
+      let isUILocked = false;
+      const lockBtn = document.getElementById("lockBtn");
+      let lockTimer;
+
+      lockBtn?.addEventListener("click", () => {
+        if (!isUILocked) {
+          isUILocked = true;
+          lockBtn.style.background = "#e74c3c";
+          lockBtn.textContent = "\\u{1F512}";
+          alert("Interaction Locked. Long-press the lock for 2s to unlock.");
+        }
+      });
+
+      lockBtn?.addEventListener("touchstart", (e) => {
+        if (isUILocked) {
+          lockTimer = setTimeout(() => {
+            isUILocked = false;
+            lockBtn.style.background = "#2ecc71";
+            lockBtn.textContent = "\\u{1F513}";
+          }, 2000);
+        }
+      });
+      lockBtn?.addEventListener("touchend", () => clearTimeout(lockTimer));
+
+      function checkLock() { return isUILocked; }
+
       function setActivePool(poolValue, skipSave) {
         poolHidden.value = poolValue;
 

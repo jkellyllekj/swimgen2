@@ -2,7 +2,7 @@
 
 :root {
         /* Boulder shadow for heavy UI presence */
-        --boulder-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), 0 12px 30px rgba(0, 0, 0, 0.2);
+        --boulder-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 10px 25px rgba(0, 0, 0, 0.15);
         /* 35% white for chips and buttons */
         --white35: rgba(255,255,255,0.35);
         --whiteBorder: rgba(255,255,255,0.42);
@@ -107,9 +107,10 @@
         border-color: rgba(255,255,255,0.40);
       }
       /* Glass panel with reflection and depth borders */
-      .glassPanel, .glassChip, .generateBox, .distance-slider, input[type="number"], select {
+      .glassPanel, .glassChip, button, .generateBox, input[type="number"], select {
         box-shadow: var(--boulder-shadow) !important;
       }
+      .distance-slider { box-shadow: none !important; margin: 12px 0; }
       button:active {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
         transform: translateY(1px);
