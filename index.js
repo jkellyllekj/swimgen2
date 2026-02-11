@@ -3413,7 +3413,7 @@ app.get("/", (req, res) => {
 
       if (removeAdsBtn) {
         removeAdsBtn.addEventListener("click", () => {
-          if (confirm("Subscribe to remove ads for £5/year? (Simulated for Lite Launch)")) {
+          if (confirm("Subscribe to remove ads for 5 GBP/year? (Simulated for Lite Launch)")) {
             const oneYearFromNow = Date.now() + (365 * 24 * 60 * 60 * 1000);
             updateSetting('premiumExpiry', oneYearFromNow);
             updateSetting('isPremium', true);
@@ -3436,7 +3436,7 @@ app.get("/", (req, res) => {
 
       // Premium Teaser Info
       document.getElementById("showPremiumInfo")?.addEventListener("click", () => {
-        alert("Coming Soon to Premium:\n\n• Custom Intervals & CSS Pace\n• Equipment Toggles (Fins/Paddles)\n• Custom Pool Lengths (33m, etc.)\n• Stroke-Specific Focus Areas\n• Full Set Editor & Manual Adjustments");
+        alert("Coming Soon to Premium:" + String.fromCharCode(10) + String.fromCharCode(10) + "- Custom Intervals & CSS Pace" + String.fromCharCode(10) + "- Equipment Toggles (Fins/Paddles)" + String.fromCharCode(10) + "- Custom Pool Lengths (33m, etc.)" + String.fromCharCode(10) + "- Stroke-Specific Focus Areas" + String.fromCharCode(10) + "- Full Set Editor & Manual Adjustments");
       });
   `;
 
