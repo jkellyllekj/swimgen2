@@ -444,6 +444,12 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Replaced lock emoji with SVG for cross-device consistency.
+
+✅ COMPLETED: Fixed web auto-relock using unlockInProgress flag and stopImmediatePropagation.
+
+✅ COMPLETED: Instruction card uses flex order to stay visible on load, moves below workout on generate.
+
 ✅ COMPLETED: Resolved web "auto-relock" bug using 500ms click-guard logic.
 
 ✅ COMPLETED: Stabilized Instruction Card position using min-height on results container.
