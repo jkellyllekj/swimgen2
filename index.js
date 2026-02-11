@@ -1185,12 +1185,12 @@ app.get("/", (req, res) => {
               </div>
 
               <div style="flex:1; display:flex; justify-content:center;">
-                <div style="display:flex; align-items:center; gap:12px;">
-  <div style="position:relative; width:28px; height:28px; border-radius:6px; background:#fff; box-shadow: var(--boulder-shadow); display:flex; align-items:center; justify-content:center; overflow:hidden;">
-    <input type="color" id="solidColorPicker" oninput="setBgColor(this.value)" value="#ffffff" title="Choose color" style="position:absolute; width:150%; height:150%; cursor:pointer; opacity:0.01; z-index:2;">
-    <span style="font-size:16px; z-index:1;">&#129514;</span>
+                <div style="display:flex; align-items:center; gap:12px; margin-left:8px;">
+  <div style="position:relative; width:26px; height:26px; display:flex; align-items:center; justify-content:center;">
+    <input type="color" id="solidColorPicker" oninput="setBgColor(this.value)" value="#40c9e0" title="Choose background color" style="position:absolute; width:100%; height:100%; opacity:0.01; cursor:pointer; z-index:2;">
+    <span style="font-size:22px; z-index:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128167;</span>
   </div>
-  <button id="bgCycleBtn" type="button" class="iconBtnBare" style="width:28px; height:28px; background:#fff; border-radius:6px; box-shadow: var(--boulder-shadow); display:flex; align-items:center; justify-content:center; padding:0;">&#128444;&#65039;</button>
+  <button id="bgCycleBtn" type="button" aria-label="Change background" class="icon-silhouette" style="font-size:22px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128444;&#65039;</button>
 </div>
               </div>
 
@@ -1387,16 +1387,16 @@ app.get("/", (req, res) => {
 
         <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:20px;">
           <div class="workoutTitleRow" style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:520px; height:44px;">
-            <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="color:#ffd700; font-size:28px; margin-right:8px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4)); transition: all 0.3s ease;">&#128275;</button>
+            <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="color:#ffd700; font-size:28px; margin-right:8px; filter: contrast(1.2) saturate(1.1) drop-shadow(0 2px 3px rgba(0,0,0,0.4)); transition: all 0.3s ease;">&#128275;</button>
             <div style="display:flex; align-items:center; gap:10px;">
               <button id="regenBtn2" class="icon-silhouette" aria-label="Regenerate">
-                <img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" style="width:38px; height:38px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+                <img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" style="width:40px; height:40px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
               </button>
-              <div style="position:relative; width:22px; height:22px; display:flex; align-items:center; justify-content:center;">
+              <div style="position:relative; width:26px; height:26px; display:flex; align-items:center; justify-content:center;">
                 <input type="color" oninput="setBgColor(this.value)" style="position:absolute; width:100%; height:100%; opacity:0.01; cursor:pointer; z-index:2;">
-                <span style="font-size:18px; z-index:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128167;</span>
+                <span style="font-size:22px; z-index:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128167;</span>
               </div>
-              <button id="bgCycleBtn2" class="icon-silhouette" style="font-size:20px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128444;&#65039;</button>
+              <button id="bgCycleBtn2" class="icon-silhouette" style="font-size:22px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128444;&#65039;</button>
             </div>
             <span id="workoutNameText" style="font-weight:700; font-size:14px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow: var(--boulder-shadow);"></span>
           </div>
@@ -1767,9 +1767,9 @@ app.get("/", (req, res) => {
       let bgModeIndex = 0;
 
       async function cycleBackgroundManually() {
-        const btn = document.getElementById("bgCycleBtn");
         const bgA = document.getElementById("bgA");
-        if (!btn || !bgA) return;
+        const bgB = document.getElementById("bgB");
+        if (!bgA) return;
 
         bgModeIndex = (bgModeIndex + 1) % bgModes.length;
         const currentMode = bgModes[bgModeIndex];
@@ -1779,6 +1779,21 @@ app.get("/", (req, res) => {
           bgA.style.backgroundImage = 'none';
           document.body.style.background = color;
           bgA.style.backgroundColor = color;
+        } else if (bgB) {
+          const activeBg = bgA.style.opacity === '1' ? bgA : bgB;
+          const inactiveBg = activeBg === bgA ? bgB : bgA;
+
+          const img = new Image();
+          img.onload = () => {
+            inactiveBg.style.backgroundImage = 'url("' + currentMode + '")';
+            inactiveBg.style.backgroundColor = 'transparent';
+            activeBg.style.opacity = '0';
+            inactiveBg.style.opacity = '1';
+            setTimeout(() => {
+              document.body.style.background = '#121212';
+            }, 500);
+          };
+          img.src = currentMode;
         } else {
           bgA.style.backgroundImage = 'url("' + currentMode + '")';
           document.body.style.background = 'linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%)';
@@ -3147,7 +3162,9 @@ app.get("/", (req, res) => {
 
       function handleUnlockEnd(e) {
         clearTimeout(lockTimer);
-        if (isUILocked && lockBtn) lockBtn.style.transform = "scale(1)";
+        if (isUILocked && lockBtn) {
+          lockBtn.style.transform = isUILocked ? "scale(1)" : lockBtn.style.transform;
+        }
       }
 
       lockBtn?.addEventListener("click", (e) => {

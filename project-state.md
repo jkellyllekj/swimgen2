@@ -444,6 +444,16 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Fixed top-row icons to be floating silhouettes with Drop icon.
+
+✅ COMPLETED: Restored gold highlight for selected pool size.
+
+✅ COMPLETED: Implemented smooth cross-fade for background images (no color flashing).
+
+✅ COMPLETED: Fixed web lock behavior (no auto-relock on mouse-up) and enhanced 3D look.
+
+✅ COMPLETED: Increased icon sizes in title row for better balance.
+
 ✅ COMPLETED: Replaced black ad banner with Navy-Blue high-performance gradient.
 
 ✅ COMPLETED: Centered ad text and fixed "Remove Ads" button clipping on S24 Plus.

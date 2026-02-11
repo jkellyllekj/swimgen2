@@ -124,6 +124,11 @@
         transition: transform 0.2s ease;
       }
       .icon-silhouette:active { transform: scale(0.9); }
+      .glassChip.selected {
+        background: rgba(255, 215, 0, 0.3) !important;
+        border-color: rgba(255, 215, 0, 0.8) !important;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), var(--boulder-shadow) !important;
+      }
       .workoutTitleRow .glassChip, .workoutTitleRow .icon-silhouette {
         margin: 0 4px;
       }
