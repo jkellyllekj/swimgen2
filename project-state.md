@@ -1095,3 +1095,8 @@ User Feedback
 - Injected IS_LITE_MODE = true into client-side HOME_JS_DOM script block.
 - Replaced adBanner dev links with perpetual ADVERTISEMENT placeholder + Remove Ads button.
 - Strengthened advancedRow hide with display:none !important.
+
+[2026-02-11] AD FRAMEWORK & PREMIUM: 
+- Added isPremium flag to localStorage settings initialization.
+- Wired Remove Ads button with confirm dialog and premium mode toggle.
+- Banner auto-hides on load if isPremium is true in saved settings.

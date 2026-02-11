@@ -1501,6 +1501,7 @@ app.get("/", (req, res) => {
         if (!savedSettings.version) {
           return {
             version: '1.0',
+            isPremium: savedSettings.isPremium || false,
             core: {
               distance: savedSettings.distance || 2000,
               poolLength: savedSettings.poolLength || '25m',
@@ -3423,6 +3424,26 @@ app.get("/", (req, res) => {
 
       // Initialize gesture editing system
       initGestureSystem();
+
+      // Ad Banner Logic
+      const adBanner = document.getElementById("adBanner");
+      const removeAdsBtn = adBanner ? adBanner.querySelector("button") : null;
+
+      if (removeAdsBtn) {
+        removeAdsBtn.addEventListener("click", () => {
+          if (confirm("In the App Store, this will trigger a £5/year subscription. Enable Premium mode for this session?")) {
+            updateSetting('isPremium', true);
+            if (adBanner) adBanner.style.display = "none";
+            alert("Premium Mode Enabled: Ads removed for this session.");
+          }
+        });
+      }
+
+      // Check premium status on load
+      const settings = loadUserSettings();
+      if (settings && settings.isPremium && adBanner) {
+        adBanner.style.display = "none";
+      }
   `;
 
   const HOME_JS_GESTURES = `
