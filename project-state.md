@@ -1086,3 +1086,7 @@ User Feedback
 1. Overwrite the entire `project-state.md` file with the block above.
 2. Ensure NO sections are truncated. Every specification must be preserved.
 3. Commit and push: `git add project-state.md`, `git commit -m "Comprehensive St
+[2026-02-11] LITE MODE LOCKDOWN: 
+- Hard-coded IS_LITE_MODE = true in index.js.
+- Set display:none on advancedRow to remove Advanced options from active UI.
+- Gated openGestureEditModal to disable the set editor for Lite release.

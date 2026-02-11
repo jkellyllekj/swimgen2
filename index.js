@@ -20,6 +20,11 @@ const workoutLibrary = require("./src/modules/workoutLibrary");
 const workoutGenerator = require("./src/modules/workoutGenerator");
 const workoutTemplates = require("./src/data/workoutTemplates");
 
+// ============================================================================
+// RELEASE CONFIGURATION
+// ============================================================================
+const IS_LITE_MODE = true; // Set to true for App Store "SwimGen2 Lite" release
+
 // Aliases for backward compatibility - these functions are now in modules
 const { 
   fnv1a32, shuffleWithSeed, mulberry32,
@@ -1209,7 +1214,7 @@ app.get("/", (req, res) => {
                   <button type="button" data-pool="25yd" style="padding:6px 14px; border-radius:5px; cursor:pointer;">25yd</button>
                 </div>
 
-                <div id="advancedRow" style="display:flex; align-items:center; justify-content:flex-start; gap:10px; margin-top:10px; position:relative;">
+                <div id="advancedRow" style="display:none; align-items:center; justify-content:flex-start; gap:10px; margin-top:10px; position:relative;">
                   <button type="button" id="toggleAdvanced" style="background:transparent; border:none; text-align:left; font-size:16px; opacity:0.95; display:flex; align-items:center; gap:8px; cursor:pointer; padding:0; font-weight:700;">
                     <span id="advancedChip" class="whiteChip">▶ Advanced options</span>
                   </button>
@@ -3719,6 +3724,7 @@ app.get("/", (req, res) => {
       }
 
       function openGestureEditModal(index) {
+        if (typeof IS_LITE_MODE !== 'undefined' && IS_LITE_MODE) return; 
         currentGestureEditingIndex = index;
         const set = currentWorkoutArray[index];
         
