@@ -1365,16 +1365,6 @@ app.get("/", (req, res) => {
           </div>
         </div>
       </form>
-      <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:12px; padding:12px; font-size:13px; border-left:4px solid #f1c40f; background:rgba(255,255,255,0.4);">
-        <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to Use SwimGen</h4>
-        <ul style="margin:0; padding-left:18px; line-height:1.5; color:#333;">
-          <li><strong>🐬 Top Dolphin:</strong> Regenerate the entire workout.</li>
-          <li><strong>🖼️ Frame Icon:</strong> Switch between images and solid backgrounds (White, Black, Pastel).</li>
-          <li><strong>Swipe Right:</strong> Remove a specific set.</li>
-          <li><strong>Swipe Left:</strong> Move a set to the bottom.</li>
-          <li><strong>💬 Feedback:</strong> <a href="mailto:feedback@swimgen.com" style="color:#0055aa; text-decoration:underline;">Leave a comment here.</a></li>
-        </ul>
-      </div>
     </div>
 
     <div style="max-width:520px; box-sizing:border-box; padding:0;">
@@ -1396,6 +1386,17 @@ app.get("/", (req, res) => {
 
         <pre id="raw" style="display:none; margin-top:12px; padding:12px; background:#fff; border-radius:8px; border:1px solid #e7e7e7; white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size:13px; line-height:1.35;"></pre>
       </div>
+    </div>
+
+    <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:12px; padding:12px; font-size:13px; border-left:4px solid #f1c40f; background:rgba(255,255,255,0.4);">
+      <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to Use SwimGen</h4>
+      <ul style="margin:0; padding-left:18px; line-height:1.5; color:#333;">
+        <li><strong>Top Dolphin:</strong> Regenerate the entire workout.</li>
+        <li><strong>Frame Icon:</strong> Switch between images and solid backgrounds (White, Black, Pastel).</li>
+        <li><strong>Swipe Right:</strong> Remove a specific set.</li>
+        <li><strong>Swipe Left:</strong> Move a set to the bottom.</li>
+        <li><strong>Feedback:</strong> <a href="mailto:feedback@swimgen.com" style="color:#0055aa; text-decoration:underline;">Leave a comment here.</a></li>
+      </ul>
     </div>
 
     <!-- GESTURE EDIT MODAL START -->
@@ -3142,22 +3143,24 @@ app.get("/", (req, res) => {
         }
       }, true);
 
-      toggleAdvanced.addEventListener("click", () => {
-        const open = advancedWrap.style.display !== "none";
-        if (open) {
-          advancedWrap.style.display = "none";
-          if (advancedChip) {
-            advancedChip.innerHTML = "▶ Advanced options";
-            advancedChip.classList.remove("whiteChipActive");
+      if (toggleAdvanced) {
+        toggleAdvanced.addEventListener("click", () => {
+          const open = advancedWrap.style.display !== "none";
+          if (open) {
+            advancedWrap.style.display = "none";
+            if (advancedChip) {
+              advancedChip.innerHTML = "▶ Advanced options";
+              advancedChip.classList.remove("whiteChipActive");
+            }
+          } else {
+            advancedWrap.style.display = "block";
+            if (advancedChip) {
+              advancedChip.innerHTML = "▼ Advanced options";
+              advancedChip.classList.add("whiteChipActive");
+            }
           }
-        } else {
-          advancedWrap.style.display = "block";
-          if (advancedChip) {
-            advancedChip.innerHTML = "▼ Advanced options";
-            advancedChip.classList.add("whiteChipActive");
-          }
-        }
-      });
+        });
+      }
 
       copyBtn.addEventListener("click", async () => {
         const text = copyBtn.dataset.copyText || "";
