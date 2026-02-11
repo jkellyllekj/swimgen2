@@ -1100,3 +1100,9 @@ User Feedback
 - Added isPremium flag to localStorage settings initialization.
 - Wired Remove Ads button with confirm dialog and premium mode toggle.
 - Banner auto-hides on load if isPremium is true in saved settings.
+
+[2026-02-11] PREMIUM TEASER & GUIDE: 
+- Replaced hidden advancedRow with "Premium Options (Coming Soon)" teaser button.
+- Added "How to Use SwimGen" gesture guide card below generator form.
+- Upgraded ad removal to 1-year subscription expiry logic with premiumExpiry timestamp.
+- Added Premium Info popup listing upcoming premium features.

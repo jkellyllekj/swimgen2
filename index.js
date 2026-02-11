@@ -1213,9 +1213,9 @@ app.get("/", (req, res) => {
                   <button type="button" data-pool="25yd" style="padding:6px 14px; border-radius:5px; cursor:pointer;">25yd</button>
                 </div>
 
-                <div id="advancedRow" style="display:none !important; align-items:center; justify-content:flex-start; gap:10px; margin-top:10px; position:relative;">
-                  <button type="button" id="toggleAdvanced" style="background:transparent; border:none; text-align:left; font-size:16px; opacity:0.95; display:flex; align-items:center; gap:8px; cursor:pointer; padding:0; font-weight:700;">
-                    <span id="advancedChip" class="whiteChip">▶ Advanced options</span>
+                <div id="premiumTeaserRow" style="display:flex; align-items:center; justify-content:flex-start; gap:10px; margin-top:10px; position:relative;">
+                  <button type="button" id="showPremiumInfo" style="background:transparent; border:none; text-align:left; font-size:14px; opacity:0.85; display:flex; align-items:center; gap:8px; cursor:pointer; padding:0; font-weight:600; color:#0055aa;">
+                    <span class="whiteChip">✨ Premium Options (Coming Soon)</span>
                   </button>
                 </div>
               </div>
@@ -1365,6 +1365,14 @@ app.get("/", (req, res) => {
           </div>
         </div>
       </form>
+      <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:12px; padding:12px; font-size:13px; border-left:4px solid #f1c40f; background:rgba(255,255,255,0.4);">
+        <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to Use SwimGen</h4>
+        <ul style="margin:0; padding-left:18px; line-height:1.5; color:#333;">
+          <li><strong>Swipe Right:</strong> Remove a set from this workout.</li>
+          <li><strong>Swipe Left:</strong> Move a set to the bottom of the list.</li>
+          <li><strong>Dolphin Button:</strong> Reroll just that specific set.</li>
+        </ul>
+      </div>
     </div>
 
     <div style="max-width:520px; box-sizing:border-box; padding:0;">
@@ -3425,25 +3433,37 @@ app.get("/", (req, res) => {
       // Initialize gesture editing system
       initGestureSystem();
 
-      // Ad Banner Logic
+      // Ad Banner & Premium Expiry Logic
       const adBanner = document.getElementById("adBanner");
       const removeAdsBtn = adBanner ? adBanner.querySelector("button") : null;
 
       if (removeAdsBtn) {
         removeAdsBtn.addEventListener("click", () => {
-          if (confirm("In the App Store, this will trigger a £5/year subscription. Enable Premium mode for this session?")) {
+          if (confirm("Subscribe to remove ads for £5/year? (Simulated for Lite Launch)")) {
+            const oneYearFromNow = Date.now() + (365 * 24 * 60 * 60 * 1000);
+            updateSetting('premiumExpiry', oneYearFromNow);
             updateSetting('isPremium', true);
             if (adBanner) adBanner.style.display = "none";
-            alert("Premium Mode Enabled: Ads removed for this session.");
+            alert("Subscription Active: Ads removed for 1 year.");
           }
         });
       }
 
-      // Check premium status on load
+      // Check premium status and expiry on load
       const settings = loadUserSettings();
-      if (settings && settings.isPremium && adBanner) {
-        adBanner.style.display = "none";
+      const now = Date.now();
+      const isStillPremium = settings && settings.isPremium && settings.premiumExpiry && settings.premiumExpiry > now;
+
+      if (isStillPremium) {
+        if (adBanner) adBanner.style.display = "none";
+      } else if (adBanner) {
+        adBanner.style.display = "flex"; // Show banner if expired or not premium
       }
+
+      // Premium Teaser Info
+      document.getElementById("showPremiumInfo")?.addEventListener("click", () => {
+        alert("Coming Soon to Premium:\n\n• Custom Intervals & CSS Pace\n• Equipment Toggles (Fins/Paddles)\n• Custom Pool Lengths (33m, etc.)\n• Stroke-Specific Focus Areas\n• Full Set Editor & Manual Adjustments");
+      });
   `;
 
   const HOME_JS_GESTURES = `
