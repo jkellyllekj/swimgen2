@@ -1382,7 +1382,7 @@ app.get("/", (req, res) => {
 
     <div style="max-width:520px; box-sizing:border-box; padding:0;">
 
-      <div id="resultWrap" style="margin-top:16px; padding:0; background:transparent; border-radius:0; border:none; box-shadow:none;">
+      <div id="resultWrap" style="margin-top:16px; min-height:400px; padding:0; background:transparent; border-radius:0; border:none; box-shadow:none;">
         <div id="errorBox" style="display:none; margin-bottom:10px; padding:10px; background:#fff; border:1px solid #e7e7e7; border-radius:8px;"></div>
 
         <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:20px;">
@@ -1410,7 +1410,7 @@ app.get("/", (req, res) => {
       </div>
     </div>
 
-    <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:12px; padding:12px; font-size:13px; border-left:4px solid #f1c40f; background:rgba(255,255,255,0.4);">
+    <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:24px; padding:12px; font-size:13px; border-left:4px solid #f1c40f; background:rgba(255,255,255,0.4);">
       <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to use SwimGen</h4>
       <p style="margin:0 0 8px 0; font-size:12px;">1. Choose your distance and pool size.<br>2. Click <strong>Generate</strong> and voila!</p>
       <ul style="margin:0; padding-left:18px; line-height:1.4; color:#333; font-size:12px;">
@@ -3140,6 +3140,7 @@ app.get("/", (req, res) => {
       }
 
       let isUILocked = false;
+      let lastUnlockTime = 0;
       const lockBtn = document.getElementById("lockBtn");
       let lockTimer;
 
@@ -3152,6 +3153,7 @@ app.get("/", (req, res) => {
 
         lockTimer = setTimeout(() => {
           isUILocked = false;
+          lastUnlockTime = Date.now();
           lockBtn.style.color = "#ffd700";
           lockBtn.textContent = "\\u{1F513}";
           lockBtn.style.transform = "scaleX(-1) scale(1)";
@@ -3162,12 +3164,14 @@ app.get("/", (req, res) => {
 
       function handleUnlockEnd(e) {
         clearTimeout(lockTimer);
-        if (lockBtn && isUILocked) {
+        if (isUILocked && lockBtn) {
           lockBtn.style.transform = "scale(1)";
         }
       }
 
       lockBtn?.addEventListener("click", (e) => {
+        if (Date.now() - lastUnlockTime < 500) return;
+
         if (!isUILocked) {
           isUILocked = true;
           lockBtn.style.color = "#bdc3c7";
@@ -3180,7 +3184,6 @@ app.get("/", (req, res) => {
 
       lockBtn?.addEventListener("touchstart", handleUnlockStart, { passive: false });
       lockBtn?.addEventListener("touchend", handleUnlockEnd);
-      lockBtn?.addEventListener("touchcancel", handleUnlockEnd);
       lockBtn?.addEventListener("mousedown", handleUnlockStart);
       lockBtn?.addEventListener("mouseup", handleUnlockEnd);
       lockBtn?.addEventListener("mouseleave", handleUnlockEnd);

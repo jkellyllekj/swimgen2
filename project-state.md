@@ -444,6 +444,12 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Resolved web "auto-relock" bug using 500ms click-guard logic.
+
+✅ COMPLETED: Stabilized Instruction Card position using min-height on results container.
+
+✅ COMPLETED: Standardized Lock icon (Gold/Silver) across Web and Mobile.
+
 ✅ COMPLETED: Unified Premium/Ad-Removal navigation (direct link to /premium).
 
 ✅ COMPLETED: Fixed Pool Selection Highlights (Gold shadow/border).
