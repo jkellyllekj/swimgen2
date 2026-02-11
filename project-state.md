@@ -444,6 +444,12 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Implemented Fixed "Frame" Ad Banner (75px depth) with pulse animation.
+
+✅ COMPLETED: Fixed scroll-to-workout logic to account for header offset.
+
+✅ COMPLETED: Standardized Title Bar height and icon vertical alignment.
+
 ✅ COMPLETED: Converted title bar icons to floating silhouettes (removed boxes/shadows).
 
 ✅ COMPLETED: Fixed 2s Lock-Hold for Web (added mouse event support).

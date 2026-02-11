@@ -1161,10 +1161,22 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
 app.get("/", (req, res) => {
   const HOME_HTML = `
     <link rel="stylesheet" href="/styles.css">
-    <div id="adBanner" style="width:100vw; height:50px; background:#ffffff; display:flex; align-items:center; justify-content:center; font-size:10px; color:#888; position:sticky; top:0; left:0; z-index:9999; border-bottom:1px solid #ddd; margin-left: calc(-1 * (100vw - 100%) / 2);">
-      <span style="letter-spacing:1px; font-weight:bold;">ADVERTISEMENT</span>
-      <button type="button" style="position:absolute; right:15px; background:#f0f0f0; border:1px solid #ccc; border-radius:4px; padding:4px 8px; font-size:10px; cursor:pointer;">Remove Ads</button>
+    <div id="adBanner" style="width:100vw; height:75px; background:#f8f9fa; display:flex; align-items:center; justify-content:center; font-size:11px; color:#555; position:fixed; top:0; left:0; z-index:9999; border-bottom:2px solid #ccc; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow:hidden;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+        <div id="fakeAdContent" style="font-weight:bold; color:#0055aa; text-transform:uppercase; letter-spacing:1px; animation: pulse 2s infinite;">Get SwimGen Pro: No Ads and Custom Pools</div>
+        <div style="font-size:9px; color:#888;">Limited Time Offer -- Click Remove Ads to Upgrade</div>
+      </div>
+      <button type="button" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:#0055aa; color:white; border:none; border-radius:4px; padding:6px 10px; font-size:10px; font-weight:bold; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Remove Ads</button>
     </div>
+
+    <style>
+      @keyframes pulse {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(0.98); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      body { padding-top: 75px !important; }
+    </style>
 
     <div style="max-width:520px;">
       <form id="genForm" class="glassPanel" style="position:relative; max-width:520px; padding:16px;">
@@ -1379,7 +1391,7 @@ app.get("/", (req, res) => {
         <div id="errorBox" style="display:none; margin-bottom:10px; padding:10px; background:#fff; border:1px solid #e7e7e7; border-radius:8px;"></div>
 
         <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:20px;">
-          <div class="workoutTitleRow" style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:520px;">
+          <div class="workoutTitleRow" style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:520px; height:40px;">
             <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="color:#2ecc71; font-size:20px;">&#128275;</button>
             <div style="display:flex; align-items:center; gap:12px;">
               <button id="regenBtn2" class="icon-silhouette" aria-label="Regenerate">
@@ -3398,7 +3410,14 @@ app.get("/", (req, res) => {
             // STEP 2: Scroll to workout area when splash is visible
             const scrollTarget = nameDisplayEl && nameDisplayEl.style.display !== "none" ? nameDisplayEl : cards;
             if (scrollTarget) {
-              scrollTarget.scrollIntoView({ behavior: "smooth", block: "start" });
+              const bannerHeight = 75;
+              const elementPosition = scrollTarget.getBoundingClientRect().top + window.pageYOffset;
+              const offsetPosition = elementPosition - bannerHeight - 20;
+
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+              });
             }
 
             // STEP 3: Fade in content after scroll starts
