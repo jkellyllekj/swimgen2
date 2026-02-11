@@ -444,6 +444,12 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Replaced black ad banner with Navy-Blue high-performance gradient.
+
+✅ COMPLETED: Centered ad text and fixed "Remove Ads" button clipping on S24 Plus.
+
+✅ COMPLETED: Improved lock visibility: Gold/Flipped (Unlocked) vs Silver (Locked).
+
 ✅ COMPLETED: Redesigned Ad Banner to dark theme with bottom-right button placement.
 
 ✅ COMPLETED: Adjusted title icon sizes for better visual balance.

@@ -116,9 +116,10 @@
         border: none !important;
         box-shadow: none !important;
         cursor: pointer;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
+        vertical-align: middle;
         padding: 0;
         transition: transform 0.2s ease;
       }

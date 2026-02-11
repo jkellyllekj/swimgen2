@@ -1161,16 +1161,16 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
 app.get("/", (req, res) => {
   const HOME_HTML = `
     <link rel="stylesheet" href="/styles.css">
-    <div id="adBanner" style="position:fixed; top:0; left:0; width:100vw; height:75px; background:#121212; color:#e0e0e0; display:flex; flex-direction:column; justify-content:center; padding:0 12px; box-sizing:border-box; z-index:9999; border-bottom:2px solid #333; box-shadow:0 4px 12px rgba(0,0,0,0.5);">
-      <div style="display:flex; flex-direction:column; gap:2px; align-items:flex-start;">
-        <div id="fakeAdContent" style="font-weight:800; color:#40c9e0; text-transform:uppercase; letter-spacing:0.5px; font-size:12px; animation: pulse 2s infinite;">Get SwimGen Pro: No Ads and Custom Pools</div>
-        <div style="font-size:10px; color:#aaa;">Limited Time Offer -- Upgrade Now</div>
+    <div id="adBanner" style="position:fixed; top:0; left:0; width:100vw; height:75px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:0 60px; box-sizing:border-box; z-index:9999; border-bottom:1px solid rgba(255,255,255,0.1); box-shadow:0 4px 15px rgba(0,0,0,0.4);">
+      <div style="display:flex; flex-direction:column; gap:2px;">
+        <div id="fakeAdContent" style="font-weight:800; color:#60a5fa; text-transform:uppercase; letter-spacing:1px; font-size:12px; animation: pulse 2s infinite;">Get SwimGen Pro: No Ads and Custom Pools</div>
+        <div style="font-size:10px; color:#94a3b8; font-weight:500;">Limited Time Offer -- Click to Upgrade</div>
       </div>
-      <button type="button" style="position:absolute; bottom:6px; right:8px; background:#e0e0e0; color:#121212; border:none; border-radius:4px; padding:4px 10px; font-size:10px; font-weight:800; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">REMOVE ADS</button>
+      <button type="button" style="position:absolute; bottom:8px; right:15px; background:rgba(255,255,255,0.9); color:#1e3a8a; border:none; border-radius:4px; padding:4px 10px; font-size:9px; font-weight:900; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">REMOVE ADS</button>
     </div>
     <style>
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
-      body { padding-top: 75px !important; }
+      body { padding-top: 85px !important; }
     </style>
 
     <div style="max-width:520px;">
@@ -1387,7 +1387,7 @@ app.get("/", (req, res) => {
 
         <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:20px;">
           <div class="workoutTitleRow" style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:520px; height:44px;">
-            <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="color:#2ecc71; font-size:26px; margin-right:4px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128275;</button>
+            <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="color:#ffd700; font-size:28px; margin-right:8px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4)); transition: all 0.3s ease;">&#128275;</button>
             <div style="display:flex; align-items:center; gap:10px;">
               <button id="regenBtn2" class="icon-silhouette" aria-label="Regenerate">
                 <img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" style="width:38px; height:38px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
@@ -3133,13 +3133,13 @@ app.get("/", (req, res) => {
         if (e.type === 'touchstart') e.preventDefault();
         
         showToast("Hold for 2 seconds to unlock...");
-        lockBtn.style.transform = "scale(1.1)";
+        lockBtn.style.transform = "scale(1.2)";
 
         lockTimer = setTimeout(() => {
           isUILocked = false;
-          lockBtn.style.color = "#2ecc71";
+          lockBtn.style.color = "#ffd700";
           lockBtn.textContent = "\\u{1F513}";
-          lockBtn.style.transform = "scale(1)";
+          lockBtn.style.transform = "scaleX(-1) scale(1)";
           showToast("Unlocked!");
           if (navigator.vibrate) navigator.vibrate(50);
         }, 2000);
@@ -3153,7 +3153,8 @@ app.get("/", (req, res) => {
       lockBtn?.addEventListener("click", (e) => {
         if (!isUILocked) {
           isUILocked = true;
-          lockBtn.style.color = "#e74c3c";
+          lockBtn.style.color = "#bdc3c7";
+          lockBtn.style.transform = "scale(1)";
           lockBtn.textContent = "\\u{1F512}";
           showToast("Screen Locked");
           if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
