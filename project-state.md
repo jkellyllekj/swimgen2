@@ -444,6 +444,14 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Unified Premium/Ad-Removal navigation (direct link to /premium).
+
+✅ COMPLETED: Fixed Pool Selection Highlights (Gold shadow/border).
+
+✅ COMPLETED: Removed unintended boxes/shadows from Set Reroll dolphins.
+
+✅ COMPLETED: Adjusted Workout Title width to 45% and prevented text wrapping.
+
 ✅ COMPLETED: Fixed top-row icons to be floating silhouettes with Drop icon.
 
 ✅ COMPLETED: Restored gold highlight for selected pool size.

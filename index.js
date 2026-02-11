@@ -3162,8 +3162,8 @@ app.get("/", (req, res) => {
 
       function handleUnlockEnd(e) {
         clearTimeout(lockTimer);
-        if (isUILocked && lockBtn) {
-          lockBtn.style.transform = isUILocked ? "scale(1)" : lockBtn.style.transform;
+        if (lockBtn && isUILocked) {
+          lockBtn.style.transform = "scale(1)";
         }
       }
 
@@ -3203,14 +3203,16 @@ app.get("/", (req, res) => {
           customUnit.value = "meters";
         }
 
-        for (const btn of poolButtons.querySelectorAll("button[data-pool]")) {
-          const isActive = btn.getAttribute("data-pool") === poolValue;
-          if (isActive) {
+        const btns = poolButtons.querySelectorAll("button[data-pool]");
+        btns.forEach(btn => {
+          if (btn.getAttribute("data-pool") === poolValue) {
+            btn.classList.add("selected");
             btn.classList.add("active");
           } else {
+            btn.classList.remove("selected");
             btn.classList.remove("active");
           }
-        }
+        });
         if (!skipSave) saveUserSettings();
       }
 
@@ -3534,37 +3536,25 @@ app.get("/", (req, res) => {
       // Initialize gesture editing system
       initGestureSystem();
 
-      // Ad Banner & Premium Expiry Logic
+      // Direct Navigation for Premium/Ads
       const adBanner = document.getElementById("adBanner");
       const removeAdsBtn = adBanner ? adBanner.querySelector("button") : null;
 
       if (removeAdsBtn) {
         removeAdsBtn.addEventListener("click", () => {
-          if (confirm("Subscribe to remove ads for 5 GBP/year? (Simulated for Lite Launch)")) {
-            const oneYearFromNow = Date.now() + (365 * 24 * 60 * 60 * 1000);
-            updateSetting('premiumExpiry', oneYearFromNow);
-            updateSetting('isPremium', true);
-            if (adBanner) adBanner.style.display = "none";
-            alert("Subscription Active: Ads removed for 1 year.");
-          }
+          window.location.href = '/premium';
         });
       }
 
-      // Check premium status and expiry on load
+      document.getElementById("showPremiumInfo")?.addEventListener("click", () => {
+        window.location.href = '/premium';
+      });
+
       const settings = loadUserSettings();
       const now = Date.now();
-      const isStillPremium = settings && settings.isPremium && settings.premiumExpiry && settings.premiumExpiry > now;
-
-      if (isStillPremium) {
+      if (settings && settings.premiumExpiry && settings.premiumExpiry > now) {
         if (adBanner) adBanner.style.display = "none";
-      } else if (adBanner) {
-        adBanner.style.display = "flex"; // Show banner if expired or not premium
       }
-
-      // Premium Teaser Info
-      document.getElementById("showPremiumInfo")?.addEventListener("click", () => {
-        alert("Coming Soon to Premium:" + String.fromCharCode(10) + String.fromCharCode(10) + "- Custom Intervals & CSS Pace" + String.fromCharCode(10) + "- Equipment Toggles (Fins/Paddles)" + String.fromCharCode(10) + "- Custom Pool Lengths (33m, etc.)" + String.fromCharCode(10) + "- Stroke-Specific Focus Areas" + String.fromCharCode(10) + "- Full Set Editor & Manual Adjustments");
-      });
   `;
 
   const HOME_JS_GESTURES = `

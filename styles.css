@@ -129,6 +129,24 @@
         border-color: rgba(255, 215, 0, 0.8) !important;
         box-shadow: 0 0 10px rgba(255, 215, 0, 0.5), var(--boulder-shadow) !important;
       }
+      button[data-reroll-set], .setDolphin, .setDolphin img {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .poolRow button.selected {
+        background: rgba(255, 215, 0, 0.4) !important;
+        border: 2px solid #ffd700 !important;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), var(--boulder-shadow) !important;
+        color: #111 !important;
+      }
+      #workoutNameText {
+        max-width: 45%;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
       .workoutTitleRow .glassChip, .workoutTitleRow .icon-silhouette {
         margin: 0 4px;
       }
