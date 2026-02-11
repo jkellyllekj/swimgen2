@@ -1161,9 +1161,9 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
 app.get("/", (req, res) => {
   const HOME_HTML = `
     <link rel="stylesheet" href="/styles.css">
-    <div id="adBanner" style="width:100vw; height:50px; margin: 0 0 12px 0; background:rgba(255,255,255,0.95); display:flex; align-items:center; justify-content:center; font-size:10px; color:#888; position:sticky; top:0; left:0; right:0; z-index:5000; backdrop-filter:blur(6px); border-bottom:1px solid rgba(0,0,0,0.1); box-sizing:border-box;">
+    <div id="adBanner" style="width:100vw; height:50px; background:#ffffff; display:flex; align-items:center; justify-content:center; font-size:10px; color:#888; position:sticky; top:0; left:0; z-index:9999; border-bottom:1px solid #ddd; margin-left: calc(-1 * (100vw - 100%) / 2);">
       <span style="letter-spacing:1px; font-weight:bold;">ADVERTISEMENT</span>
-      <button type="button" style="position:absolute; right:12px; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.1); border-radius:4px; padding:4px 8px; font-size:10px; cursor:pointer;">Remove Ads</button>
+      <button type="button" style="position:absolute; right:15px; background:#f0f0f0; border:1px solid #ccc; border-radius:4px; padding:4px 8px; font-size:10px; cursor:pointer;">Remove Ads</button>
     </div>
 
     <div style="max-width:520px;">
@@ -1378,18 +1378,20 @@ app.get("/", (req, res) => {
       <div id="resultWrap" style="margin-top:16px; padding:0; background:transparent; border-radius:0; border:none; box-shadow:none;">
         <div id="errorBox" style="display:none; margin-bottom:10px; padding:10px; background:#fff; border:1px solid #e7e7e7; border-radius:8px;"></div>
 
-        <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:10px; scroll-margin-top:20px;">
-          <div class="workoutTitleRow">
-            <button id="regenBtn2" type="button" aria-label="Regenerate" class="iconBtnBare iconSm"><img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" alt=""></button>
+        <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:20px;">
+          <div class="workoutTitleRow" style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:520px;">
+            <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="color:#2ecc71; font-size:20px;">&#128275;</button>
             <div style="display:flex; align-items:center; gap:12px;">
-  <div style="position:relative; width:28px; height:28px; border-radius:6px; background:#fff; box-shadow: var(--boulder-shadow); display:flex; align-items:center; justify-content:center; overflow:hidden;">
-    <input type="color" id="solidColorPicker2" oninput="setBgColor(this.value)" value="#ffffff" title="Choose color" style="position:absolute; width:150%; height:150%; cursor:pointer; opacity:0.01; z-index:2;">
-    <span style="font-size:16px; z-index:1;">&#129514;</span>
-  </div>
-  <button id="bgCycleBtn2" type="button" class="iconBtnBare" style="width:28px; height:28px; background:#fff; border-radius:6px; box-shadow: var(--boulder-shadow); display:flex; align-items:center; justify-content:center; padding:0;">&#128444;&#65039;</button>
-</div>
-            <button id="lockBtn" type="button" style="background:#2ecc71; border-radius:6px; width:28px; height:28px; border:none; color:white; font-size:14px; cursor:pointer; box-shadow: var(--boulder-shadow);">&#128275;</button>
-            <span id="workoutNameText" style="display:inline-block; font-weight:700; font-size:15px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow:0 2px 6px rgba(0,0,0,0.25);"></span>
+              <button id="regenBtn2" class="icon-silhouette" aria-label="Regenerate">
+                <img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" style="width:32px; height:32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+              </button>
+              <div style="position:relative; width:24px; height:24px; display:flex; align-items:center; justify-content:center;">
+                <input type="color" oninput="setBgColor(this.value)" style="position:absolute; width:100%; height:100%; opacity:0.01; cursor:pointer; z-index:2;">
+                <span style="font-size:20px; z-index:1; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));">&#128167;</span>
+              </div>
+              <button id="bgCycleBtn2" class="icon-silhouette" style="font-size:20px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));">&#128444;&#65039;</button>
+            </div>
+            <span id="workoutNameText" style="font-weight:700; font-size:14px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow: var(--boulder-shadow);"></span>
           </div>
         </div>
         <div id="cards" style="display:none;"></div>
@@ -3109,25 +3111,34 @@ app.get("/", (req, res) => {
       const lockBtn = document.getElementById("lockBtn");
       let lockTimer;
 
+      function handleUnlockStart() {
+        if (!isUILocked) return;
+        lockTimer = setTimeout(() => {
+          isUILocked = false;
+          lockBtn.style.color = "#2ecc71";
+          lockBtn.textContent = "\\u{1F513}";
+          console.log("UI Unlocked");
+        }, 2000);
+      }
+
+      function handleUnlockEnd() {
+        clearTimeout(lockTimer);
+      }
+
       lockBtn?.addEventListener("click", () => {
         if (!isUILocked) {
           isUILocked = true;
-          lockBtn.style.background = "#e74c3c";
+          lockBtn.style.color = "#e74c3c";
           lockBtn.textContent = "\\u{1F512}";
           alert("Interaction Locked. Long-press the lock for 2s to unlock.");
         }
       });
 
-      lockBtn?.addEventListener("touchstart", (e) => {
-        if (isUILocked) {
-          lockTimer = setTimeout(() => {
-            isUILocked = false;
-            lockBtn.style.background = "#2ecc71";
-            lockBtn.textContent = "\\u{1F513}";
-          }, 2000);
-        }
-      });
-      lockBtn?.addEventListener("touchend", () => clearTimeout(lockTimer));
+      lockBtn?.addEventListener("touchstart", handleUnlockStart);
+      lockBtn?.addEventListener("touchend", handleUnlockEnd);
+      lockBtn?.addEventListener("mousedown", handleUnlockStart);
+      lockBtn?.addEventListener("mouseup", handleUnlockEnd);
+      lockBtn?.addEventListener("mouseleave", handleUnlockEnd);
 
       function checkLock() { return isUILocked; }
 

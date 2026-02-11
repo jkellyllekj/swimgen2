@@ -444,6 +444,12 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Converted title bar icons to floating silhouettes (removed boxes/shadows).
+
+✅ COMPLETED: Fixed 2s Lock-Hold for Web (added mouse event support).
+
+✅ COMPLETED: Placed Lock on far left of workout title bar.
+
 ✅ COMPLETED: Implemented Edge-to-Edge Perpetual Banner (100vw).
 
 ✅ COMPLETED: Unified Eyedropper and Frame buttons with Boulder Shadows.
