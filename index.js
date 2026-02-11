@@ -1757,73 +1757,63 @@ app.get("/", (req, res) => {
         activeBgLayer = "A";
       }
 
-      const bgModes = [
-        ...backgroundImages,
-        'COLOR:#ffffff', // White
-        'COLOR:#121212', // Dark/Black
-        'COLOR:#e3f2fd', // Light Blue Pastel
-        'COLOR:#f1f8e9'  // Light Green Pastel
-      ];
-      let bgModeIndex = 0;
+      const imageOnlyBackgrounds = backgroundImages.filter(bg => !bg.startsWith('COLOR:'));
+      let bgImageIndex = 0;
 
       async function cycleBackgroundManually() {
         const bgA = document.getElementById("bgA");
         const bgB = document.getElementById("bgB");
-        if (!bgA) return;
+        if (!bgA || !bgB) return;
 
-        bgModeIndex = (bgModeIndex + 1) % bgModes.length;
-        const currentMode = bgModes[bgModeIndex];
+        bgImageIndex = (bgImageIndex + 1) % imageOnlyBackgrounds.length;
+        const newImageUrl = imageOnlyBackgrounds[bgImageIndex];
+        
+        const activeBg = getComputedStyle(bgA).opacity === '1' ? bgA : bgB;
+        const inactiveBg = activeBg === bgA ? bgB : bgA;
 
-        if (currentMode.startsWith('COLOR:')) {
-          const color = currentMode.split(':')[1];
-          bgA.style.backgroundImage = 'none';
-          document.body.style.background = color;
-          bgA.style.backgroundColor = color;
-        } else if (bgB) {
-          const activeBg = bgA.style.opacity === '1' ? bgA : bgB;
-          const inactiveBg = activeBg === bgA ? bgB : bgA;
-
-          const img = new Image();
-          img.onload = () => {
-            inactiveBg.style.backgroundImage = 'url("' + currentMode + '")';
-            inactiveBg.style.backgroundColor = 'transparent';
-            activeBg.style.opacity = '0';
-            inactiveBg.style.opacity = '1';
-            setTimeout(() => {
-              document.body.style.background = '#121212';
-            }, 500);
-          };
-          img.src = currentMode;
-        } else {
-          bgA.style.backgroundImage = 'url("' + currentMode + '")';
-          document.body.style.background = 'linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%)';
-        }
-      }
-
-      function wireBackgroundCycleButton() {
-        const btn = document.getElementById("bgCycleBtn");
-        if (!btn) return;
-        btn.addEventListener("click", cycleBackgroundManually);
+        inactiveBg.style.opacity = '0';
+        inactiveBg.style.backgroundImage = "url('" + newImageUrl + "')";
+        inactiveBg.style.backgroundColor = 'transparent';
+        inactiveBg.style.transition = 'opacity 0.6s ease-in-out';
+        activeBg.style.transition = 'opacity 0.6s ease-in-out';
+        
+        const img = new Image();
+        img.onload = () => {
+          inactiveBg.style.opacity = '1';
+          activeBg.style.opacity = '0';
+          setTimeout(() => {
+             activeBg.style.backgroundImage = 'none';
+             activeBg.style.backgroundColor = 'transparent';
+             document.body.style.background = '#121212';
+          }, 600);
+        };
+        img.src = newImageUrl;
       }
 
       window.setBgColor = function(color) {
         const bgA = document.getElementById("bgA");
         const bgB = document.getElementById("bgB");
         if (!bgA || !bgB) return;
-        
+
         bgA.style.backgroundImage = 'none';
+        bgA.style.backgroundColor = color;
+        bgA.style.opacity = '1';
+        
         bgB.style.backgroundImage = 'none';
+        bgB.style.backgroundColor = 'transparent';
+        bgB.style.opacity = '0';
         
         document.body.style.background = color;
-        bgA.style.backgroundColor = color;
-        bgB.style.backgroundColor = color;
         
-        const r = parseInt(color.slice(1,3), 16);
-        const g = parseInt(color.slice(3,5), 16);
-        const b = parseInt(color.slice(5,7), 16);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        document.body.style.color = brightness < 128 ? '#ffffff' : '#111111';
+        const r = parseInt(color.slice(1,3), 16), g = parseInt(color.slice(3,5), 16), b = parseInt(color.slice(5,7), 16);
+        document.body.style.color = (r*299 + g*587 + b*114)/1000 < 128 ? '#ffffff' : '#111111';
       };
+
+      function wireBackgroundCycleButton() {
+        const btn = document.getElementById("bgCycleBtn");
+        if (!btn) return;
+        btn.addEventListener("click", cycleBackgroundManually);
+      }
 
       initBackgroundLayers();
       wireBackgroundCycleButton();

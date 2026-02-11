@@ -980,6 +980,24 @@
   border-radius: 10px;
   margin: 5px 0;
 }
+.ghost-card {
+  opacity: 0.3 !important;
+  background: #ddd !important;
+  box-shadow: none !important;
+  border: 2px dashed #aaa !important;
+}
+.dragging-clone {
+  position: fixed !important;
+  z-index: 9999 !important;
+  pointer-events: none !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+  transform: rotate(2deg) !important;
+  transition: none !important;
+}
+.drop-target {
+  border: 2px solid #40c9e0 !important;
+  box-shadow: 0 0 15px rgba(64, 201, 224, 0.5) !important;
+}
 /* ===== END GESTURE STYLES =====*/
 
 /* ===== 30/30 GESTURE EDITING FIXED STYLES ===== */

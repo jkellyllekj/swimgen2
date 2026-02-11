@@ -450,6 +450,12 @@ Total Footer now sums actual section distances for "Honest Total."
 
 ✅ COMPLETED: Corrected Ad Banner copy (Removed "Pro/Limited Time" references).
 
+✅ COMPLETED: Implemented true double-buffered background cross-fades (no solid color flash).
+
+✅ COMPLETED: Separated image cycling from solid color picking logic.
+
+✅ COMPLETED: Replaced live-sort drag-and-drop with standard "Ghost Card" pattern to fix mobile "pop-back" bug.
+
 ✅ COMPLETED: Fixed mobile "Reset Jump" by disabling body scroll during drag.
 
 ✅ COMPLETED: Implemented "Cooldown Shield" -- deferred sets now move above the Cool down.
