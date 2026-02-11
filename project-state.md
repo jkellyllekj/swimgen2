@@ -444,6 +444,12 @@ Added (N lengths) annotations to workout display.
 
 Total Footer now sums actual section distances for "Honest Total."
 
+✅ COMPLETED: Restored native 3D Lock Icons for cross-platform visual parity.
+
+✅ COMPLETED: Implemented ignoreNextClick logic to fix web auto-relock bug.
+
+✅ COMPLETED: Corrected Ad Banner copy (Removed "Pro/Limited Time" references).
+
 ✅ COMPLETED: Replaced lock emoji with SVG for cross-device consistency.
 
 ✅ COMPLETED: Fixed web auto-relock using unlockInProgress flag and stopImmediatePropagation.

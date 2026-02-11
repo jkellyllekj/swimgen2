@@ -1163,8 +1163,8 @@ app.get("/", (req, res) => {
     <link rel="stylesheet" href="/styles.css">
     <div id="adBanner" style="position:fixed; top:0; left:0; width:100vw; height:75px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:0 60px; box-sizing:border-box; z-index:9999; border-bottom:1px solid rgba(255,255,255,0.1); box-shadow:0 4px 15px rgba(0,0,0,0.4);">
       <div style="display:flex; flex-direction:column; gap:2px;">
-        <div id="fakeAdContent" style="font-weight:800; color:#60a5fa; text-transform:uppercase; letter-spacing:1px; font-size:12px; animation: pulse 2s infinite;">Get SwimGen Pro: No Ads and Custom Pools</div>
-        <div style="font-size:10px; color:#94a3b8; font-weight:500;">Limited Time Offer -- Click to Upgrade</div>
+        <div id="fakeAdContent" style="font-weight:800; color:#60a5fa; text-transform:uppercase; letter-spacing:1px; font-size:12px;">Enjoy a clean experience -- Remove Ads today</div>
+        <div style="font-size:10px; color:#94a3b8; font-weight:500;">Check out upcoming Premium features in the menu below</div>
       </div>
       <button type="button" style="position:absolute; bottom:8px; right:15px; background:rgba(255,255,255,0.9); color:#1e3a8a; border:none; border-radius:4px; padding:4px 10px; font-size:9px; font-weight:900; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">REMOVE ADS</button>
     </div>
@@ -1387,11 +1387,7 @@ app.get("/", (req, res) => {
 
         <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:20px;">
           <div class="workoutTitleRow" style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:520px; height:44px;">
-            <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="width:32px; height:32px; margin-right:8px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4));">
-              <svg id="lockSvg" viewBox="0 0 24 24" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path id="lockPath" d="M7 10V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V10M7 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10H7ZM12 18V14M12 18C11.4477 18 11 17.5523 11 17C11 16.4477 11.4477 16 12 16C12.5523 16 13 16.4477 13 17C13 17.5523 12.5523 18 12 18Z" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
+            <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="color:#ffd700; font-size:28px; margin-right:8px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4));">&#128275;</button>
             <div style="display:flex; align-items:center; gap:10px;">
               <button id="regenBtn2" class="icon-silhouette" aria-label="Regenerate">
                 <img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" style="width:40px; height:40px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
@@ -3147,53 +3143,53 @@ app.get("/", (req, res) => {
       }
 
       let isUILocked = false;
-      let unlockInProgress = false;
+      let ignoreNextClick = false;
       const lockBtn = document.getElementById("lockBtn");
-      const lockPath = document.getElementById("lockPath");
       let lockTimer;
-
-      function updateLockUI(locked) {
-        if (locked) {
-          lockPath.setAttribute("d", "M17 11V7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7V11M7 11H5C3.89543 11 3 11.8954 3 13V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V13C21 11.8954 20.1046 11 19 11H7ZM12 18V15M12 18C11.4477 18 11 17.5523 11 17C11 16.4477 11.4477 16 12 16C12.5523 16 13 16.4477 13 17C13 17.5523 12.5523 18 12 18Z");
-          lockPath.setAttribute("stroke", "#bdc3c7");
-          showToast("Screen Locked");
-        } else {
-          lockPath.setAttribute("d", "M7 10V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V10M7 10H5C3.89543 10 3 10.8954 3 12V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V12C21 10.8954 20.1046 10 19 10H7ZM12 18V14M12 18C11.4477 18 11 17.5523 11 17C11 16.4477 11.4477 16 12 16C12.5523 16 13 16.4477 13 17C13 17.5523 12.5523 18 12 18Z");
-          lockPath.setAttribute("stroke", "#ffd700");
-          showToast("Unlocked!");
-        }
-      }
 
       function handleUnlockStart(e) {
         if (!isUILocked) return;
-        unlockInProgress = true;
-        showToast("Hold 2s to unlock...");
+        if (e.type === 'touchstart') e.preventDefault();
+        
+        showToast("Hold for 2 seconds to unlock...");
+        lockBtn.style.transform = "scale(1.2)";
+
         lockTimer = setTimeout(() => {
           isUILocked = false;
-          updateLockUI(false);
-          unlockInProgress = false;
+          ignoreNextClick = true;
+          lockBtn.style.color = "#ffd700";
+          lockBtn.textContent = "\\u{1F513}";
+          lockBtn.style.transform = "scaleX(-1) scale(1)";
+          showToast("Unlocked!");
+          if (navigator.vibrate) navigator.vibrate(50);
         }, 2000);
       }
 
       function handleUnlockEnd(e) {
         clearTimeout(lockTimer);
-        unlockInProgress = false;
+        if (isUILocked && lockBtn) lockBtn.style.transform = "scale(1)";
       }
 
       lockBtn?.addEventListener("click", (e) => {
-        if (unlockInProgress === false && isUILocked === false) {
-          e.stopImmediatePropagation();
+        if (ignoreNextClick) {
+          ignoreNextClick = false;
           return;
         }
+
         if (!isUILocked) {
           isUILocked = true;
-          updateLockUI(true);
+          lockBtn.style.color = "#bdc3c7";
+          lockBtn.textContent = "\\u{1F512}";
+          lockBtn.style.transform = "scale(1)";
+          showToast("Screen Locked");
+          if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
         }
       });
 
       lockBtn?.addEventListener("mousedown", handleUnlockStart);
       lockBtn?.addEventListener("mouseup", handleUnlockEnd);
-      lockBtn?.addEventListener("touchstart", (e) => { e.preventDefault(); handleUnlockStart(e); });
+      lockBtn?.addEventListener("mouseleave", handleUnlockEnd);
+      lockBtn?.addEventListener("touchstart", handleUnlockStart, { passive: false });
       lockBtn?.addEventListener("touchend", handleUnlockEnd);
 
       function checkLock() { return isUILocked; }
