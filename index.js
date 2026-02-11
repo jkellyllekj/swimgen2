@@ -3651,10 +3651,8 @@ app.get("/", (req, res) => {
         
         console.log('Deleting set at index', index);
         
-        // 1. Remove from array
         currentWorkoutArray.splice(index, 1);
         
-        // 2. Remove from DOM directly (preserves footer)
         const cardsContainer = document.getElementById('cards');
         if (cardsContainer) {
           const setElements = Array.from(cardsContainer.querySelectorAll('[data-index]'));
@@ -3662,19 +3660,40 @@ app.get("/", (req, res) => {
             setElements[index].remove();
             console.log('Removed set from DOM');
             
-            // 3. Renumber remaining sets
-            setElements.forEach((el, i) => {
-              if (i > index) {
-                el.setAttribute('data-index', i - 1);
-              }
+            const remaining = Array.from(cardsContainer.querySelectorAll('[data-index]'));
+            remaining.forEach((el, i) => {
+              el.setAttribute('data-index', i);
             });
           }
         }
         
-        // 4. Update math totals
         updateMathTotals();
         
-        // 5. Re-attach gesture listeners to remaining sets
+        const totalTextEl = document.getElementById('totalText');
+        const totalStr = totalTextEl ? totalTextEl.textContent.replace('Total ', '') : '';
+        const s = window.__swgSummary || { units: 'm', poolLen: 25 };
+        const poolLen = s.poolLen || 25;
+        const distNum = parseInt(totalStr) || 0;
+        const totalLengths = Math.round(distNum / poolLen);
+        const rebuiltFooter = [
+          'Total distance: ' + totalStr,
+          'Total lengths: ' + totalLengths + ' lengths'
+        ];
+        renderFooterTotalsAndMeta(rebuiltFooter);
+        
+        const totalBox = document.getElementById('totalBox');
+        if (totalBox) {
+          totalBox.style.opacity = '1';
+          totalBox.style.transform = 'none';
+          totalBox.style.display = 'block';
+        }
+        const footerBox = document.getElementById('footerBox');
+        if (footerBox) {
+          footerBox.style.opacity = '1';
+          footerBox.style.transform = 'none';
+          footerBox.style.display = 'block';
+        }
+        
         setTimeout(() => {
           if (typeof setupGestureEditing === 'function') {
             setupGestureEditing(currentWorkoutArray);
