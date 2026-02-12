@@ -109,7 +109,7 @@ The application is currently stateless and does not use any persistent storage.
 - **DOM Architecture**: Footer (#sticky-footer-panel containing totalBox + footerBox) moved OUTSIDE #resultWrap as a sibling. Nothing that clears resultWrap can destroy the footer.
 - **Ghost Card System Retained**: Analyzed Ghost vs Live Sort; Ghost pattern kept for better visual feedback. Issues were edge cases in event handling, not architectural.
 - **S24 Pop-Back Fix**: pointercancel handler commits to lastShiftTargetIndex and calls finalSync() (not just rerenderWorkoutFromArray). CSS touch-action: none on [data-effort] is the primary scroll lock.
-- **Freeze Prevention**: All document.body.style.overflow = 'hidden' removed from drag start. cleanupGhostDrag resets body overflow/touchAction. No safety timeout (was causing 5s freezes; removed).
+- **Freeze Prevention**: All document.body.style.overflow = 'hidden' removed from drag start. cleanupGhostDrag resets body overflow/touchAction. No safety timeout (was causing 5s freezes; removed). CSS touch-action on [data-effort] changed from 'none !important' to 'pan-y' so mobile scrolling works; only set to 'none' inline during active long-press drag.
 - **Animation Flow**: Delete/moveSetToBottom use 400ms slide-out animation (translateX(100%) + opacity + height collapse) with 450ms deferred array mutation. isAnimatingSetAction flag prevents double-firing.
 - **finalSync()**: Single source of truth -- calls rerenderWorkoutFromArray() + updateMathTotals() + renderFooterTotalsAndMeta() + setupGestureEditing(). All state changes go through finalSync.
 - **Stale Index Protection**: delete/move capture setRef (object reference) before animation, re-find live index via indexOf after timeout.

@@ -463,7 +463,7 @@
         }
       }
       [data-effort] {
-        touch-action: none !important;
+        touch-action: pan-y;
         -webkit-user-select: none;
         user-select: none;
       }

@@ -1170,8 +1170,8 @@ app.get("/", (req, res) => {
     </div>
     <style>
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
-      @keyframes cardSettle { 0% { opacity: 0.6; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
-      .card-settling { animation: cardSettle 0.3s ease-out forwards; }
+      @keyframes cardSettle { 0% { opacity: 0.5; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
+      .card-settling { animation: cardSettle 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
       body { padding-top: 85px !important; }
     </style>
 
@@ -3718,7 +3718,7 @@ app.get("/", (req, res) => {
           });
           setTimeout(function() {
             settleCards.forEach(function(c) { c.classList.remove('card-settling'); });
-          }, 350);
+          }, 600);
         }
         setupGestureEditing(currentWorkoutArray);
       }
