@@ -462,10 +462,15 @@
           grid-template-columns: 1fr !important;
         }
       }
-      [data-effort] {
+      [data-effort]:not(.live-drag-active) {
         box-shadow: var(--boulder-shadow) !important;
         margin-bottom: 0px !important;
-        transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.2s ease;
+        transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        will-change: transform;
+      }
+      [data-effort].live-drag-active {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+        margin-bottom: 0px !important;
         will-change: transform;
       }
       .live-drag-active {
@@ -474,6 +479,14 @@
         z-index: 9999;
         rotate: 0deg !important;
         transition: none !important;
+      }
+      .shrink-out {
+        overflow: hidden !important;
+        height: 0 !important;
+        opacity: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transition: all 0.3s ease-out !important;
       }
       .setHeaderRow {
         display:flex;

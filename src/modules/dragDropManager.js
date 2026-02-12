@@ -73,8 +73,8 @@ const CARD_GESTURE_SETUP = `
         }
 
         function handleTouchMove(e) {
-          if (!isLongPressDragging) return;
           if (e.cancelable) e.preventDefault();
+          if (!isLongPressDragging) return;
         }
         
         card.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -176,10 +176,9 @@ const CARD_GESTURE_SETUP = `
             clearCardShifts();
             cleanupGhostDrag(card);
             
-            if (dragOffsetX > 100 && !isNaN(idx)) {
-              deleteWorkoutSet(idx);
-            } else if (dragOffsetX < -100 && !isNaN(idx)) {
-              moveSetToBottom(idx);
+            if (Math.abs(dragOffsetX) > 60 && !isNaN(idx)) {
+              if (dragOffsetX > 0) deleteWorkoutSet(idx);
+              else moveSetToBottom(idx);
             } else {
               handleGhostDrop(card, currentX, currentY, idx);
             }
@@ -193,12 +192,9 @@ const CARD_GESTURE_SETUP = `
 
           if (isSwiping) {
             const currentIndex = parseInt(card.getAttribute('data-index'));
-            if (!isNaN(currentIndex)) {
-              if (deltaX > 100) {
-                deleteWorkoutSet(currentIndex);
-              } else if (deltaX < -100) {
-                moveSetToBottom(currentIndex);
-              }
+            if (!isNaN(currentIndex) && Math.abs(deltaX) > 60) {
+              if (deltaX > 0) deleteWorkoutSet(currentIndex);
+              else moveSetToBottom(currentIndex);
             }
           }
           isSwiping = false;

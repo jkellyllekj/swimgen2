@@ -3686,16 +3686,26 @@ app.get("/", (req, res) => {
         return lines.join('\\n');
       }
 
-      function syncStateAndUI() {
+      function finalSync() {
         updateMathTotals();
-        const text = convertArrayToWorkoutText(currentWorkoutArray);
-        renderFooterTotalsAndMeta(splitWorkout(text).footerLines);
+        const workoutText = convertArrayToWorkoutText(currentWorkoutArray);
+        const splitData = splitWorkout(workoutText);
+        renderFooterTotalsAndMeta(splitData.footerLines);
+        setupGestureEditing(currentWorkoutArray);
       }
 
       function deleteWorkoutSet(index) {
         if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
+        const card = document.querySelector('[data-effort][data-index="' + index + '"]');
         currentWorkoutArray.splice(index, 1);
-        rerenderWorkoutFromArray();
+        if (card) {
+          card.classList.add('shrink-out');
+          setTimeout(function() {
+            rerenderWorkoutFromArray();
+          }, 300);
+        } else {
+          rerenderWorkoutFromArray();
+        }
       }
 
       function moveSetToBottom(index) {
@@ -3834,9 +3844,7 @@ app.get("/", (req, res) => {
           }
         }
         
-        syncStateAndUI();
-        
-        setupGestureEditing();
+        finalSync();
       }
 
       function openGestureEditModal(index) {
