@@ -209,8 +209,16 @@ const CARD_GESTURE_SETUP = `
           isLongPressDragging = false;
           document.body.style.overflow = '';
           document.body.style.touchAction = '';
+          
+          const idx = originalDragIndex;
           clearCardShifts();
           cleanupGhostDrag(card);
+          if (lastShiftTargetIndex !== -1 && lastShiftTargetIndex !== idx && !isNaN(idx) && currentWorkoutArray && currentWorkoutArray.length > idx) {
+            const newIndex = lastShiftTargetIndex > idx ? lastShiftTargetIndex - 1 : lastShiftTargetIndex;
+            const [removed] = currentWorkoutArray.splice(idx, 1);
+            currentWorkoutArray.splice(newIndex, 0, removed);
+            rerenderWorkoutFromArray();
+          }
           originalDragIndex = -1;
         });
       }

@@ -462,6 +462,11 @@
           grid-template-columns: 1fr !important;
         }
       }
+      [data-effort] {
+        touch-action: none !important;
+        -webkit-user-select: none;
+        user-select: none;
+      }
       [data-effort]:not(.live-drag-active) {
         box-shadow: var(--boulder-shadow) !important;
         margin-bottom: 0px !important;
