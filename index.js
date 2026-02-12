@@ -3702,17 +3702,22 @@ app.get("/", (req, res) => {
         const setRef = currentWorkoutArray[index];
         const card = document.querySelector('[data-effort][data-index="' + index + '"]');
         if (card) {
-          card.classList.add('slide-out-animation');
+          card.style.transition = 'transform 0.4s ease, opacity 0.4s ease, height 0.4s ease, margin 0.4s ease';
+          card.style.transform = 'translateX(100%)';
+          card.style.opacity = '0';
+          card.style.height = '0px';
+          card.style.margin = '0px';
+          card.style.overflow = 'hidden';
           setTimeout(function() {
             const liveIndex = currentWorkoutArray.indexOf(setRef);
             if (liveIndex !== -1) {
               currentWorkoutArray.splice(liveIndex, 1);
             }
-            rerenderWorkoutFromArray();
-          }, 400);
+            finalSync();
+          }, 450);
         } else {
           currentWorkoutArray.splice(index, 1);
-          rerenderWorkoutFromArray();
+          finalSync();
         }
       }
 
@@ -3721,7 +3726,12 @@ app.get("/", (req, res) => {
         const setRef = currentWorkoutArray[index];
         const card = document.querySelector('[data-effort][data-index="' + index + '"]');
         if (card) {
-          card.classList.add('slide-out-animation');
+          card.style.transition = 'transform 0.4s ease, opacity 0.4s ease, height 0.4s ease, margin 0.4s ease';
+          card.style.transform = 'translateX(100%)';
+          card.style.opacity = '0';
+          card.style.height = '0px';
+          card.style.margin = '0px';
+          card.style.overflow = 'hidden';
           setTimeout(function() {
             const liveIndex = currentWorkoutArray.indexOf(setRef);
             if (liveIndex === -1) return;
@@ -3732,8 +3742,8 @@ app.get("/", (req, res) => {
             } else {
               currentWorkoutArray.push(movedSet);
             }
-            rerenderWorkoutFromArray();
-          }, 400);
+            finalSync();
+          }, 450);
         } else {
           const [movedSet] = currentWorkoutArray.splice(index, 1);
           let coolIdx = currentWorkoutArray.findIndex(s => s.label.toLowerCase().includes("cool"));
@@ -3742,7 +3752,7 @@ app.get("/", (req, res) => {
           } else {
             currentWorkoutArray.push(movedSet);
           }
-          rerenderWorkoutFromArray();
+          finalSync();
         }
       }
 

@@ -55,8 +55,6 @@ const CARD_GESTURE_SETUP = `
             
             card.classList.add('ghost-card');
             card.style.touchAction = 'none';
-            document.body.style.overflow = 'hidden';
-            document.body.style.touchAction = 'none';
             
             if (navigator.vibrate) navigator.vibrate(30);
           }, 300);
@@ -167,8 +165,6 @@ const CARD_GESTURE_SETUP = `
           
           if (isLongPressDragging) {
             isLongPressDragging = false;
-            document.body.style.overflow = '';
-            document.body.style.touchAction = '';
             
             const dragOffsetX = currentX - startX;
             const idx = originalDragIndex;
@@ -207,8 +203,6 @@ const CARD_GESTURE_SETUP = `
           if (!isLongPressDragging) return;
           
           isLongPressDragging = false;
-          document.body.style.overflow = '';
-          document.body.style.touchAction = '';
           
           const idx = originalDragIndex;
           clearCardShifts();
@@ -283,8 +277,6 @@ const DRAG_DROP_FUNCTIONS = `
         originalCard.classList.remove('swiping-right', 'swiping-left');
         originalCard.style.touchAction = '';
         originalCard.style.transform = '';
-        document.body.style.overflow = '';
-        document.body.style.touchAction = '';
         
         document.querySelectorAll('.drop-target').forEach(c => {
           c.classList.remove('drop-target');
