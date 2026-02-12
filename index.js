@@ -1411,16 +1411,22 @@ app.get("/", (req, res) => {
 
       <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:24px; padding:12px; font-size:13px; border-left:4px solid #f1c40f; background:rgba(255,255,255,0.4); order:1;">
         <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to use SwimGen</h4>
-        <p style="margin:0 0 8px 0; font-size:12px;">1. Choose your distance and pool size.<br>2. Click <strong>Generate</strong> and voila!</p>
-        <ul style="margin:0; padding-left:18px; line-height:1.4; color:#333; font-size:12px;">
-          <li><strong>Top Dolphin:</strong> New full workout.</li>
-          <li><strong>Set Dolphin:</strong> Reroll just that set.</li>
-          <li><strong>Long Press (300ms):</strong> Drag and drop sets.</li>
-          <li><strong>Swipe Right:</strong> Remove a set.</li>
-          <li><strong>Swipe Left:</strong> Send set to bottom.</li>
-          <li><strong>Eyedropper/Frame Icons:</strong> Custom colors or image backgrounds.</li>
-          <li><strong>Feedback:</strong> <a href="mailto:feedback@swimgen.com" target="_blank" style="color:#0055aa;">Leave a comment here.</a></li>
-        </ul>
+        <ol style="margin:0 0 10px 0; padding-left:18px; font-size:12px; line-height:1.6;">
+          <li>Choose your distance and pool size.</li>
+          <li>Click <strong>Generate</strong> and voila!</li>
+        </ol>
+        <details class="more-features-details">
+          <summary style="cursor:pointer; color:#007bff; text-decoration:underline; font-weight:bold; margin-bottom:10px; font-size:12px;">How to use more features</summary>
+          <ul style="list-style-type:disc; padding-left:20px; margin:8px 0 0 0; line-height:1.5; color:#333; font-size:12px;">
+            <li><strong>Top Dolphin:</strong> New full workout.</li>
+            <li><strong>Set Dolphin:</strong> Reroll just that set.</li>
+            <li><strong>Long Press (300ms):</strong> Drag and drop sets.</li>
+            <li><strong>Swipe Right:</strong> Remove a set.</li>
+            <li><strong>Swipe Left:</strong> Send set to bottom.</li>
+            <li><strong>Eyedropper/Frame Icons:</strong> Custom colors or image backgrounds.</li>
+            <li><strong>Feedback:</strong> <a href="https://forms.gle/your-link-here" target="_blank" style="color:#007bff;">Leave a comment here.</a></li>
+          </ul>
+        </details>
       </div>
     </div>
 

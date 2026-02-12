@@ -546,11 +546,13 @@ Added .lite-mode CSS class to hide Advanced Options row.
 
 Redesigned bottom bar to split Pool Info and Total Distance.
 
-✅ COMPLETED: Restored original card spacing and removed Agent-introduced scaling bugs.
+✅ REFACTORED: Help UI into collapsible "Show More" format.
 
-✅ COMPLETED: Fixed Math Footer persistence after set deletion.
+✅ RESTORED: Original card spacing (0px margin).
 
-✅ COMPLETED: Added e.preventDefault() scroll-lock to stable reorder logic.
+✅ FIXED: Math Footer persistence during set deletion.
+
+✅ FIXED: S24 "Pop-back" via e.preventDefault() scroll-lock.
 
 Previous Work (2026-02-05)
 ✅ COMPLETED: Template-Only Generation System

@@ -464,7 +464,7 @@
       }
       [data-effort] {
         box-shadow: var(--boulder-shadow) !important;
-        margin-bottom: 0px;
+        margin-bottom: 0px !important;
         transition: transform 0.2s ease-in-out;
       }
       .live-drag-active { transform: none !important; }
