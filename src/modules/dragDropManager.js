@@ -11,10 +11,11 @@
  * - Swipe left/right for defer/delete
  * - Double-tap to edit
  * - Ghost Card drag-and-drop reordering with real-time gap shifting
- * - S24 Scroll-Lock: e.preventDefault() on touchmove during drag
+ * - Touch-primary drag: touchmove drives drag on mobile, pointermove on desktop
  * - Omni-directional: deltaX controls swipe icons on clone, deltaY controls reorder
  * - Icon layering: swipe classes go on dragClone, clone becomes translucent
  * - Slow-drag committed: any newIndex != draggedIndex commits the move
+ * - No setPointerCapture for touch: avoids browser pointercancel conflict with touch-action
  * 
  * Note: setupCardGestures calls external functions (openGestureEditModal, 
  * deleteWorkoutSet, moveSetToBottom, finalSync) that remain in index.js
@@ -35,11 +36,14 @@ const CARD_GESTURE_SETUP = `
         let cloneOffsetX = 0;
         let cloneOffsetY = 0;
         let originalDragIndex = -1;
+        let dragCommitted = false;
+        let isTouchDevice = false;
 
         function startPressTimer() {
           pressTimer = setTimeout(() => {
             isLongPressDragging = true;
             isSwiping = false;
+            dragCommitted = false;
             originalDragIndex = parseInt(card.getAttribute('data-index'));
             
             const rect = card.getBoundingClientRect();
@@ -70,12 +74,84 @@ const CARD_GESTURE_SETUP = `
           }
         }
 
+        function updateDragPosition() {
+          if (dragClone) {
+            dragClone.style.left = (currentX - cloneOffsetX) + 'px';
+            dragClone.style.top = (currentY - cloneOffsetY) + 'px';
+            
+            const deltaX = currentX - startX;
+            if (Math.abs(deltaX) > 20) {
+              dragClone.style.opacity = '0.7';
+              dragClone.classList.remove('swiping-right', 'swiping-left');
+              if (deltaX > 20) dragClone.classList.add('swiping-right');
+              else if (deltaX < -20) dragClone.classList.add('swiping-left');
+            } else {
+              dragClone.style.opacity = '1';
+              dragClone.classList.remove('swiping-right', 'swiping-left');
+            }
+          }
+          
+          const autoScrollMargin = 100;
+          const viewportHeight = window.innerHeight;
+          if (currentY > viewportHeight - autoScrollMargin) {
+            window.scrollBy({ top: 30, behavior: 'instant' });
+          } else if (currentY < autoScrollMargin && window.scrollY > 0) {
+            window.scrollBy({ top: -30, behavior: 'instant' });
+          }
+          
+          const deltaY = currentY - startY;
+          if (Math.abs(deltaY) > 10) {
+            shiftCardsForGap(card, currentX, currentY);
+          }
+        }
+
+        function commitDrag() {
+          if (dragCommitted) return;
+          dragCommitted = true;
+          isLongPressDragging = false;
+          
+          const dragOffsetX = currentX - startX;
+          const idx = originalDragIndex;
+          
+          clearCardShifts();
+          cleanupGhostDrag(card);
+          
+          if (Math.abs(dragOffsetX) > 60 && !isNaN(idx)) {
+            if (dragOffsetX > 0) deleteWorkoutSet(idx);
+            else moveSetToBottom(idx);
+          } else {
+            handleGhostDrop(card, currentX, currentY, idx);
+          }
+          originalDragIndex = -1;
+        }
+
         function handleTouchMove(e) {
           if (!isLongPressDragging) return;
           if (e.cancelable) e.preventDefault();
+          const touch = e.touches[0];
+          if (touch) {
+            currentX = touch.clientX;
+            currentY = touch.clientY;
+          }
+          updateDragPosition();
         }
         
         card.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+        card.addEventListener('touchend', function(e) {
+          if (!isLongPressDragging) return;
+          commitDrag();
+        });
+
+        card.addEventListener('touchcancel', function(e) {
+          cancelPressTimer();
+          if (!isLongPressDragging) return;
+          dragCommitted = true;
+          isLongPressDragging = false;
+          clearCardShifts();
+          cleanupGhostDrag(card);
+          originalDragIndex = -1;
+        });
         
         card.addEventListener('pointerdown', function(e) {
           if (typeof checkLock === 'function' && checkLock()) return;
@@ -84,7 +160,12 @@ const CARD_GESTURE_SETUP = `
           currentX = e.clientX;
           currentY = e.clientY;
           isPointerDown = true;
-          card.setPointerCapture(e.pointerId);
+          dragCommitted = false;
+          isTouchDevice = (e.pointerType === 'touch');
+          
+          if (!isTouchDevice) {
+            card.setPointerCapture(e.pointerId);
+          }
           
           startPressTimer();
 
@@ -111,35 +192,9 @@ const CARD_GESTURE_SETUP = `
           const deltaY = currentY - startY;
           
           if (isLongPressDragging) {
+            if (isTouchDevice) return;
             e.preventDefault();
-            
-            if (dragClone) {
-              dragClone.style.left = (currentX - cloneOffsetX) + 'px';
-              dragClone.style.top = (currentY - cloneOffsetY) + 'px';
-              
-              if (Math.abs(deltaX) > 20) {
-                dragClone.style.opacity = '0.7';
-                dragClone.classList.remove('swiping-right', 'swiping-left');
-                if (deltaX > 20) dragClone.classList.add('swiping-right');
-                else if (deltaX < -20) dragClone.classList.add('swiping-left');
-              } else {
-                dragClone.style.opacity = '1';
-                dragClone.classList.remove('swiping-right', 'swiping-left');
-              }
-            }
-            
-            const autoScrollMargin = 100;
-            const viewportHeight = window.innerHeight;
-            if (currentY > viewportHeight - autoScrollMargin) {
-              window.scrollBy({ top: 30, behavior: 'instant' });
-            } else if (currentY < autoScrollMargin && window.scrollY > 0) {
-              window.scrollBy({ top: -30, behavior: 'instant' });
-            }
-            
-            if (Math.abs(deltaY) > 10) {
-              shiftCardsForGap(card, currentX, currentY);
-            }
-            
+            updateDragPosition();
             return;
           }
           
@@ -164,21 +219,7 @@ const CARD_GESTURE_SETUP = `
           isPointerDown = false;
           
           if (isLongPressDragging) {
-            isLongPressDragging = false;
-            
-            const dragOffsetX = currentX - startX;
-            const idx = originalDragIndex;
-            
-            clearCardShifts();
-            cleanupGhostDrag(card);
-            
-            if (Math.abs(dragOffsetX) > 60 && !isNaN(idx)) {
-              if (dragOffsetX > 0) deleteWorkoutSet(idx);
-              else moveSetToBottom(idx);
-            } else {
-              handleGhostDrop(card, currentX, currentY, idx);
-            }
-            originalDragIndex = -1;
+            commitDrag();
             return;
           }
           
@@ -199,22 +240,18 @@ const CARD_GESTURE_SETUP = `
         card.addEventListener('pointercancel', function(e) {
           cancelPressTimer();
           isPointerDown = false;
-          
           if (!isLongPressDragging) return;
-          
-          isLongPressDragging = false;
-          
-          const idx = originalDragIndex;
-          clearCardShifts();
-          cleanupGhostDrag(card);
-          if (lastShiftTargetIndex !== -1 && lastShiftTargetIndex !== idx && !isNaN(idx) && currentWorkoutArray && currentWorkoutArray.length > idx) {
-            const newIndex = lastShiftTargetIndex > idx ? lastShiftTargetIndex - 1 : lastShiftTargetIndex;
-            const [removed] = currentWorkoutArray.splice(idx, 1);
-            currentWorkoutArray.splice(newIndex, 0, removed);
-            if (typeof finalSync === 'function') finalSync();
-            else rerenderWorkoutFromArray();
+          if (isTouchDevice) {
+            setTimeout(function() {
+              if (!dragCommitted && isLongPressDragging === false) {
+                cleanupGhostDrag(card);
+                clearCardShifts();
+                originalDragIndex = -1;
+              }
+            }, 200);
+            return;
           }
-          originalDragIndex = -1;
+          commitDrag();
         });
       }
 `;
