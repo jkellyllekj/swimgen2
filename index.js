@@ -3686,11 +3686,16 @@ app.get("/", (req, res) => {
         return lines.join('\\n');
       }
 
+      function syncStateAndUI() {
+        updateMathTotals();
+        const text = convertArrayToWorkoutText(currentWorkoutArray);
+        renderFooterTotalsAndMeta(splitWorkout(text).footerLines);
+      }
+
       function deleteWorkoutSet(index) {
         if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
         currentWorkoutArray.splice(index, 1);
-        updateMathTotals();
-        renderFooterTotalsAndMeta(splitWorkout(convertArrayToWorkoutText(currentWorkoutArray)).footerLines);
+        syncStateAndUI();
         setupGestureEditing(currentWorkoutArray);
       }
 
@@ -3830,10 +3835,8 @@ app.get("/", (req, res) => {
           }
         }
         
-        // Update math totals
-        updateMathTotals();
+        syncStateAndUI();
         
-        // Re-attach gesture handlers
         setupGestureEditing();
       }
 

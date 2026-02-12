@@ -12,7 +12,9 @@
  * - Double-tap to edit
  * - Ghost Card drag-and-drop reordering with real-time gap shifting
  * - S24 Scroll-Lock: e.preventDefault() on touchmove during drag
- * - Omni-directional: deltaX controls swipe icons, deltaY controls reorder
+ * - Omni-directional: deltaX controls swipe icons on clone, deltaY controls reorder
+ * - Icon layering: swipe classes go on dragClone, clone becomes translucent
+ * - Slow-drag committed: any newIndex != draggedIndex commits the move
  * 
  * Note: setupCardGestures calls external functions (openGestureEditModal, 
  * deleteWorkoutSet, moveSetToBottom, rerenderWorkoutFromArray) that remain in index.js
@@ -32,11 +34,13 @@ const CARD_GESTURE_SETUP = `
         let dragClone = null;
         let cloneOffsetX = 0;
         let cloneOffsetY = 0;
+        let originalDragIndex = -1;
 
         function startPressTimer() {
           pressTimer = setTimeout(() => {
             isLongPressDragging = true;
             isSwiping = false;
+            originalDragIndex = parseInt(card.getAttribute('data-index'));
             
             const rect = card.getBoundingClientRect();
             cloneOffsetX = currentX - rect.left;
@@ -113,6 +117,16 @@ const CARD_GESTURE_SETUP = `
             if (dragClone) {
               dragClone.style.left = (currentX - cloneOffsetX) + 'px';
               dragClone.style.top = (currentY - cloneOffsetY) + 'px';
+              
+              if (Math.abs(deltaX) > 20) {
+                dragClone.style.opacity = '0.7';
+                dragClone.classList.remove('swiping-right', 'swiping-left');
+                if (deltaX > 20) dragClone.classList.add('swiping-right');
+                else if (deltaX < -20) dragClone.classList.add('swiping-left');
+              } else {
+                dragClone.style.opacity = '1';
+                dragClone.classList.remove('swiping-right', 'swiping-left');
+              }
             }
             
             const autoScrollMargin = 100;
@@ -121,14 +135,6 @@ const CARD_GESTURE_SETUP = `
               window.scrollBy({ top: 30, behavior: 'instant' });
             } else if (currentY < autoScrollMargin && window.scrollY > 0) {
               window.scrollBy({ top: -30, behavior: 'instant' });
-            }
-            
-            if (Math.abs(deltaX) > 20) {
-              card.classList.remove('swiping-right', 'swiping-left');
-              if (deltaX > 20) card.classList.add('swiping-right');
-              else if (deltaX < -20) card.classList.add('swiping-left');
-            } else {
-              card.classList.remove('swiping-right', 'swiping-left');
             }
             
             if (Math.abs(deltaY) > 10) {
@@ -165,24 +171,23 @@ const CARD_GESTURE_SETUP = `
             
             const dragOffsetX = currentX - startX;
             const dragOffsetY = currentY - startY;
+            const idx = originalDragIndex;
             
             const isHorizontalSwipe = Math.abs(dragOffsetX) > 80 && Math.abs(dragOffsetX) > Math.abs(dragOffsetY) * 1.5;
             
-            if (isHorizontalSwipe) {
-              clearCardShifts();
-              cleanupGhostDrag(card);
-              const currentIndex = parseInt(card.getAttribute('data-index'));
-              if (!isNaN(currentIndex)) {
-                if (dragOffsetX > 0) {
-                  deleteWorkoutSet(currentIndex);
-                } else {
-                  moveSetToBottom(currentIndex);
-                }
+            clearCardShifts();
+            cleanupGhostDrag(card);
+            
+            if (isHorizontalSwipe && !isNaN(idx)) {
+              if (dragOffsetX > 0) {
+                deleteWorkoutSet(idx);
+              } else {
+                moveSetToBottom(idx);
               }
             } else {
-              clearCardShifts();
-              handleGhostDrop(card, currentX, currentY);
+              handleGhostDrop(card, currentX, currentY, idx);
             }
+            originalDragIndex = -1;
             return;
           }
           
@@ -214,6 +219,7 @@ const CARD_GESTURE_SETUP = `
           document.body.style.touchAction = '';
           clearCardShifts();
           cleanupGhostDrag(card);
+          originalDragIndex = -1;
         });
       }
 `;
@@ -286,39 +292,9 @@ const DRAG_DROP_FUNCTIONS = `
         lastHighlightedDropIndex = -1;
       }
       
-      function highlightDropTarget(draggedCard, x, y) {
+      function handleGhostDrop(draggedCard, dropX, dropY, originalIndex) {
         const cards = Array.from(document.querySelectorAll('[data-effort][data-index]'));
-        const draggedIndex = parseInt(draggedCard.getAttribute('data-index'));
-        
-        let targetIndex = -1;
-        for (let i = 0; i < cards.length; i++) {
-          const c = cards[i];
-          if (c === draggedCard) continue;
-          
-          const rect = c.getBoundingClientRect();
-          const midY = rect.top + rect.height / 2;
-          const cardIndex = parseInt(c.getAttribute('data-index'));
-          
-          if (y < midY) {
-            targetIndex = cardIndex;
-            break;
-          }
-        }
-        
-        if (targetIndex === lastHighlightedDropIndex) return;
-        lastHighlightedDropIndex = targetIndex;
-        
-        cards.forEach(c => c.classList.remove('drop-target'));
-        
-        if (targetIndex !== -1 && targetIndex !== draggedIndex) {
-          const targetCard = cards.find(c => parseInt(c.getAttribute('data-index')) === targetIndex);
-          if (targetCard) targetCard.classList.add('drop-target');
-        }
-      }
-      
-      function handleGhostDrop(draggedCard, dropX, dropY) {
-        const cards = Array.from(document.querySelectorAll('[data-effort][data-index]'));
-        const draggedIndex = parseInt(draggedCard.getAttribute('data-index'));
+        const draggedIndex = (typeof originalIndex === 'number' && originalIndex >= 0) ? originalIndex : parseInt(draggedCard.getAttribute('data-index'));
         let insertBeforeIndex = -1;
         
         for (let i = 0; i < cards.length; i++) {
@@ -342,8 +318,6 @@ const DRAG_DROP_FUNCTIONS = `
         } else {
           newIndex = insertBeforeIndex;
         }
-        
-        cleanupGhostDrag(draggedCard);
         
         if (newIndex !== draggedIndex && currentWorkoutArray && currentWorkoutArray.length > draggedIndex) {
           const [removed] = currentWorkoutArray.splice(draggedIndex, 1);
