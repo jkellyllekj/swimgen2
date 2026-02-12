@@ -473,6 +473,7 @@
         box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
         z-index: 9999;
         rotate: 0deg !important;
+        transition: none !important;
       }
       .setHeaderRow {
         display:flex;

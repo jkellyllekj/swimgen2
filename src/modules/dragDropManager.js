@@ -73,7 +73,8 @@ const CARD_GESTURE_SETUP = `
         }
 
         function handleTouchMove(e) {
-          if (isLongPressDragging) { if (e.cancelable) e.preventDefault(); }
+          if (!isLongPressDragging) return;
+          if (e.cancelable) e.preventDefault();
         }
         
         card.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -170,20 +171,15 @@ const CARD_GESTURE_SETUP = `
             document.body.style.touchAction = '';
             
             const dragOffsetX = currentX - startX;
-            const dragOffsetY = currentY - startY;
             const idx = originalDragIndex;
-            
-            const isHorizontalSwipe = Math.abs(dragOffsetX) > 80 && Math.abs(dragOffsetX) > Math.abs(dragOffsetY) * 1.5;
             
             clearCardShifts();
             cleanupGhostDrag(card);
             
-            if (isHorizontalSwipe && !isNaN(idx)) {
-              if (dragOffsetX > 0) {
-                deleteWorkoutSet(idx);
-              } else {
-                moveSetToBottom(idx);
-              }
+            if (dragOffsetX > 100 && !isNaN(idx)) {
+              deleteWorkoutSet(idx);
+            } else if (dragOffsetX < -100 && !isNaN(idx)) {
+              moveSetToBottom(idx);
             } else {
               handleGhostDrop(card, currentX, currentY, idx);
             }

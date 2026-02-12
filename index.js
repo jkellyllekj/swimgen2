@@ -3695,8 +3695,7 @@ app.get("/", (req, res) => {
       function deleteWorkoutSet(index) {
         if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
         currentWorkoutArray.splice(index, 1);
-        syncStateAndUI();
-        setupGestureEditing(currentWorkoutArray);
+        rerenderWorkoutFromArray();
       }
 
       function moveSetToBottom(index) {
