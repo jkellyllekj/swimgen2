@@ -278,6 +278,9 @@ const DRAG_DROP_FUNCTIONS = `
         originalCard.style.touchAction = '';
         originalCard.style.transform = '';
         
+        document.body.style.overflow = '';
+        document.body.style.touchAction = '';
+        
         document.querySelectorAll('.drop-target').forEach(c => {
           c.classList.remove('drop-target');
         });

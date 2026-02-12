@@ -1404,12 +1404,12 @@ app.get("/", (req, res) => {
         <div id="workout-list-scroll-area">
           <div id="cards" style="display:none;"></div>
         </div>
-        <div id="sticky-footer-panel">
-          <div id="totalBox" style="display:none; text-align:right; margin-top:8px;"><span id="totalText" style="display:inline-block; font-weight:700; font-size:15px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow:0 2px 6px rgba(0,0,0,0.25);"></span></div>
-          <div id="footerBox" class="glassSummary" style="display:none; margin-top:8px; padding:12px;"></div>
-        </div>
 
         <pre id="raw" style="display:none; margin-top:12px; padding:12px; background:#fff; border-radius:8px; border:1px solid #e7e7e7; white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size:13px; line-height:1.35;"></pre>
+      </div>
+      <div id="sticky-footer-panel" style="max-width:520px; width:100%; order:3;">
+        <div id="totalBox" style="display:none; text-align:right; margin-top:8px;"><span id="totalText" style="display:inline-block; font-weight:700; font-size:15px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow:0 2px 6px rgba(0,0,0,0.25);"></span></div>
+        <div id="footerBox" class="glassSummary" style="display:none; margin-top:8px; padding:12px;"></div>
       </div>
 
       <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:24px; padding:12px; font-size:13px; border:none; background:rgba(255,255,255,0.4); order:1;">
@@ -3690,6 +3690,7 @@ app.get("/", (req, res) => {
       }
 
       function finalSync() {
+        rerenderWorkoutFromArray();
         updateMathTotals();
         const workoutText = convertArrayToWorkoutText(currentWorkoutArray);
         const splitData = splitWorkout(workoutText);
