@@ -3884,8 +3884,6 @@ app.get("/", (req, res) => {
             window.renderCards(payload, newWorkoutText);
           }
         }
-        
-        finalSync();
       }
 
       function openGestureEditModal(index) {
