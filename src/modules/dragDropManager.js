@@ -17,7 +17,7 @@
  * - Slow-drag committed: any newIndex != draggedIndex commits the move
  * 
  * Note: setupCardGestures calls external functions (openGestureEditModal, 
- * deleteWorkoutSet, moveSetToBottom, rerenderWorkoutFromArray) that remain in index.js
+ * deleteWorkoutSet, moveSetToBottom, finalSync) that remain in index.js
  */
 
 const CARD_GESTURE_SETUP = `
@@ -56,21 +56,6 @@ const CARD_GESTURE_SETUP = `
             card.classList.add('ghost-card');
             card.style.touchAction = 'none';
             
-            window.__dragSafetyCard = card;
-            window.__resetDragSafety = function() {
-              if (window.__dragSafetyTimer) clearTimeout(window.__dragSafetyTimer);
-              window.__dragSafetyTimer = setTimeout(function() {
-                if (isLongPressDragging) {
-                  isLongPressDragging = false;
-                  isPointerDown = false;
-                  clearCardShifts();
-                  cleanupGhostDrag(window.__dragSafetyCard || card);
-                  originalDragIndex = -1;
-                }
-              }, 5000);
-            };
-            window.__resetDragSafety();
-            
             if (navigator.vibrate) navigator.vibrate(30);
           }, 300);
         }
@@ -82,10 +67,6 @@ const CARD_GESTURE_SETUP = `
           }
           if (!isLongPressDragging) {
             card.style.touchAction = '';
-          }
-          if (window.__dragSafetyTimer) {
-            clearTimeout(window.__dragSafetyTimer);
-            window.__dragSafetyTimer = null;
           }
         }
 
@@ -131,7 +112,6 @@ const CARD_GESTURE_SETUP = `
           
           if (isLongPressDragging) {
             e.preventDefault();
-            if (window.__resetDragSafety) window.__resetDragSafety();
             
             if (dragClone) {
               dragClone.style.left = (currentX - cloneOffsetX) + 'px';
@@ -180,10 +160,6 @@ const CARD_GESTURE_SETUP = `
 
         card.addEventListener('pointerup', function(e) {
           cancelPressTimer();
-          if (window.__dragSafetyTimer) {
-            clearTimeout(window.__dragSafetyTimer);
-            window.__dragSafetyTimer = null;
-          }
           if (!isPointerDown) return;
           isPointerDown = false;
           
@@ -296,13 +272,6 @@ const DRAG_DROP_FUNCTIONS = `
       }
 
       function cleanupGhostDrag(originalCard) {
-        if (window.__dragSafetyTimer) {
-          clearTimeout(window.__dragSafetyTimer);
-          window.__dragSafetyTimer = null;
-        }
-        window.__resetDragSafety = null;
-        window.__dragSafetyCard = null;
-        
         const clone = document.querySelector('.dragging-clone');
         if (clone) clone.remove();
         originalCard.classList.remove('ghost-card');
@@ -349,7 +318,8 @@ const DRAG_DROP_FUNCTIONS = `
         if (newIndex !== draggedIndex && currentWorkoutArray && currentWorkoutArray.length > draggedIndex) {
           const [removed] = currentWorkoutArray.splice(draggedIndex, 1);
           currentWorkoutArray.splice(newIndex, 0, removed);
-          rerenderWorkoutFromArray();
+          if (typeof finalSync === 'function') finalSync();
+          else rerenderWorkoutFromArray();
         }
       }
 `;
