@@ -3689,6 +3689,8 @@ app.get("/", (req, res) => {
         return lines.join('\\n');
       }
 
+      let isAnimatingSetAction = false;
+      
       function finalSync() {
         rerenderWorkoutFromArray();
         updateMathTotals();
@@ -3699,11 +3701,13 @@ app.get("/", (req, res) => {
       }
 
       function deleteWorkoutSet(index) {
+        if (isAnimatingSetAction) return;
         if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
         const setRef = currentWorkoutArray[index];
         const card = document.querySelector('[data-effort][data-index="' + index + '"]');
         if (card) {
-          card.style.transition = 'transform 0.4s ease, opacity 0.4s ease, height 0.4s ease, margin 0.4s ease';
+          isAnimatingSetAction = true;
+          card.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease, height 0.4s ease, margin 0.4s ease';
           card.style.transform = 'translateX(100%)';
           card.style.opacity = '0';
           card.style.height = '0px';
@@ -3715,6 +3719,7 @@ app.get("/", (req, res) => {
               currentWorkoutArray.splice(liveIndex, 1);
             }
             finalSync();
+            isAnimatingSetAction = false;
           }, 450);
         } else {
           currentWorkoutArray.splice(index, 1);
@@ -3723,11 +3728,13 @@ app.get("/", (req, res) => {
       }
 
       function moveSetToBottom(index) {
+        if (isAnimatingSetAction) return;
         if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
         const setRef = currentWorkoutArray[index];
         const card = document.querySelector('[data-effort][data-index="' + index + '"]');
         if (card) {
-          card.style.transition = 'transform 0.4s ease, opacity 0.4s ease, height 0.4s ease, margin 0.4s ease';
+          isAnimatingSetAction = true;
+          card.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease, height 0.4s ease, margin 0.4s ease';
           card.style.transform = 'translateX(100%)';
           card.style.opacity = '0';
           card.style.height = '0px';
@@ -3735,7 +3742,7 @@ app.get("/", (req, res) => {
           card.style.overflow = 'hidden';
           setTimeout(function() {
             const liveIndex = currentWorkoutArray.indexOf(setRef);
-            if (liveIndex === -1) return;
+            if (liveIndex === -1) { isAnimatingSetAction = false; return; }
             const [movedSet] = currentWorkoutArray.splice(liveIndex, 1);
             let coolIdx = currentWorkoutArray.findIndex(s => s.label.toLowerCase().includes("cool"));
             if (coolIdx !== -1) {
@@ -3744,6 +3751,7 @@ app.get("/", (req, res) => {
               currentWorkoutArray.push(movedSet);
             }
             finalSync();
+            isAnimatingSetAction = false;
           }, 450);
         } else {
           const [movedSet] = currentWorkoutArray.splice(index, 1);

@@ -105,8 +105,11 @@ The application is currently stateless and does not use any persistent storage.
 
 ## Recent Changes
 
-### S24 Stability & Footer Fix (Feb 2026)
-- Restored original Ghost Card drag logic with S24 Scroll-Lock fix (e.preventDefault on cancelable touchmove)
-- Restored original card spacing (margin-bottom: 0px) and boulder-shadow, removed scaling bugs
-- Fixed Math Footer bug: deleteWorkoutSet now calls renderFooterTotalsAndMeta via splitWorkout(convertArrayToWorkoutText()) to rebuild yellow Total box and effort icons after set deletion
-- Added convertArrayToWorkoutText() helper to reconstruct workout text from currentWorkoutArray for footer rebuilds
+### Gesture System Stabilization & Footer Immortalization (Feb 2026)
+- **DOM Architecture**: Footer (#sticky-footer-panel containing totalBox + footerBox) moved OUTSIDE #resultWrap as a sibling. Nothing that clears resultWrap can destroy the footer.
+- **Ghost Card System Retained**: Analyzed Ghost vs Live Sort; Ghost pattern kept for better visual feedback. Issues were edge cases in event handling, not architectural.
+- **S24 Pop-Back Fix**: pointercancel handler commits to lastShiftTargetIndex and calls finalSync() (not just rerenderWorkoutFromArray). CSS touch-action: none on [data-effort] is the primary scroll lock.
+- **Freeze Prevention**: All document.body.style.overflow = 'hidden' removed from drag start. cleanupGhostDrag has safety clears. 5-second global safety timeout auto-releases stuck drag state.
+- **Animation Flow**: Delete/moveSetToBottom use 400ms slide-out animation (translateX(100%) + opacity + height collapse) with 450ms deferred array mutation. isAnimatingSetAction flag prevents double-firing.
+- **finalSync()**: Single source of truth -- calls rerenderWorkoutFromArray() + updateMathTotals() + renderFooterTotalsAndMeta() + setupGestureEditing(). All state changes go through finalSync.
+- **Stale Index Protection**: delete/move capture setRef (object reference) before animation, re-find live index via indexOf after timeout.
