@@ -465,9 +465,15 @@
       [data-effort] {
         box-shadow: var(--boulder-shadow) !important;
         margin-bottom: 0px !important;
-        transition: transform 0.2s ease-in-out;
+        transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.2s ease;
+        will-change: transform;
       }
-      .live-drag-active { transform: none !important; }
+      .live-drag-active {
+        transform: scale(1.03) !important;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+        z-index: 9999;
+        rotate: 0deg !important;
+      }
       .setHeaderRow {
         display:flex;
         align-items:flex-start;
@@ -997,7 +1003,8 @@
   z-index: 9999 !important;
   pointer-events: none !important;
   box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
-  transform: rotate(2deg) !important;
+  transform: scale(1.03) !important;
+  rotate: 0deg !important;
   transition: none !important;
 }
 .drop-target {

@@ -10,8 +10,9 @@
  * - Card gesture setup (touch/pointer event handlers)
  * - Swipe left/right for defer/delete
  * - Double-tap to edit
- * - Ghost Card drag-and-drop reordering
+ * - Ghost Card drag-and-drop reordering with real-time gap shifting
  * - S24 Scroll-Lock: e.preventDefault() on touchmove during drag
+ * - Omni-directional: deltaX controls swipe icons, deltaY controls reorder
  * 
  * Note: setupCardGestures calls external functions (openGestureEditModal, 
  * deleteWorkoutSet, moveSetToBottom, rerenderWorkoutFromArray) that remain in index.js
@@ -112,7 +113,6 @@ const CARD_GESTURE_SETUP = `
             if (dragClone) {
               dragClone.style.left = (currentX - cloneOffsetX) + 'px';
               dragClone.style.top = (currentY - cloneOffsetY) + 'px';
-              dragClone.style.transform = 'rotate(2deg)';
             }
             
             const autoScrollMargin = 100;
@@ -123,7 +123,18 @@ const CARD_GESTURE_SETUP = `
               window.scrollBy({ top: -30, behavior: 'instant' });
             }
             
-            highlightDropTarget(card, currentX, currentY);
+            if (Math.abs(deltaX) > 20) {
+              card.classList.remove('swiping-right', 'swiping-left');
+              if (deltaX > 20) card.classList.add('swiping-right');
+              else if (deltaX < -20) card.classList.add('swiping-left');
+            } else {
+              card.classList.remove('swiping-right', 'swiping-left');
+            }
+            
+            if (Math.abs(deltaY) > 10) {
+              shiftCardsForGap(card, currentX, currentY);
+            }
+            
             return;
           }
           
@@ -158,6 +169,7 @@ const CARD_GESTURE_SETUP = `
             const isHorizontalSwipe = Math.abs(dragOffsetX) > 80 && Math.abs(dragOffsetX) > Math.abs(dragOffsetY) * 1.5;
             
             if (isHorizontalSwipe) {
+              clearCardShifts();
               cleanupGhostDrag(card);
               const currentIndex = parseInt(card.getAttribute('data-index'));
               if (!isNaN(currentIndex)) {
@@ -168,6 +180,7 @@ const CARD_GESTURE_SETUP = `
                 }
               }
             } else {
+              clearCardShifts();
               handleGhostDrop(card, currentX, currentY);
             }
             return;
@@ -199,6 +212,7 @@ const CARD_GESTURE_SETUP = `
           isLongPressDragging = false;
           document.body.style.overflow = '';
           document.body.style.touchAction = '';
+          clearCardShifts();
           cleanupGhostDrag(card);
         });
       }
@@ -206,13 +220,61 @@ const CARD_GESTURE_SETUP = `
 
 const DRAG_DROP_STATE = `
       let lastHighlightedDropIndex = -1;
+      let lastShiftTargetIndex = -1;
 `;
 
 const DRAG_DROP_FUNCTIONS = `
+      function clearCardShifts() {
+        document.querySelectorAll('[data-effort][data-drag-shifted]').forEach(c => {
+          c.style.transform = '';
+          c.removeAttribute('data-drag-shifted');
+        });
+        lastShiftTargetIndex = -1;
+      }
+
+      function shiftCardsForGap(draggedCard, x, y) {
+        const cards = Array.from(document.querySelectorAll('[data-effort][data-index]'));
+        const draggedIndex = parseInt(draggedCard.getAttribute('data-index'));
+        
+        let targetIndex = cards.length;
+        for (let i = 0; i < cards.length; i++) {
+          const c = cards[i];
+          if (c === draggedCard) continue;
+          const rect = c.getBoundingClientRect();
+          const midY = rect.top + rect.height / 2;
+          if (y < midY) {
+            targetIndex = parseInt(c.getAttribute('data-index'));
+            break;
+          }
+        }
+        
+        if (targetIndex === lastShiftTargetIndex) return;
+        lastShiftTargetIndex = targetIndex;
+        
+        const gapSize = 50;
+        for (let i = 0; i < cards.length; i++) {
+          const c = cards[i];
+          const ci = parseInt(c.getAttribute('data-index'));
+          if (c === draggedCard) continue;
+          
+          if (draggedIndex < targetIndex && ci > draggedIndex && ci < targetIndex) {
+            c.style.transform = 'translateY(-' + gapSize + 'px)';
+            c.setAttribute('data-drag-shifted', '1');
+          } else if (draggedIndex > targetIndex && ci >= targetIndex && ci < draggedIndex) {
+            c.style.transform = 'translateY(' + gapSize + 'px)';
+            c.setAttribute('data-drag-shifted', '1');
+          } else {
+            c.style.transform = '';
+            c.removeAttribute('data-drag-shifted');
+          }
+        }
+      }
+
       function cleanupGhostDrag(originalCard) {
         const clone = document.querySelector('.dragging-clone');
         if (clone) clone.remove();
         originalCard.classList.remove('ghost-card');
+        originalCard.classList.remove('swiping-right', 'swiping-left');
         originalCard.style.touchAction = '';
         originalCard.style.transform = '';
         document.body.style.overflow = '';
