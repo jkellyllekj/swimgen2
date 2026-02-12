@@ -1409,14 +1409,14 @@ app.get("/", (req, res) => {
         <pre id="raw" style="display:none; margin-top:12px; padding:12px; background:#fff; border-radius:8px; border:1px solid #e7e7e7; white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size:13px; line-height:1.35;"></pre>
       </div>
 
-      <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:24px; padding:12px; font-size:13px; border-left:4px solid #f1c40f; background:rgba(255,255,255,0.4); order:1;">
+      <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:24px; padding:12px; font-size:13px; border:none; background:rgba(255,255,255,0.4); order:1;">
         <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to use SwimGen</h4>
         <ol style="margin:0 0 10px 0; padding-left:18px; font-size:12px; line-height:1.6;">
           <li>Choose your distance and pool size.</li>
           <li>Click <strong>Generate</strong> and voila!</li>
         </ol>
         <details class="more-features-details">
-          <summary style="cursor:pointer; color:#007bff; text-decoration:underline; font-weight:bold; margin-bottom:10px; font-size:12px;">How to use more features</summary>
+          <summary style="cursor:pointer; color:#007bff; text-decoration:underline; font-weight:bold; margin-bottom:10px; font-size:12px; list-style:none;">How to use added features</summary>
           <ul style="list-style-type:disc; padding-left:20px; margin:8px 0 0 0; line-height:1.5; color:#333; font-size:12px;">
             <li><strong>Top Dolphin:</strong> New full workout.</li>
             <li><strong>Set Dolphin:</strong> Reroll just that set.</li>
@@ -1424,7 +1424,7 @@ app.get("/", (req, res) => {
             <li><strong>Swipe Right:</strong> Remove a set.</li>
             <li><strong>Swipe Left:</strong> Send set to bottom.</li>
             <li><strong>Eyedropper/Frame Icons:</strong> Custom colors or image backgrounds.</li>
-            <li><strong>Feedback:</strong> <a href="https://forms.gle/your-link-here" target="_blank" style="color:#007bff;">Leave a comment here.</a></li>
+            <li><strong>Feedback:</strong> <a href="#" style="color:#007bff;">Leave a comment here.</a></li>
           </ul>
         </details>
       </div>
