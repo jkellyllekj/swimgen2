@@ -71,8 +71,8 @@ const CARD_GESTURE_SETUP = `
         }
 
         function handleTouchMove(e) {
-          if (e.cancelable) e.preventDefault();
           if (!isLongPressDragging) return;
+          if (e.cancelable) e.preventDefault();
         }
         
         card.addEventListener('touchmove', handleTouchMove, { passive: false });

@@ -1170,6 +1170,8 @@ app.get("/", (req, res) => {
     </div>
     <style>
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+      @keyframes cardSettle { 0% { opacity: 0.6; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+      .card-settling { animation: cardSettle 0.3s ease-out forwards; }
       body { padding-top: 85px !important; }
     </style>
 
@@ -3691,12 +3693,33 @@ app.get("/", (req, res) => {
 
       let isAnimatingSetAction = false;
       
-      function finalSync() {
+      function finalSync(animate) {
         rerenderWorkoutFromArray();
         updateMathTotals();
         const workoutText = convertArrayToWorkoutText(currentWorkoutArray);
         const splitData = splitWorkout(workoutText);
         renderFooterTotalsAndMeta(splitData.footerLines);
+        if (typeof totalBox !== 'undefined' && totalBox) {
+          totalBox.style.opacity = '1';
+          totalBox.style.transform = 'none';
+          totalBox.style.transition = 'none';
+        }
+        if (typeof footerBox !== 'undefined' && footerBox) {
+          footerBox.style.opacity = '1';
+          footerBox.style.transform = 'none';
+          footerBox.style.transition = 'none';
+        }
+        if (animate) {
+          const settleCards = document.querySelectorAll('[data-effort][data-index]');
+          settleCards.forEach(function(c) {
+            c.classList.remove('card-settling');
+            void c.offsetWidth;
+            c.classList.add('card-settling');
+          });
+          setTimeout(function() {
+            settleCards.forEach(function(c) { c.classList.remove('card-settling'); });
+          }, 350);
+        }
         setupGestureEditing(currentWorkoutArray);
       }
 
@@ -3718,12 +3741,12 @@ app.get("/", (req, res) => {
             if (liveIndex !== -1) {
               currentWorkoutArray.splice(liveIndex, 1);
             }
-            finalSync();
+            finalSync(true);
             isAnimatingSetAction = false;
           }, 450);
         } else {
           currentWorkoutArray.splice(index, 1);
-          finalSync();
+          finalSync(true);
         }
       }
 
@@ -3750,7 +3773,7 @@ app.get("/", (req, res) => {
             } else {
               currentWorkoutArray.push(movedSet);
             }
-            finalSync();
+            finalSync(true);
             isAnimatingSetAction = false;
           }, 450);
         } else {
@@ -3761,7 +3784,7 @@ app.get("/", (req, res) => {
           } else {
             currentWorkoutArray.push(movedSet);
           }
-          finalSync();
+          finalSync(true);
         }
       }
 
