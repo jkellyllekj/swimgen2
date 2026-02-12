@@ -1401,10 +1401,13 @@ app.get("/", (req, res) => {
             <span id="workoutNameText" style="font-weight:700; font-size:14px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow: var(--boulder-shadow);"></span>
           </div>
         </div>
-        <div id="cards" style="display:none;"></div>
-
-        <div id="totalBox" style="display:none; text-align:right; margin-top:8px;"><span id="totalText" style="display:inline-block; font-weight:700; font-size:15px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow:0 2px 6px rgba(0,0,0,0.25);"></span></div>
-        <div id="footerBox" class="glassSummary" style="display:none; margin-top:8px; padding:12px;"></div>
+        <div id="workout-list-scroll-area">
+          <div id="cards" style="display:none;"></div>
+        </div>
+        <div id="sticky-footer-panel">
+          <div id="totalBox" style="display:none; text-align:right; margin-top:8px;"><span id="totalText" style="display:inline-block; font-weight:700; font-size:15px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow:0 2px 6px rgba(0,0,0,0.25);"></span></div>
+          <div id="footerBox" class="glassSummary" style="display:none; margin-top:8px; padding:12px;"></div>
+        </div>
 
         <pre id="raw" style="display:none; margin-top:12px; padding:12px; background:#fff; border-radius:8px; border:1px solid #e7e7e7; white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size:13px; line-height:1.35;"></pre>
       </div>
@@ -3696,32 +3699,51 @@ app.get("/", (req, res) => {
 
       function deleteWorkoutSet(index) {
         if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
+        const setRef = currentWorkoutArray[index];
         const card = document.querySelector('[data-effort][data-index="' + index + '"]');
-        currentWorkoutArray.splice(index, 1);
         if (card) {
-          card.classList.add('shrink-out');
+          card.classList.add('slide-out-animation');
           setTimeout(function() {
+            const liveIndex = currentWorkoutArray.indexOf(setRef);
+            if (liveIndex !== -1) {
+              currentWorkoutArray.splice(liveIndex, 1);
+            }
             rerenderWorkoutFromArray();
-          }, 300);
+          }, 400);
         } else {
+          currentWorkoutArray.splice(index, 1);
           rerenderWorkoutFromArray();
         }
       }
 
       function moveSetToBottom(index) {
         if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
-        
-        const [movedSet] = currentWorkoutArray.splice(index, 1);
-        
-        let coolIdx = currentWorkoutArray.findIndex(s => s.label.toLowerCase().includes("cool"));
-        
-        if (coolIdx !== -1) {
-          currentWorkoutArray.splice(coolIdx, 0, movedSet);
+        const setRef = currentWorkoutArray[index];
+        const card = document.querySelector('[data-effort][data-index="' + index + '"]');
+        if (card) {
+          card.classList.add('slide-out-animation');
+          setTimeout(function() {
+            const liveIndex = currentWorkoutArray.indexOf(setRef);
+            if (liveIndex === -1) return;
+            const [movedSet] = currentWorkoutArray.splice(liveIndex, 1);
+            let coolIdx = currentWorkoutArray.findIndex(s => s.label.toLowerCase().includes("cool"));
+            if (coolIdx !== -1) {
+              currentWorkoutArray.splice(coolIdx, 0, movedSet);
+            } else {
+              currentWorkoutArray.push(movedSet);
+            }
+            rerenderWorkoutFromArray();
+          }, 400);
         } else {
-          currentWorkoutArray.push(movedSet);
+          const [movedSet] = currentWorkoutArray.splice(index, 1);
+          let coolIdx = currentWorkoutArray.findIndex(s => s.label.toLowerCase().includes("cool"));
+          if (coolIdx !== -1) {
+            currentWorkoutArray.splice(coolIdx, 0, movedSet);
+          } else {
+            currentWorkoutArray.push(movedSet);
+          }
+          rerenderWorkoutFromArray();
         }
-        
-        rerenderWorkoutFromArray();
       }
 
       function rerenderWorkoutFromArray() {

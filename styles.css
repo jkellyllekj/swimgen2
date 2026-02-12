@@ -493,6 +493,14 @@
         padding: 0 !important;
         transition: all 0.3s ease-out !important;
       }
+      .slide-out-animation {
+        transition: all 0.4s ease !important;
+        transform: translateX(100%) !important;
+        height: 0px !important;
+        margin: 0px !important;
+        opacity: 0 !important;
+        overflow: hidden !important;
+      }
       .setHeaderRow {
         display:flex;
         align-items:flex-start;
