@@ -4152,9 +4152,9 @@ app.get("/", (req, res) => {
 </head>
 <body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh;">
 
-<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background:#000; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; pointer-events:none;">
   <img id="splash-img" src="/assets/dolphins/FeatureGraphic.jpg"
-    style="width:100%; height:100%; object-fit:cover; transition: transform 1.5s cubic-bezier(0.25,0.46,0.45,0.94);" />
+    style="width:90%; max-width:600px; height:auto; display:block; border-radius:12px; box-shadow:0 4px 30px rgba(0,0,0,0.4); transition: transform 1.5s cubic-bezier(0.25,0.46,0.45,0.94);" />
 </div>
 <script>
 (function() {
@@ -4165,9 +4165,9 @@ app.get("/", (req, res) => {
     if (!splash) return;
     img.style.transform = 'scale(1.3)';
     setTimeout(function() {
-      splash.style.transition = 'opacity 0.6s ease-out';
+      splash.style.transition = 'opacity 0.8s ease-out';
       splash.style.opacity = '0';
-      setTimeout(function() { splash.remove(); }, 650);
+      setTimeout(function() { splash.remove(); }, 850);
     }, 1500);
   }
   if (isCapacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
