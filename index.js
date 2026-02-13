@@ -4141,7 +4141,7 @@ app.get("/", (req, res) => {
     "/backgrounds/Page-024 (Large)_result.webp"
   ];
 
-  const defaultBg = "/backgrounds/Page-002 (Large)_result.webp";
+  const defaultBg = "/backgrounds/Page-012 (Large)_result.webp";
   const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
