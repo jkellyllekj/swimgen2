@@ -132,5 +132,8 @@ dist
 # Replit debugger
 .breakpoints
 
+# Capacitor build output
+www/
+
 # Attached assets from chat (large images)
 attached_assets/
