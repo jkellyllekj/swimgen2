@@ -1166,6 +1166,7 @@ app.get("/", (req, res) => {
         <div id="fakeAdContent" style="font-weight:800; color:#60a5fa; text-transform:uppercase; letter-spacing:1px; font-size:12px;">Enjoy a clean experience -- Remove Ads today</div>
         <div style="font-size:10px; color:#94a3b8; font-weight:500;">Check out upcoming Premium features in the menu below</div>
       </div>
+      <a href="/viewport-lab" style="position:absolute; bottom:8px; left:15px; color:rgba(255,255,255,0.3); font-size:8px; text-decoration:none; font-weight:500;">View Labs</a>
       <button type="button" style="position:absolute; bottom:8px; right:15px; background:rgba(255,255,255,0.9); color:#1e3a8a; border:none; border-radius:4px; padding:4px 10px; font-size:9px; font-weight:900; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">REMOVE ADS</button>
     </div>
     <style>
@@ -1174,6 +1175,15 @@ app.get("/", (req, res) => {
       .card-settling { animation: cardSettle 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
       body { padding-top: 85px !important; }
     </style>
+    <script>
+      (function() {
+        if (new URLSearchParams(window.location.search).get('kiosk') === 'true') {
+          var s = document.createElement('style');
+          s.textContent = '#adBanner { display: none !important; } body { padding-top: 0 !important; } html, body { scrollbar-width: none !important; -ms-overflow-style: none !important; } html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; }';
+          document.head.appendChild(s);
+        }
+      })();
+    </script>
 
     <div style="max-width:520px;">
       <form id="genForm" class="glassPanel" style="position:relative; max-width:520px; padding:16px;">
@@ -4169,8 +4179,23 @@ app.get("/viewport-lab", (req, res) => {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Swim Workout Generator - Viewport Lab</title>
+  <title>SwimSum - Viewport Lab</title>
   <link rel="stylesheet" href="/styles.css">
+  <script>
+    (function() {
+      if (new URLSearchParams(window.location.search).get('kiosk') === 'true') {
+        var s = document.createElement('style');
+        s.textContent = 'html, body { overflow: hidden !important; scrollbar-width: none !important; -ms-overflow-style: none !important; } html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; } #adBanner, .ad-container, .back, h1, p, #colorPicker { display: none !important; } div[style*="background:yellow"] { display: none !important; } .frame { box-shadow: none !important; border: none !important; } #viewportLab { padding: 10px !important; }';
+        document.head.appendChild(s);
+        document.documentElement.classList.add('kiosk-mode');
+        document.addEventListener('DOMContentLoaded', function() {
+          document.querySelectorAll('iframe').forEach(function(f) {
+            f.src = '/?kiosk=true';
+          });
+        });
+      }
+    })();
+  </script>
 </head>
 <body id="viewportLab">
   <a class="back" href="/">Back to Generator</a>
