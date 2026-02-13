@@ -4152,31 +4152,46 @@ app.get("/", (req, res) => {
 </head>
 <body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh;">
 
-<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; align-items:center; justify-content:center;">
   <img id="splash-img" src="/assets/dolphins/FeatureGraphic.jpg"
-    style="width:90%; max-width:600px; height:auto; display:block; border-radius:12px; box-shadow:0 4px 30px rgba(0,0,0,0.4); transition: transform 1.5s cubic-bezier(0.25,0.46,0.45,0.94);" />
+    style="width:90%; max-width:600px; height:auto; display:block; border-radius:12px; box-shadow:0 4px 30px rgba(0,0,0,0.4); opacity:0; transition: opacity 0.4s ease-in;" />
 </div>
 <script>
 (function() {
   var isCapacitor = typeof window.Capacitor !== 'undefined';
-  function hideSplashOverlay() {
-    var splash = document.getElementById('swimsum-splash');
-    var img = document.getElementById('splash-img');
-    if (!splash) return;
-    img.style.transform = 'scale(1.3)';
+  var img = document.getElementById('splash-img');
+  var splash = document.getElementById('swimsum-splash');
+
+  function startZoomAndFade() {
+    if (!splash || !img) return;
+    img.style.transition = 'transform 2s cubic-bezier(0.25,0.46,0.45,0.94), opacity 1s ease-out';
+    img.style.transform = 'scale(4)';
     setTimeout(function() {
       splash.style.transition = 'opacity 0.8s ease-out';
       splash.style.opacity = '0';
       setTimeout(function() { splash.remove(); }, 850);
-    }, 1500);
+    }, 1400);
   }
-  if (isCapacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
-    window.Capacitor.Plugins.SplashScreen.hide();
-    hideSplashOverlay();
-  } else {
-    if (document.readyState === 'complete') hideSplashOverlay();
-    else window.addEventListener('load', hideSplashOverlay);
+
+  function onImageReady() {
+    img.style.opacity = '1';
+    setTimeout(startZoomAndFade, 800);
   }
+
+  function init() {
+    if (isCapacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
+      window.Capacitor.Plugins.SplashScreen.hide();
+    }
+    if (img.complete && img.naturalWidth > 0) {
+      onImageReady();
+    } else {
+      img.onload = onImageReady;
+      img.onerror = function() { splash.remove(); };
+    }
+  }
+
+  if (document.readyState === 'complete') init();
+  else window.addEventListener('load', init);
 })();
 </script>
 
