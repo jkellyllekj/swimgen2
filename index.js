@@ -4185,7 +4185,7 @@ app.get("/viewport-lab", (req, res) => {
     (function() {
       if (new URLSearchParams(window.location.search).get('kiosk') === 'true') {
         var s = document.createElement('style');
-        s.textContent = 'html, body { overflow: hidden !important; scrollbar-width: none !important; -ms-overflow-style: none !important; } html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; } #adBanner, .ad-container, .back, h1, h2, p, #colorPicker { display: none !important; } div[style*="background:yellow"] { display: none !important; } .frame { display: none !important; } .row, .row-pair, .row-wide { display: none !important; } .screenshot-section { display: none !important; } .screenshot-bar { display: none !important; } .screenshot-row { padding: 0 !important; } .screenshot-frame { box-shadow: none !important; } #viewportLab { padding: 0 !important; margin: 0 !important; display: flex !important; justify-content: center !important; align-items: flex-start !important; }';
+        s.textContent = 'html, body { overflow: hidden !important; scrollbar-width: none !important; -ms-overflow-style: none !important; } html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; } #adBanner, .ad-container, .back, h1, p, #colorPicker { display: none !important; } div[style*="background:yellow"] { display: none !important; } .frame { box-shadow: none !important; border: none !important; } #viewportLab { padding: 10px !important; }';
         document.head.appendChild(s);
         document.documentElement.classList.add('kiosk-mode');
         document.addEventListener('DOMContentLoaded', function() {
@@ -4279,7 +4279,7 @@ app.get("/viewport-lab", (req, res) => {
       <div class="bar screenshot-bar">
         <div class="meta"><span class="name">Samsung Galaxy S25</span><span class="tag">360 x 780</span></div>
       </div>
-      <div style="width:var(--w); height:var(--h); border-radius:28px; overflow:hidden; position:relative; box-shadow: 0 8px 40px rgba(0,0,0,0.3);">
+      <div style="width:var(--w); height:var(--h); border-radius:12px; overflow:hidden; position:relative;">
         <iframe src="/" style="width:100%; height:100%; border:none; display:block;"></iframe>
       </div>
     </div>
