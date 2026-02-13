@@ -33,16 +33,16 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Swim Workout Generator"
+args = "SwimSum"
 
 [[workflows.workflow]]
-name = "Swim Workout Generator"
+name = "SwimSum"
 author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "node index.js"
 waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"

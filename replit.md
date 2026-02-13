@@ -1,8 +1,8 @@
-# Swim Workout Generator
+# SwimSum - Swim Workout Generator
 
 ## Overview
 
-The Swim Workout Generator is a web application designed to create structured swim workouts. It is currently built as a Node.js + Express web app, serving both the API and a simple HTML frontend. The primary target is the Android Play Store, with plans for cross-platform expansion to iOS and web using React Native (Expo). The application focuses on generating coach-quality workouts with a deterministic algorithm.
+SwimSum is a web application designed to create structured swim workouts. It is currently built as a Node.js + Express web app, serving both the API and a simple HTML frontend. The primary target is the Android Play Store, with plans for cross-platform expansion to iOS and web using React Native (Expo). The application focuses on generating coach-quality workouts with a deterministic algorithm.
 
 The long-term vision includes migrating to React Native with Expo for mobile app stores, while the web app serves as a development preview. Future plans involve moving the workout algorithm to a server-side component for IP protection.
 
@@ -63,7 +63,7 @@ The application uses Express with inline HTML/CSS/JavaScript. The main file is `
 ### Frontend
 The frontend features an inline HTML interface. Users can select pool type (25m, 50m, 25yd, Custom) and target distance via a slider (500-10000m, snapping to 100). Workouts are displayed as chips with zone-based colored backgrounds (CardGym-style: Easy blue, Moderate green, Strong yellow, Hard orange, Full Gas red). Readability is ensured with white text on dark backgrounds. Vertical gradients are used for multi-zone sets like builds and descends.
 
-Key UI elements include a snazzy workout name generator, a 13-drill name library, an emoji intensity strip, and a spinning dolphin animation during workout generation. The design uses a controlsGrid layout (grid-template-columns: 1fr auto) that stays 2-column on all screen sizes, with pool buttons on the left and the Generate button on the right. The Generate button contains both the label and dolphin inside as a vertical flex box with cyan glow-ring when active. UI chips use the readChip class (78% white opacity) for readable text on the Swim Gen title, background button, and distance pill. The Advanced options toggle uses a white chip with cyan glow when expanded. The design incorporates a premium outdoor pool photo background, drop shadows for depth, and ~8-10px rounded corners. Individual sets can be rerolled using a dolphin button.
+Key UI elements include a snazzy workout name generator, a 13-drill name library, an emoji intensity strip, and a spinning dolphin animation during workout generation. The design uses a controlsGrid layout (grid-template-columns: 1fr auto) that stays 2-column on all screen sizes, with pool buttons on the left and the Generate button on the right. The Generate button contains both the label and dolphin inside as a vertical flex box with cyan glow-ring when active. UI chips use the readChip class (78% white opacity) for readable text on the Swim Sum title, background button, and distance pill. The Advanced options toggle uses a white chip with cyan glow when expanded. The design incorporates a premium outdoor pool photo background, drop shadows for depth, and ~8-10px rounded corners. Individual sets can be rerolled using a dolphin button.
 
 ### Routes
 - `/`: Main workout generator page.

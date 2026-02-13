@@ -1,7 +1,7 @@
 ============================================================================
 APP STORE RELEASE STRATEGY
 ============================================================================
-DECISION: Release "SwimGen2 Lite" to App Store
+DECISION: Release "SwimSum Lite" to App Store
 Goal: Get a functional basic version to the App Store quickly
 Approach: Hide advanced features, basic ad-supported model
 Future: Collect emails for update notifications, premium features in updates
@@ -36,8 +36,8 @@ POST-LAUNCH ENHANCEMENTS (V1.1+):
 
 ============================================================================
 
-Project: Swim Workout Generator
-Working title(s): SwimDice / SetRoll / PacePalette (TBD)
+Project: SwimSum - Swim Workout Generator
+Working title(s): SwimSum (final name)
 
 Last updated: 2026-02-12
 
@@ -88,7 +88,7 @@ Agent message format rule (from WORKING-METHOD-REPLIT.md):
 - Never rely on prose outside the code block
 
 ============================================================================ PROJECT INTENT
-Swim Workout Generator (SwimGen) is intended to be a real, shippable consumer app, not a demo.
+Swim Workout Generator (SwimSum) is intended to be a real, shippable consumer app, not a demo.
 
 The goal is:
 1. A usable, attractive, coach plausible swim workout generator
@@ -164,7 +164,7 @@ When a Pause In Action is declared:
 3. No prior chat context should be assumed
 
 Canonical raw links:
-PROJECT: SwimGen2
+PROJECT: SwimSum
 https://raw.githubusercontent.com/jkellyllekj/swimgen2/main/project-state.md
 https://raw.githubusercontent.com/jkellyllekj/swimgen2/main/WORKING-METHOD-REPLIT.md
 https://raw.githubusercontent.com/jkellyllekj/swimgen2/main/COACH_DESIGN_NOTES.md
@@ -249,7 +249,7 @@ All edit modal effort selectors must use these exact colors:
 14. Reroll must always produce a valid workout
 
 ============================================================================ PRODUCT TIERS AND MONETISATION (v1)
-SwimGen uses a subscription based model. Generator rerolls are deterministic and local. Monetisation is not tied to generation count.
+SwimSum uses a subscription based model. Generator rerolls are deterministic and local. Monetisation is not tied to generation count.
 
 Free Tier (Ad-supported):
 - Basic template-based generation
@@ -397,7 +397,7 @@ Generator Analysis Complete:
 Strategic Decisions Made:
 - Complete template-based rebuild required
 - No algorithmic set invention - real-world templates only
-- New repository: SwimGen2 for clean development
+- New repository: SwimSum for clean development
 - Scale goal: Thousands of validated swim sets
 
 Current Implementation Status:

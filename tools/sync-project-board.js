@@ -335,7 +335,7 @@ async function findProjectItems(projectId) {
 const SYNC_MARKER = "<!-- swimgen-sync -->";
 
 async function run() {
-  console.log("=== SwimGen Project Board Sync ===\n");
+  console.log("=== SwimSum Project Board Sync ===\n");
 
   const mdPath = resolve(__dirname, "..", "project-state.md");
   console.log("Parsing project-state.md...");

@@ -23,7 +23,7 @@ const workoutTemplates = require("./src/data/workoutTemplates");
 // ============================================================================
 // RELEASE CONFIGURATION
 // ============================================================================
-const IS_LITE_MODE = true; // Set to true for App Store "SwimGen2 Lite" release
+const IS_LITE_MODE = true; // Set to true for App Store "SwimSum Lite" release
 
 // Aliases for backward compatibility - these functions are now in modules
 const { 
@@ -1182,7 +1182,7 @@ app.get("/", (req, res) => {
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
               <div style="display:flex; align-items:center; gap:10px; min-width:0;">
                 <h3 style="margin:0; font-size:20px; font-weight:700; font-variant:small-caps; letter-spacing:0.5px;">
-                  <span class="glassChip readChip">Swim Gen</span>
+                  <span class="glassChip readChip">Swim Sum</span>
                 </h3>
               </div>
 
@@ -1415,7 +1415,7 @@ app.get("/", (req, res) => {
       </div>
 
       <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:24px; padding:12px; font-size:13px; border:none; background:rgba(255,255,255,0.4); order:1;">
-        <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to use SwimGen</h4>
+        <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to use SwimSum</h4>
         <ol style="margin:0 0 10px 0; padding-left:18px; font-size:12px; line-height:1.6;">
           <li>Choose your distance and pool size.</li>
           <li>Click <strong>Generate</strong> and voila!</li>
@@ -4137,7 +4137,7 @@ app.get("/", (req, res) => {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Swim Gen</title>
+  <title>Swim Sum</title>
 </head>
 <body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh;">
 <div id="bgWrap">
