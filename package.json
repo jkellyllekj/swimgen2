@@ -16,6 +16,7 @@
     "@capacitor/android": "^8.1.0",
     "@capacitor/cli": "^7.5.0",
     "@capacitor/core": "^8.1.0",
+    "@capacitor/splash-screen": "^8.0.1",
     "@types/node": "^22.19.5",
     "express": "^5.2.1",
     "node-fetch": "^3.3.2",

@@ -2847,7 +2847,7 @@ app.get("/", (req, res) => {
             }
 
             try {
-              const res = await fetch("/reroll-set", {
+              const res = await fetch((window.SWIMSUM_API_BASE || '') + "/reroll-set", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -3390,7 +3390,7 @@ app.get("/", (req, res) => {
         try {
           const lastFp = loadLastWorkoutFingerprint();
 
-          const res = await fetch("/generate-workout", {
+          const res = await fetch((window.SWIMSUM_API_BASE || '') + "/generate-workout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ...payload, lastWorkoutFp: lastFp })
@@ -4141,17 +4141,47 @@ app.get("/", (req, res) => {
     "/backgrounds/Page-024 (Large)_result.webp"
   ];
 
-  const randomBg = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+  const defaultBg = "/backgrounds/Page-002 (Large)_result.webp";
   const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Swim Sum</title>
+  <script>window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';</script>
 </head>
 <body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh;">
+
+<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background:#000; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+  <img id="splash-img" src="/assets/dolphins/FeatureGraphic.jpg"
+    style="width:100%; height:100%; object-fit:cover; transition: transform 1.5s cubic-bezier(0.25,0.46,0.45,0.94);" />
+</div>
+<script>
+(function() {
+  var isCapacitor = typeof window.Capacitor !== 'undefined';
+  function hideSplashOverlay() {
+    var splash = document.getElementById('swimsum-splash');
+    var img = document.getElementById('splash-img');
+    if (!splash) return;
+    img.style.transform = 'scale(1.3)';
+    setTimeout(function() {
+      splash.style.transition = 'opacity 0.6s ease-out';
+      splash.style.opacity = '0';
+      setTimeout(function() { splash.remove(); }, 650);
+    }, 1500);
+  }
+  if (isCapacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
+    window.Capacitor.Plugins.SplashScreen.hide();
+    hideSplashOverlay();
+  } else {
+    if (document.readyState === 'complete') hideSplashOverlay();
+    else window.addEventListener('load', hideSplashOverlay);
+  }
+})();
+</script>
+
 <div id="bgWrap">
-  <div id="bgA" class="bgLayer" style="background-image: url('${randomBg}');"></div>
+  <div id="bgA" class="bgLayer" style="background-image: url('${defaultBg}');"></div>
   <div id="bgB" class="bgLayer"></div>
 </div>
 ${HOME_HTML}

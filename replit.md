@@ -106,9 +106,13 @@ The application is currently stateless and does not use any persistent storage.
 ### Capacitor (Android Packaging)
 - **Capacitor** wraps the web app for Android Play Store distribution
 - App ID: `com.creativearts.swimsum`, App Name: `SwimSum`
-- `capacitor.config.ts` configures webDir as `www/`
-- `scripts/build-www.js` starts a temp server, fetches the rendered HTML, saves to `www/`
-- `npm run build` generates `www/`, `npm run cap:sync` syncs to Android
+- `capacitor.config.ts` configures webDir as `www/`, splash screen (launchAutoHide: false, fadeOutDuration: 800)
+- `@capacitor/splash-screen` plugin installed; native splash hides via `Capacitor.Plugins.SplashScreen.hide()`
+- Custom splash overlay: FeatureGraphic.jpg zooms center 30% over 1.5s, then fades out to reveal main UI
+- `scripts/build-www.js` starts a temp server, fetches the rendered HTML, injects production API base URL, saves to `www/`
+- `npm run build` generates `www/`, `npm run cap:sync` syncs to Android, `npm run cap:build` does both
+- Production API calls: `window.SWIMSUM_API_BASE` set to deployed Replit URL during build
+- Default background: Page-002 (no longer random)
 - Android project lives in `android/` directory
 - To build .aab: Use Android Studio to open `android/`, then Build > Generate Signed Bundle
 
