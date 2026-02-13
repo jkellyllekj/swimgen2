@@ -4164,13 +4164,13 @@ app.get("/", (req, res) => {
 
   function startZoomAndFade() {
     if (!splash || !img) return;
-    img.style.transition = 'transform 2s cubic-bezier(0.25,0.46,0.45,0.94), opacity 1s ease-out';
-    img.style.transform = 'scale(4)';
+    img.style.transition = 'transform 2s cubic-bezier(0.25,0.46,0.45,0.94)';
+    img.style.transform = 'scale(1.1)';
     setTimeout(function() {
       splash.style.transition = 'opacity 0.8s ease-out';
       splash.style.opacity = '0';
       setTimeout(function() { splash.remove(); }, 850);
-    }, 1400);
+    }, 2000);
   }
 
   function onImageReady() {
