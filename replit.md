@@ -108,13 +108,74 @@ The application is currently stateless and does not use any persistent storage.
 - App ID: `com.creativearts.swimsum`, App Name: `SwimSum`
 - `capacitor.config.ts` configures webDir as `www/`, splash screen (launchAutoHide: false, fadeOutDuration: 800)
 - `@capacitor/splash-screen` plugin installed; native splash hides via `Capacitor.Plugins.SplashScreen.hide()`
-- Custom splash overlay: FeatureGraphic.jpg zooms center 30% over 1.5s, then fades out to reveal main UI
-- `scripts/build-www.js` starts a temp server, fetches the rendered HTML, injects production API base URL, saves to `www/`
-- `npm run build` generates `www/`, `npm run cap:sync` syncs to Android, `npm run cap:build` does both
+- Custom splash overlay: FeatureGraphic.jpg fades in at natural aspect ratio, zooms to 110% over 2s, then fades out to reveal main UI
+- `scripts/build-www.js` starts a temp server, fetches the rendered HTML + styles.css, injects production API base URL, saves to `www/`
 - Production API calls: `window.SWIMSUM_API_BASE` set to deployed Replit URL during build
-- Default background: Page-002 (no longer random)
+- Default background: Page-012 (Large)_result.webp
 - Android project lives in `android/` directory
-- To build .aab: Use Android Studio to open `android/`, then Build > Generate Signed Bundle
+- Current version: versionCode 3, versionName "1.2"
+
+### Capacitor Setup Checklist (CRITICAL - for this and all future projects)
+When setting up Capacitor for ANY Replit project heading to the app store, ALWAYS do ALL of the following:
+
+**1. CORS Headers (REQUIRED)**
+The Express server MUST have CORS middleware so the Android WebView (running on https://localhost) can call the API:
+```
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.sendStatus(200);
+  next();
+});
+```
+
+**2. Build Script Must Include ALL Assets**
+The build-www.js script must fetch and save:
+- index.html (the rendered page)
+- styles.css (or any CSS served via Express routes, NOT in public/)
+- All public/ directory contents (images, backgrounds, fonts, etc.)
+Any file served by Express routes (not in public/) must be explicitly fetched and saved to www/.
+
+**3. Self-Contained Android Folder**
+The android/ folder must build without node_modules. After running `npx cap sync`:
+- ALWAYS overwrite `capacitor.settings.gradle` to use local paths:
+  ```
+  project(':capacitor-android').projectDir = new File('./capacitor-android/')
+  project(':capacitor-splash-screen').projectDir = new File('./capacitor-splash-screen/')
+  ```
+- Embedded library build.gradle files must NOT have their own buildscript blocks (they inherit AGP from root)
+- AGP version must match across root build.gradle and all modules (currently 8.7.2 - DO NOT UPGRADE)
+- Java compatibility must be VERSION_17 in all modules
+- compileSdk/targetSdk/minSdk defaults must match variables.gradle values
+
+**4. Version Code Management**
+- ALWAYS bump versionCode before each build (Play Store rejects duplicate codes)
+- Current: versionCode 3, versionName "1.2"
+- Must be incremented every time a new .aab is uploaded
+
+**5. Deployment Must Be Public**
+- The Replit deployment MUST be set to Public (not Private) for the Android app to reach the API
+- Redeploy after any server-side changes (e.g., adding CORS)
+
+**6. Android Studio Build Process**
+When user downloads android/ folder:
+1. Unzip creates nested android/android/ - must open the INNER folder
+2. The inner folder directly contains: app/, gradle/, build.gradle, settings.gradle, gradlew.bat
+3. Open in Android Studio, wait for Gradle sync to complete
+4. NEVER accept AGP upgrade prompts
+5. Build > Generate Signed Bundle / APK > Android App Bundle
+6. Use existing keystore (.jks file), enter password and alias
+7. Select "release" build variant
+8. Output .aab is at app/release/app-release.aab
+
+**7. Common Pitfalls to Avoid**
+- Missing styles.css in www/ causes broken layout (bloated, unstyled)
+- Missing CORS causes "Network error - Failed to fetch"
+- node_modules paths in capacitor.settings.gradle cause "No matching variant" build errors
+- AGP version mismatch between root and library modules causes build failures
+- Forgetting to bump versionCode causes Play Store upload rejection
+- Private deployment prevents Android app from reaching the API
 
 ## Recent Changes
 
