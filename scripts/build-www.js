@@ -51,6 +51,11 @@ async function build() {
       console.log('Copied public/ assets to www/');
     }
 
+    console.log('Fetching styles.css...');
+    let css = await fetchPage('/styles.css');
+    fs.writeFileSync(path.join(WWW_DIR, 'styles.css'), css);
+    console.log('Wrote www/styles.css');
+
     console.log('Build complete! www/ directory is ready.');
   } catch (err) {
     console.error('Build failed:', err.message);

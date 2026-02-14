@@ -13,11 +13,15 @@ CURRENT READY FEATURES (V1.0 Base):
 - Core bug fixes completed (cool down, odd/even parsing)
 - Project board with automated sync
 - Comments & Feedback column added for team collaboration
+- Swimmer Math Engine (27m/33m snapping) active
 
 IMMEDIATE PRE-LAUNCH TASKS (V1.0):
 HIGH PRIORITY:
 ✅ COMPLETED: Fix pool length math (Swimmer Math Engine implemented 2026-02-11)
 ✅ COMPLETED: Hide advanced options & set editor (Lite Mode Toggle implemented 2026-02-11)
+✅ COMPLETED: Generate Signed Bundle (v1.0 uploaded to Internal Testing)
+✅ COMPLETED: Fix Ad ID Declaration in Play Console
+- Fix Android Visual Fidelity (Current blocker: "Bloated" look/wrong backgrounds)
 - Add ad placement framework - Basic banner/interstitial ads
 - Add email signup collection - For update notifications
 - Comprehensive testing - All distances (500-10000m), all pool lengths
@@ -39,9 +43,9 @@ POST-LAUNCH ENHANCEMENTS (V1.1+):
 Project: SwimSum - Swim Workout Generator
 Working title(s): SwimSum (final name)
 
-Last updated: 2026-02-12
+Last updated: 2026-02-14
 
-Status: Active Development - Lite Mode Finalization
+Status: Active Development - App Store Submission / Visual Debugging
 
 ============================================================================ READ THIS FIRST
 This file is the single source of truth for the project.
@@ -56,10 +60,40 @@ Then STOP and read this file in full before doing anything else.
 
 Chat memory is disposable. This file is not.
 
+============================================================================ ANDROID BUILD PROTOCOL (CRITICAL)
+Strict process for generating App Store builds from Replit:
+
+1. DOWNLOAD:
+   - Download `android` folder from Replit.
+   - Unzip to local machine.
+
+2. OPEN IN ANDROID STUDIO:
+   - File > Open.
+   - Navigate to the **INNER** `android` folder.
+   - CHECK: The folder MUST directly contain `build.gradle`, `settings.gradle`, and the `app` folder.
+   - DO NOT open the outer `android` folder (nested structure causes "Add Configuration" error).
+
+3. SYNC:
+   - Select "This Window".
+   - **WAIT** for the progress bar (bottom right) to finish completely.
+   - DO NOT click "AGP Upgrade Assistant" (Dismiss all notifications).
+
+4. BUILD:
+   - Verify top toolbar shows module `app` (not "Add Configuration").
+   - Build > Generate Signed Bundle / APK.
+   - Select "Android App Bundle".
+   - Use saved Keystore (Release key).
+   - Destination: `android/app/release/app-release.aab`.
+
 ============================================================================ CURRENT BUGS (ACTIVE)
-🐛 BUG: Template metadata appearing as swim sets (FIXED 2026-02-05)
-- "Workout total: Xm" was parsed as a section due to colon format
-- Fixed by changing to "Total Xm" (no colon)
+🐛 BUG: Android Visual Fidelity
+   - Symptom: App looks "bloated", wrong backgrounds, fonts off in WebView.
+   - Status: Detected 2026-02-14 after first successful install.
+   - Suspect: Viewport meta tags, CSS unit scaling, or stale `www` sync.
+
+🐛 BUG: Replit Auth on Published Web App
+   - Symptom: Friends asked to login to Replit to view app.
+   - Fix: Must toggle Deployment setting to "Public".
 
 ============================================================================ ACTIVE DEVELOPMENT - SWIMGEN2
 Repository: https://github.com/jkellyllekj/swimgen2
@@ -67,7 +101,7 @@ Repository: https://github.com/jkellyllekj/swimgen2
 Status: Template-based rebuild preserving UI layer
 Core Principle: No algorithmic set invention - real-world templates only
 Scale Goal: Thousands of validated swim sets continuously growing
-Current Focus: Lite Mode launch & Swimmer Math Stability
+Current Focus: Fixing Android WebView visual issues & Lite Mode launch
 
 ============================================================================ INSTRUCTION STYLE RULE
 The assistant must always provide explicit, start to finish instructions.
@@ -100,13 +134,13 @@ The goal is:
 Long term evolution is expected (years), but v1 must stand on its own.
 
 ============================================================================ CURRENT PHASE
-Phase: Template-Based Rebuild Foundation & Lite Mode Launch
+Phase: App Store Submission & Visual Polish
 
 Primary goals:
-- Replace algorithmic generator with real-world template library
-- Fix critical bugs (edit persistence, unrealistic sets)
-- Preserve and enhance current UI/gesture functionality
-- Build scalable architecture for thousands of swim sets
+- Ensure Android WebView looks 1:1 with Web Preview
+- Pass Internal Testing on Google Play
+- Configure AdMob/Monetization
+- Release Lite Mode (v1.0)
 
 Constraints:
 - Generator uses ONLY real-world templates (no algorithmic invention)
@@ -115,10 +149,9 @@ Constraints:
 - Template collection is continuous process
 
 Phase is complete when:
-- Generator uses validated template library with 1000+ real sets
-- Edit functionality works with tabbed interface
-- All critical bugs are resolved
-- Architecture supports continuous template growth
+- App is live on Play Store (Internal Test passed)
+- Visuals are corrected on mobile device
+- Ads are displaying correctly
 
 ============================================================================ ARCHITECTURE OVERVIEW (MIGRATION PATH)
 CURRENT (LITE RELEASE READY):
@@ -130,32 +163,32 @@ CURRENT (LITE RELEASE READY):
 
 TARGET (SWIMGEN2):
 /swimgen2/
-├── legacy/                     # Original working code
+├── legacy/                     # Original working code
 ├── src/
-│   ├── generator-v2.js         # Template-based engine
-│   ├── template-library/       # Real-world sets (thousands)
-│   ├── editor/                 # Tabbed editor system
-│   │   ├── drill-editor.js
-│   │   ├── mainset-editor.js
-│   │   └── effort-builder.js
-│   ├── pace-calculator.js      # CSS/interval mathematics
-│   └── workout-model.js        # Data structures
-├── ui/                         # Preserved & enhanced UI
-│   ├── gestures.js             # Enhanced with phone gestures
-│   ├── renderer.js             # Animation fixes
-│   ├── modals.js               # Tabbed edit modal
-│   └── background-options.js
+│   ├── generator-v2.js         # Template-based engine
+│   ├── template-library/       # Real-world sets (thousands)
+│   ├── editor/                 # Tabbed editor system
+│   │   ├── drill-editor.js
+│   │   ├── mainset-editor.js
+│   │   └── effort-builder.js
+│   ├── pace-calculator.js      # CSS/interval mathematics
+│   └── workout-model.js        # Data structures
+├── ui/                         # Preserved & enhanced UI
+│   ├── gestures.js             # Enhanced with phone gestures
+│   ├── renderer.js             # Animation fixes
+│   ├── modals.js               # Tabbed edit modal
+│   └── background-options.js
 └── business/
-    ├── tiers.js                # Free/Premium/Pro gating
-    ├── ads.js                  # Ad integration for free tier
-    └── storage.js              # Workout history/favorites
+    ├── tiers.js                # Free/Premium/Pro gating
+    ├── ads.js                  # Ad integration for free tier
+    └── storage.js              # Workout history/favorites
 
 **MIGRATION STRATEGY:**
-1.  Build generator-v2 alongside legacy system
-2.  Compare outputs for realism validation
-3.  Gradually replace algorithmic generation
-4.  Preserve all UI/gesture functionality
-5.  Cutover when template library > 1000 validated sets
+1.  Build generator-v2 alongside legacy system
+2.  Compare outputs for realism validation
+3.  Gradually replace algorithmic generation
+4.  Preserve all UI/gesture functionality
+5.  Cutover when template library > 1000 validated sets
 
 ============================================================================ PAUSE IN ACTION AND NEW CHAT HANDOVER
 When a Pause In Action is declared:
@@ -292,6 +325,16 @@ Rules:
 - Current color coded workout cards are a core engagement feature
 
 ============================================================================ RECENT WORK (FACTS, NOT PLANS)
+Recent Work (2026-02-14)
+✅ COMPLETED: Android Build & Upload
+- Generated Signed Bundle (Release v1.0, 6.16MB).
+- Uploaded to Google Play Internal Testing.
+- Resolved "Ad ID Declaration" blocking error.
+- Documented "Nested Folder" build protocol.
+🐛 BUG DETECTED: Android Visual Fidelity
+- Mobile app looks "bloated" and lacks correct styling compared to web.
+- Backgrounds not loading correctly in WebView.
+
 Recent Work (2026-02-12)
 ✅ COMPLETED: Gesture System Stabilization (The "Big One")
 - Infinite Recursion Fix: Removed circular call between finalSync() and rerenderWorkoutFromArray().
@@ -516,32 +559,32 @@ COLLECTION SOURCES:
 
 STORAGE STRUCTURE:
 /swimgen2/src/template-library/
-├── collector/             # Automated collection tools
-├── sources/               # Raw collected sets by source
-├── validated/             # Coach-approved sets
-├── community/             # User-submitted sets (vetted)
-└── index.js               # Consolidated access
+├── collector/             # Automated collection tools
+├── sources/               # Raw collected sets by source
+├── validated/             # Coach-approved sets
+├── community/             # User-submitted sets (vetted)
+└── index.js               # Consolidated access
 
 **TEMPLATE FORMAT:**
 ```javascript
 {
-  "id": "usaswim-2024-001",
-  "pattern": "8x50 kick on 1:00",
-  "baseDistance": 400,
-  "effort": "moderate",
-  "section": "kick",
-  "equipment": ["fins"],
-  "stroke": "freestyle",
-  "interval": "1:00",
-  "variations": ["6x50", "10x50", "8x75"],
-  "tags": ["kick", "ankle flexibility", "fins"],
-  "source": "USA Swimming - Spring Training",
-  "coachNotes": "Focus on steady kick tempo",
-  "validation": {
-    "coachApproved": true,
-    "usageCount": 1250,
-    "rating": 4.8
-  }
+  "id": "usaswim-2024-001",
+  "pattern": "8x50 kick on 1:00",
+  "baseDistance": 400,
+  "effort": "moderate",
+  "section": "kick",
+  "equipment": ["fins"],
+  "stroke": "freestyle",
+  "interval": "1:00",
+  "variations": ["6x50", "10x50", "8x75"],
+  "tags": ["kick", "ankle flexibility", "fins"],
+  "source": "USA Swimming - Spring Training",
+  "coachNotes": "Focus on steady kick tempo",
+  "validation": {
+    "coachApproved": true,
+    "usageCount": 1250,
+    "rating": 4.8
+  }
 }
 QUALITY RULES:
 
@@ -733,15 +776,15 @@ LOCATION: /research/ directory (separate from working app)
 STRUCTURE:
 research/
 ├── collectors/
-│   ├── usms-collector.js
-│   ├── coach-sites-collector.js
-│   └── public-databases-collector.js
+│   ├── usms-collector.js
+│   ├── coach-sites-collector.js
+│   └── public-databases-collector.js
 ├── analysis/
-│   ├── pattern-finder.js
-│   └── popularity-ranker.js
+│   ├── pattern-finder.js
+│   └── popularity-ranker.js
 ├── outputs/
-│   ├── top-500-patterns.json
-│   └── pattern-insights.md
+│   ├── top-500-patterns.json
+│   └── pattern-insights.md
 └── README.md
 
 RULES:
@@ -860,6 +903,7 @@ All gestures work together with conflict prevention
 Team Notes
 [11/2023] JK: Fixed template parsing bugs - cool down no longer shows "Total Xm", odd/even sets now display correctly
 [11/2023] JK: Working on template randomization to prevent identical 2000m workouts
+[02/2026] JK: Android pipeline established. Beware "inner folder" trap. Visual parity is priority.
 
 User Feedback
 [To be implemented]
