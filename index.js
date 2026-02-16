@@ -1429,15 +1429,16 @@ app.get("/", (req, res) => {
 
       <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:24px; padding:12px; font-size:13px; border:none; background:rgba(255,255,255,0.4); order:1;">
         <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to use SwimSum</h4>
-        <ol style="margin:0 0 10px 0; padding-left:18px; font-size:12px; line-height:1.6;">
-          <li>Choose your distance and pool size.</li>
-          <li>Click <strong>Generate</strong> and voila!</li>
-        </ol>
+        <ul style="margin:0 0 10px 0; padding-left:18px; font-size:12px; line-height:1.8; list-style:disc;">
+          <li>Choose your pool length</li>
+          <li>Swipe your distance</li>
+          <li>Generate an instant workout!</li>
+        </ul>
         <details class="more-features-details">
           <summary style="cursor:pointer; color:#007bff; text-decoration:underline; font-weight:bold; margin-bottom:10px; font-size:12px; list-style:none;">How to use added features</summary>
           <ul style="list-style-type:disc; padding-left:20px; margin:8px 0 0 0; line-height:1.5; color:#333; font-size:12px;">
             <li><strong>Top Dolphin:</strong> New full workout.</li>
-            <li><strong>Set Dolphin:</strong> Reroll just that set.</li>
+            <li><strong>Refresh Icon:</strong> Reroll just that set.</li>
             <li><strong>Long Press (300ms):</strong> Drag and drop sets.</li>
             <li><strong>Swipe Right:</strong> Remove a set.</li>
             <li><strong>Swipe Left:</strong> Send set to bottom.</li>
@@ -4155,8 +4156,8 @@ app.get("/", (req, res) => {
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:900; font-size:64px; color:#ffffff; text-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.2), 0 0 40px rgba(255,255,255,0.15); letter-spacing:2px; user-select:none;">SwimSum</div>
     <div style="margin-top:24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:17px; font-weight:500; color:rgba(0,0,0,0.75); letter-spacing:0.3px; text-shadow: 0 1px 3px rgba(255,255,255,0.15);">
       <div id="splash-line1" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Choose your pool length</div>
-      <div id="splash-line2" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Swipe in your distance</div>
-      <div id="splash-line3" style="opacity:0;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Generate an instant workout</div>
+      <div id="splash-line2" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Swipe your distance</div>
+      <div id="splash-line3" style="opacity:0;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Generate an instant workout!</div>
       <div id="splash-line4" style="opacity:0; margin-top:20px;"><img src="/assets/dolphins/dolphin-base.png" style="width:72px; height:72px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));"></div>
     </div>
   </div>
