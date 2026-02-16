@@ -9,7 +9,7 @@
     totalDistance: 500,
     sections: [
       { label: "Warm up", desc: "100 easy", distance: 100 },
-      { label: "Main", desc: "4x75 steady\\nbuild each 75 by 25", distance: 300 },
+      { label: "Main", desc: "4x75 steady\nbuild each 75 by 25", distance: 300 },
       { label: "Cool down", desc: "100 easy", distance: 100 }
     ],
     tags: ["short", "quick"]
@@ -19,7 +19,7 @@
     totalDistance: 800,
     sections: [
       { label: "Warm up", desc: "200 easy choice", distance: 200 },
-      { label: "Main", desc: "4x100 moderate\\nfocus on technique", distance: 400 },
+      { label: "Main", desc: "4x100 moderate\nfocus on technique", distance: 400 },
       { label: "Cool down", desc: "200 easy", distance: 200 }
     ],
     tags: ["short", "express"]
@@ -41,7 +41,7 @@
     sections: [
       { label: "Warm up", desc: "300 easy", distance: 300 },
       { label: "Drill", desc: "4x50 drill choice", distance: 200 },
-      { label: "Main", desc: "4x125 steady\\nbuild last 25", distance: 500 },
+      { label: "Main", desc: "4x125 steady\nbuild last 25", distance: 500 },
       { label: "Cool down", desc: "200 easy", distance: 200 }
     ],
     tags: ["short", "technique"]
@@ -55,7 +55,7 @@
     totalDistance: 1500,
     sections: [
       { label: "Warm up", desc: "300 easy choice", distance: 300 },
-      { label: "Drill", desc: "4x50 drill FC\\n1. Catch-up\\n2. Fist\\n3. DPS\\n4. Finger drag", distance: 200 },
+      { label: "Drill", desc: "4x50 drill FC\n1. Catch-up\n2. Fist\n3. DPS\n4. Finger drag", distance: 200 },
       { label: "Main", desc: "4x200 easy @ moderate effort", distance: 800 },
       { label: "Cool down", desc: "200 easy", distance: 200 }
     ],
@@ -66,7 +66,7 @@
     totalDistance: 1800,
     sections: [
       { label: "Warm up", desc: "400 easy", distance: 400 },
-      { label: "Drill", desc: "6x50 drill FC\\n1. Catch-up\\n2. Fist\\n3. DPS\\n4. Finger drag\\n5. Single arm\\n6. Scull", distance: 300 },
+      { label: "Drill", desc: "6x50 drill FC\n1. Catch-up\n2. Fist\n3. DPS\n4. Finger drag\n5. Single arm\n6. Scull", distance: 300 },
       { label: "Build", desc: "4x100 build by 25", distance: 400 },
       { label: "Main", desc: "4x150 steady", distance: 600 },
       { label: "Cool down", desc: "100 easy", distance: 100 }
@@ -93,7 +93,7 @@
     name: "Aerobic Base",
     totalDistance: 2500,
     sections: [
-      { label: "Warm up", desc: "400 easy\\n4x50 build", distance: 600 },
+      { label: "Warm up", desc: "400 easy\n4x50 build", distance: 600 },
       { label: "Drill", desc: "4x50 drill choice", distance: 200 },
       { label: "Main", desc: "5x300 steady @ threshold", distance: 1500 },
       { label: "Cool down", desc: "200 easy", distance: 200 }
@@ -106,7 +106,7 @@
     sections: [
       { label: "Warm up", desc: "400 easy", distance: 400 },
       { label: "Build", desc: "4x100 build by 25", distance: 400 },
-      { label: "Main 1", desc: "6x200 @ threshold pace\\n10-15 sec rest", distance: 1200 },
+      { label: "Main 1", desc: "6x200 @ threshold pace\n10-15 sec rest", distance: 1200 },
       { label: "Kick", desc: "4x50 kick moderate", distance: 200 },
       { label: "Main 2", desc: "4x150 descend 1-4", distance: 600 },
       { label: "Cool down", desc: "200 easy", distance: 200 }
@@ -117,7 +117,7 @@
     name: "Mixed Pace",
     totalDistance: 3000,
     sections: [
-      { label: "Warm up", desc: "300 easy\\n4x50 choice", distance: 500 },
+      { label: "Warm up", desc: "300 easy\n4x50 choice", distance: 500 },
       { label: "Drill", desc: "4x75 drill/swim by 25", distance: 300 },
       { label: "Main", desc: "3x(200 strong + 100 easy)", distance: 900 },
       { label: "Pull", desc: "4x150 pull steady", distance: 600 },
@@ -132,7 +132,7 @@
     sections: [
       { label: "Warm up", desc: "400 easy", distance: 400 },
       { label: "Build", desc: "4x100 build", distance: 400 },
-      { label: "Main", desc: "Pyramid: 100-200-300-400-300-200-100\\nAll @ strong effort", distance: 1600 },
+      { label: "Main", desc: "Pyramid: 100-200-300-400-300-200-100\nAll @ strong effort", distance: 1600 },
       { label: "Kick", desc: "4x100 kick moderate", distance: 400 },
       { label: "Cool down", desc: "400 easy", distance: 400 }
     ],
@@ -159,7 +159,7 @@
     name: "Endurance Builder",
     totalDistance: 4000,
     sections: [
-      { label: "Warm up", desc: "400 easy\\n4x100 build", distance: 800 },
+      { label: "Warm up", desc: "400 easy\n4x100 build", distance: 800 },
       { label: "Drill", desc: "4x50 drill choice", distance: 200 },
       { label: "Main", desc: "5x400 steady @ threshold", distance: 2000 },
       { label: "Kick", desc: "4x100 kick moderate", distance: 400 },
@@ -174,7 +174,7 @@
       { label: "Warm up", desc: "600 easy choice", distance: 600 },
       { label: "Build", desc: "6x100 build by 25", distance: 600 },
       { label: "Main 1", desc: "8x150 strong", distance: 1200 },
-      { label: "Main 2", desc: "12x50 fast\\n15 sec rest", distance: 600 },
+      { label: "Main 2", desc: "12x50 fast\n15 sec rest", distance: 600 },
       { label: "Pull", desc: "4x150 pull easy", distance: 600 },
       { label: "Cool down", desc: "400 easy", distance: 400 }
     ],
@@ -184,7 +184,7 @@
     name: "Broken Distance",
     totalDistance: 4200,
     sections: [
-      { label: "Warm up", desc: "500 easy\\n4x50 build", distance: 700 },
+      { label: "Warm up", desc: "500 easy\n4x50 build", distance: 700 },
       { label: "Drill", desc: "6x50 drill FC", distance: 300 },
       { label: "Main", desc: "3x(500 steady + 100 easy)", distance: 1800 },
       { label: "Kick", desc: "4x100 kick choice", distance: 400 },
@@ -198,7 +198,7 @@
     totalDistance: 4000,
     sections: [
       { label: "Warm up", desc: "400 IM easy", distance: 400 },
-      { label: "Drill", desc: "4x100 IM drill\\n25 each stroke", distance: 400 },
+      { label: "Drill", desc: "4x100 IM drill\n25 each stroke", distance: 400 },
       { label: "Main 1", desc: "4x200 IM strong", distance: 800 },
       { label: "Main 2", desc: "8x100 IM @ threshold", distance: 800 },
       { label: "Kick", desc: "4x100 IM kick", distance: 400 },
@@ -215,7 +215,7 @@
     name: "Distance Day",
     totalDistance: 5000,
     sections: [
-      { label: "Warm up", desc: "600 easy\\n4x100 build", distance: 1000 },
+      { label: "Warm up", desc: "600 easy\n4x100 build", distance: 1000 },
       { label: "Main 1", desc: "1000 steady", distance: 1000 },
       { label: "Drill", desc: "6x50 drill choice", distance: 300 },
       { label: "Main 2", desc: "6x300 @ threshold", distance: 1800 },
@@ -230,7 +230,7 @@
     sections: [
       { label: "Warm up", desc: "800 easy choice", distance: 800 },
       { label: "Build", desc: "4x100 build", distance: 400 },
-      { label: "Main", desc: "Ladder: 50-100-150-200-250-300-250-200-150-100-50\\nStrong effort", distance: 1800 },
+      { label: "Main", desc: "Ladder: 50-100-150-200-250-300-250-200-150-100-50\nStrong effort", distance: 1800 },
       { label: "Kick", desc: "6x100 kick moderate", distance: 600 },
       { label: "Pull", desc: "4x200 pull steady", distance: 800 },
       { label: "Cool down", desc: "600 easy", distance: 600 }
@@ -241,7 +241,7 @@
     name: "Triple Threat",
     totalDistance: 5400,
     sections: [
-      { label: "Warm up", desc: "600 easy\\n6x50 build", distance: 900 },
+      { label: "Warm up", desc: "600 easy\n6x50 build", distance: 900 },
       { label: "Main 1", desc: "4x400 steady", distance: 1600 },
       { label: "Drill", desc: "4x75 drill/swim", distance: 300 },
       { label: "Main 2", desc: "6x200 strong", distance: 1200 },
@@ -258,7 +258,7 @@
       { label: "Warm up", desc: "800 easy", distance: 800 },
       { label: "Build", desc: "6x100 build by 25", distance: 600 },
       { label: "Drill", desc: "4x75 drill choice", distance: 300 },
-      { label: "Main 1", desc: "5x400 @ threshold\\n20 sec rest", distance: 2000 },
+      { label: "Main 1", desc: "5x400 @ threshold\n20 sec rest", distance: 2000 },
       { label: "Main 2", desc: "8x150 descend 1-4 twice", distance: 1200 },
       { label: "Kick", desc: "4x100 kick moderate", distance: 400 },
       { label: "Cool down", desc: "700 easy", distance: 700 }
@@ -273,7 +273,7 @@
     name: "Marathon Prep",
     totalDistance: 7000,
     sections: [
-      { label: "Warm up", desc: "800 easy\\n4x100 build", distance: 1200 },
+      { label: "Warm up", desc: "800 easy\n4x100 build", distance: 1200 },
       { label: "Main 1", desc: "2000 steady", distance: 2000 },
       { label: "Drill", desc: "6x50 drill FC", distance: 300 },
       { label: "Main 2", desc: "5x400 @ threshold", distance: 2000 },
@@ -302,12 +302,12 @@
     name: "Championship Prep",
     totalDistance: 8000,
     sections: [
-      { label: "Warm up", desc: "800 easy\\n6x100 build", distance: 1400 },
-      { label: "Main 1", desc: "8x200 @ race pace\\n15 sec rest", distance: 1600 },
+      { label: "Warm up", desc: "800 easy\n6x100 build", distance: 1400 },
+      { label: "Main 1", desc: "8x200 @ race pace\n15 sec rest", distance: 1600 },
       { label: "Pull", desc: "4x200 pull steady", distance: 800 },
       { label: "Main 2", desc: "4x400 strong", distance: 1600 },
       { label: "Kick", desc: "6x100 kick fast", distance: 600 },
-      { label: "Main 3", desc: "16x50 fast\\n10 sec rest", distance: 800 },
+      { label: "Main 3", desc: "16x50 fast\n10 sec rest", distance: 800 },
       { label: "Cool down", desc: "1200 easy", distance: 1200 }
     ],
     tags: ["race", "competition"]
@@ -320,7 +320,7 @@
     name: "Iron Swimmer",
     totalDistance: 9000,
     sections: [
-      { label: "Warm up", desc: "1000 easy\\n6x100 build", distance: 1600 },
+      { label: "Warm up", desc: "1000 easy\n6x100 build", distance: 1600 },
       { label: "Main 1", desc: "3000 steady continuous", distance: 3000 },
       { label: "Drill", desc: "6x75 drill FC", distance: 450 },
       { label: "Main 2", desc: "8x250 strong", distance: 2000 },
@@ -334,7 +334,7 @@
     name: "Ultimate Challenge",
     totalDistance: 10000,
     sections: [
-      { label: "Warm up", desc: "1000 easy\\n8x100 build", distance: 1800 },
+      { label: "Warm up", desc: "1000 easy\n8x100 build", distance: 1800 },
       { label: "Main 1", desc: "5x600 @ steady pace", distance: 3000 },
       { label: "Drill", desc: "8x50 drill choice", distance: 400 },
       { label: "Main 2", desc: "8x300 strong", distance: 2400 },
@@ -368,10 +368,10 @@ var SECTION_TEMPLATES_LOCAL = {
     { body: "400 easy", dist: 400 },
     { body: "4x100 easy", dist: 400 },
     { body: "8x50 easy", dist: 400 },
-    { body: "200 easy\\n4x50 easy choice", dist: 400 },
+    { body: "200 easy\n4x50 easy choice", dist: 400 },
     { body: "6x50 easy choice", dist: 300 },
     { body: "4x75 easy", dist: 300 },
-    { body: "200 easy\\n2x100 moderate", dist: 400 },
+    { body: "200 easy\n2x100 moderate", dist: 400 },
     { body: "500 easy", dist: 500 },
     { body: "2x200 easy", dist: 400 },
     { body: "10x50 easy", dist: 500 },
@@ -382,7 +382,7 @@ var SECTION_TEMPLATES_LOCAL = {
     { body: "800 easy", dist: 800 },
     { body: "8x100 easy", dist: 800 },
     { body: "4x200 easy", dist: 800 },
-    { body: "500 easy\\n6x50 easy choice", dist: 800 }
+    { body: "500 easy\n6x50 easy choice", dist: 800 }
   ],
   build: [
     { body: "4x50 build", dist: 200 },
@@ -396,28 +396,28 @@ var SECTION_TEMPLATES_LOCAL = {
   ],
   drill: [
     // Structured numbered drill sets (coach-style)
-    { body: "6x50 Drill FC\\n1. Fist\\n2. Catch-up\\n3. DPS\\n4. Jazz Hands\\n5. Long Dog\\n6. Scull Front", dist: 300 },
-    { body: "8x25 Drill FC\\n1. Scull Front\\n2. Scull Rear\\n3. Torpedo Glide\\n4. Fist\\n5. Finger Drag\\n6. Catch-up\\n7. DPS\\n8. Single Arm", dist: 200 },
-    { body: "4x50 Drill FC\\n1. Catch-up\\n2. DPS\\n3. Fist\\n4. 25 Drill / 25 Swim", dist: 200 },
-    { body: "6x50 Drill FC\\n1. Finger Drag\\n2. Long Dog\\n3. 3-3-3\\n4. Catch-up\\n5. Single Arm\\n6. DPS", dist: 300 },
-    { body: "8x50 Drill FC\\n1. Fist\\n2. Catch-up\\n3. DPS\\n4. Jazz Hands\\n5. Long Dog\\n6. Scull Front\\n7. Finger Drag\\n8. Torpedo Glide", dist: 400 },
-    { body: "4x50 Drill FC\\n1. Single Arm\\n2. Torpedo Glide\\n3. 3-3-3\\n4. Scull Rear", dist: 200 },
-    { body: "6x50 Drill FC\\n1. Torpedo Glide\\n2. Scull Front\\n3. Scull Rear\\n4. Fist\\n5. DPS\\n6. Catch-up", dist: 300 },
-    { body: "8x25 Drill FC\\n1. Fist\\n2. Catch-up\\n3. DPS\\n4. Jazz Hands\\n5. Long Dog\\n6. Scull Front\\n7. Finger Drag\\n8. Single Arm", dist: 200 },
-    { body: "4x100 Drill FC\\n1. 50 Drill / 50 Swim\\n2. Catch-up\\n3. DPS\\n4. Fist", dist: 400 },
-    { body: "6x50 Drill FC\\n1. Jazz Hands\\n2. 3-3-3\\n3. Single Arm\\n4. Finger Drag\\n5. Torpedo Glide\\n6. Long Dog", dist: 300 },
-    { body: "4x50 Drill FC\\n1. Fist\\n2. DPS\\n3. Catch-up\\n4. Scull Front", dist: 200 },
-    { body: "4x50 Drill FC\\n1. Long Dog\\n2. Finger Drag\\n3. 3-3-3\\n4. Jazz Hands", dist: 200 },
-    { body: "6x50 Drill FC\\n1. Single Arm\\n2. Fist\\n3. Catch-up\\n4. DPS\\n5. Scull Front\\n6. Torpedo Glide", dist: 300 },
-    { body: "4x75 Drill FC\\n1. Catch-up\\n2. Fist\\n3. DPS\\n4. 25 Drill / 25 Swim", dist: 300 },
-    { body: "6x50 Drill FC\\n1. Jazz Hands\\n2. Long Dog\\n3. 3-3-3\\n4. Finger Drag\\n5. Single Arm\\n6. Fist", dist: 300 },
-    { body: "6x50 Drill FC\\n1. DPS\\n2. Fist\\n3. Catch-up\\n4. Single Arm\\n5. Finger Drag\\n6. Scull Rear", dist: 300 },
-    { body: "10x50 Drill FC\\n1. Fist\\n2. Catch-up\\n3. DPS\\n4. Jazz Hands\\n5. Long Dog\\n6. Scull Front\\n7. Finger Drag\\n8. Single Arm\\n9. Torpedo Glide\\n10. Scull Rear", dist: 500 },
-    { body: "6x100 Drill FC\\n1. 50 Drill / 50 Swim\\n2. Catch-up\\n3. DPS\\n4. Fist\\n5. Single Arm\\n6. Long Dog", dist: 600 },
-    { body: "12x50 Drill FC\\n1. Fist\\n2. Catch-up\\n3. DPS\\n4. Jazz Hands\\n5. Long Dog\\n6. Scull Front\\n7. Finger Drag\\n8. Single Arm\\n9. Torpedo Glide\\n10. Scull Rear\\n11. 3-3-3\\n12. 25 Drill / 25 Swim", dist: 600 },
-    { body: "6x100 Drill FC\\n1. 50 Drill / 50 Swim\\n2. Catch-up\\n3. DPS\\n4. Fist\\n5. Single Arm\\n6. Long Dog", dist: 600 },
-    { body: "8x100 Drill FC\\n1. 50 Drill / 50 Swim\\n2. Catch-up\\n3. DPS\\n4. Fist\\n5. Single Arm\\n6. Long Dog\\n7. Torpedo Glide\\n8. Scull Front", dist: 800 },
-    { body: "14x50 Drill FC\\n1. Fist\\n2. Catch-up\\n3. DPS\\n4. Jazz Hands\\n5. Long Dog\\n6. Scull Front\\n7. Finger Drag\\n8. Single Arm\\n9. Torpedo Glide\\n10. Scull Rear\\n11. 3-3-3\\n12. 25 Drill / 25 Swim\\n13. Fist\\n14. Catch-up", dist: 700 }
+    { body: "6x50 Drill FC\n1. Fist\n2. Catch-up\n3. DPS\n4. Jazz Hands\n5. Long Dog\n6. Scull Front", dist: 300 },
+    { body: "8x25 Drill FC\n1. Scull Front\n2. Scull Rear\n3. Torpedo Glide\n4. Fist\n5. Finger Drag\n6. Catch-up\n7. DPS\n8. Single Arm", dist: 200 },
+    { body: "4x50 Drill FC\n1. Catch-up\n2. DPS\n3. Fist\n4. 25 Drill / 25 Swim", dist: 200 },
+    { body: "6x50 Drill FC\n1. Finger Drag\n2. Long Dog\n3. 3-3-3\n4. Catch-up\n5. Single Arm\n6. DPS", dist: 300 },
+    { body: "8x50 Drill FC\n1. Fist\n2. Catch-up\n3. DPS\n4. Jazz Hands\n5. Long Dog\n6. Scull Front\n7. Finger Drag\n8. Torpedo Glide", dist: 400 },
+    { body: "4x50 Drill FC\n1. Single Arm\n2. Torpedo Glide\n3. 3-3-3\n4. Scull Rear", dist: 200 },
+    { body: "6x50 Drill FC\n1. Torpedo Glide\n2. Scull Front\n3. Scull Rear\n4. Fist\n5. DPS\n6. Catch-up", dist: 300 },
+    { body: "8x25 Drill FC\n1. Fist\n2. Catch-up\n3. DPS\n4. Jazz Hands\n5. Long Dog\n6. Scull Front\n7. Finger Drag\n8. Single Arm", dist: 200 },
+    { body: "4x100 Drill FC\n1. 50 Drill / 50 Swim\n2. Catch-up\n3. DPS\n4. Fist", dist: 400 },
+    { body: "6x50 Drill FC\n1. Jazz Hands\n2. 3-3-3\n3. Single Arm\n4. Finger Drag\n5. Torpedo Glide\n6. Long Dog", dist: 300 },
+    { body: "4x50 Drill FC\n1. Fist\n2. DPS\n3. Catch-up\n4. Scull Front", dist: 200 },
+    { body: "4x50 Drill FC\n1. Long Dog\n2. Finger Drag\n3. 3-3-3\n4. Jazz Hands", dist: 200 },
+    { body: "6x50 Drill FC\n1. Single Arm\n2. Fist\n3. Catch-up\n4. DPS\n5. Scull Front\n6. Torpedo Glide", dist: 300 },
+    { body: "4x75 Drill FC\n1. Catch-up\n2. Fist\n3. DPS\n4. 25 Drill / 25 Swim", dist: 300 },
+    { body: "6x50 Drill FC\n1. Jazz Hands\n2. Long Dog\n3. 3-3-3\n4. Finger Drag\n5. Single Arm\n6. Fist", dist: 300 },
+    { body: "6x50 Drill FC\n1. DPS\n2. Fist\n3. Catch-up\n4. Single Arm\n5. Finger Drag\n6. Scull Rear", dist: 300 },
+    { body: "10x50 Drill FC\n1. Fist\n2. Catch-up\n3. DPS\n4. Jazz Hands\n5. Long Dog\n6. Scull Front\n7. Finger Drag\n8. Single Arm\n9. Torpedo Glide\n10. Scull Rear", dist: 500 },
+    { body: "6x100 Drill FC\n1. 50 Drill / 50 Swim\n2. Catch-up\n3. DPS\n4. Fist\n5. Single Arm\n6. Long Dog", dist: 600 },
+    { body: "12x50 Drill FC\n1. Fist\n2. Catch-up\n3. DPS\n4. Jazz Hands\n5. Long Dog\n6. Scull Front\n7. Finger Drag\n8. Single Arm\n9. Torpedo Glide\n10. Scull Rear\n11. 3-3-3\n12. 25 Drill / 25 Swim", dist: 600 },
+    { body: "6x100 Drill FC\n1. 50 Drill / 50 Swim\n2. Catch-up\n3. DPS\n4. Fist\n5. Single Arm\n6. Long Dog", dist: 600 },
+    { body: "8x100 Drill FC\n1. 50 Drill / 50 Swim\n2. Catch-up\n3. DPS\n4. Fist\n5. Single Arm\n6. Long Dog\n7. Torpedo Glide\n8. Scull Front", dist: 800 },
+    { body: "14x50 Drill FC\n1. Fist\n2. Catch-up\n3. DPS\n4. Jazz Hands\n5. Long Dog\n6. Scull Front\n7. Finger Drag\n8. Single Arm\n9. Torpedo Glide\n10. Scull Rear\n11. 3-3-3\n12. 25 Drill / 25 Swim\n13. Fist\n14. Catch-up", dist: 700 }
   ],
   kick: [
     // Simple flat effort sets (majority for cleaner variety)
@@ -432,7 +432,7 @@ var SECTION_TEMPLATES_LOCAL = {
     { body: "6x50 kick strong", dist: 300 },
     { body: "4x50 kick strong", dist: 200 },
     // Progression sets (multi-line builds)
-    { body: "200 kick moderate\\n4x50 kick strong", dist: 400 },
+    { body: "200 kick moderate\n4x50 kick strong", dist: 400 },
     { body: "6x50 kick descend 1-3 twice", dist: 300 },
     { body: "4x100 kick build", dist: 400 },
     { body: "4x100 kick descend 1-4", dist: 400 },
@@ -444,7 +444,7 @@ var SECTION_TEMPLATES_LOCAL = {
     { body: "10x50 kick steady", dist: 500 },
     { body: "6x100 kick moderate", dist: 600 },
     { body: "12x50 kick steady", dist: 600 },
-    { body: "4x100 kick moderate\\n4x50 kick strong", dist: 600 }
+    { body: "4x100 kick moderate\n4x50 kick strong", dist: 600 }
   ],
   cooldown: [
     { body: "200 easy", dist: 200 },
@@ -460,7 +460,7 @@ var SECTION_TEMPLATES_LOCAL = {
     { body: "500 easy", dist: 500 },
     { body: "10x50 easy", dist: 500 },
     { body: "5x100 easy", dist: 500 },
-    { body: "3x100 easy\\n4x50 loosen", dist: 500 }
+    { body: "3x100 easy\n4x50 loosen", dist: 500 }
   ],
   main: [
     // Flat effort sets (variety of colors)
@@ -500,27 +500,27 @@ var SECTION_TEMPLATES_LOCAL = {
     { body: "8x100 descend 1-4 twice", dist: 800 },
     { body: "10x100 descend 1-5 twice", dist: 1000 },
     // Multi-part sets (dist = sum of both parts)
-    { body: "8x50 fast\\n4x100 moderate", dist: 800 },
-    { body: "400 strong\\n4x100 descend 1-4", dist: 800 },
-    { body: "4x150 build\\n4x50 fast", dist: 800 },
-    { body: "6x100 steady\\n6x50 fast", dist: 900 },
-    { body: "300 easy\\n6x100 hard", dist: 900 },
-    { body: "5x100 strong\\n5x100 threshold", dist: 1000 },
-    { body: "6x100 steady\\n8x50 fast", dist: 1000 },
-    { body: "8x100 moderate\\n4x100 hard", dist: 1200 },
-    { body: "10x100 steady\\n4x50 fast", dist: 1200 },
-    { body: "6x150 moderate\\n6x50 fast", dist: 1200 },
-    { body: "10x100 moderate\\n8x50 fast", dist: 1400 },
-    { body: "8x150 steady\\n4x50 fast", dist: 1400 },
-    { body: "10x100 threshold\\n10x50 fast", dist: 1500 },
-    { body: "12x100 steady\\n6x50 fast", dist: 1500 },
-    { body: "10x100 strong\\n12x50 fast", dist: 1600 },
+    { body: "8x50 fast\n4x100 moderate", dist: 800 },
+    { body: "400 strong\n4x100 descend 1-4", dist: 800 },
+    { body: "4x150 build\n4x50 fast", dist: 800 },
+    { body: "6x100 steady\n6x50 fast", dist: 900 },
+    { body: "300 easy\n6x100 hard", dist: 900 },
+    { body: "5x100 strong\n5x100 threshold", dist: 1000 },
+    { body: "6x100 steady\n8x50 fast", dist: 1000 },
+    { body: "8x100 moderate\n4x100 hard", dist: 1200 },
+    { body: "10x100 steady\n4x50 fast", dist: 1200 },
+    { body: "6x150 moderate\n6x50 fast", dist: 1200 },
+    { body: "10x100 moderate\n8x50 fast", dist: 1400 },
+    { body: "8x150 steady\n4x50 fast", dist: 1400 },
+    { body: "10x100 threshold\n10x50 fast", dist: 1500 },
+    { body: "12x100 steady\n6x50 fast", dist: 1500 },
+    { body: "10x100 strong\n12x50 fast", dist: 1600 },
     { body: "8x200 moderate", dist: 1600 },
-    { body: "12x100 moderate\\n8x50 fast", dist: 1600 },
-    { body: "10x150 moderate\\n6x50 fast", dist: 1800 },
-    { body: "12x100 strong\\n12x50 fast", dist: 1800 },
-    { body: "15x100 steady\\n10x50 fast", dist: 2000 },
-    { body: "12x100 moderate\\n16x50 fast", dist: 2000 }
+    { body: "12x100 moderate\n8x50 fast", dist: 1600 },
+    { body: "10x150 moderate\n6x50 fast", dist: 1800 },
+    { body: "12x100 strong\n12x50 fast", dist: 1800 },
+    { body: "15x100 steady\n10x50 fast", dist: 2000 },
+    { body: "12x100 moderate\n16x50 fast", dist: 2000 }
   ]
 };
 
@@ -544,7 +544,7 @@ var V1_BASE_SET_CATALOGUE_LOCAL = {
         const a = snapToWallSafe(Math.round(unit * 0.5), ctx.poolLen);
         const b = snapToWallSafe(Math.round(unit * 0.25), ctx.poolLen);
         const c = snapToWallSafe(unit - a - b, ctx.poolLen);
-        return `${a} easy swim\\n${b} kick easy\\n${c} easy swim`;
+        return `${a} easy swim\n${b} kick easy\n${c} easy swim`;
       },
     },
     {
@@ -1142,7 +1142,7 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
     }
     
     const heading = fit.reps + "x" + fit.dist + " Drill FC";
-    return heading + "\\n" + drillLines.join("\\n");
+    return heading + "\n" + drillLines.join("\n");
   }
 
   // KICK: Kick set with variety across effort levels
@@ -1230,7 +1230,7 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
         const r1 = Math.floor(totalReps / 2);
         const r2 = totalReps - r1;
         if (r1 >= 2 && r2 >= 2 && r1 * repDist + r2 * repDist === target) {
-          return makeLine(r1, repDist, stroke + " build", restFor(repDist, "moderate")) + "\\n" +
+          return makeLine(r1, repDist, stroke + " build", restFor(repDist, "moderate")) + "\n" +
                  makeLine(r2, repDist, stroke + " fast", restFor(repDist, "hard"));
         }
         return null;
@@ -1243,8 +1243,8 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
         if (!Number.isInteger(totalReps) || totalReps < 6 || totalReps % 3 !== 0) return null;
         const r = totalReps / 3;
         if (r >= 2 && r * repDist * 3 === target) {
-          return makeLine(r, repDist, stroke + " steady", restFor(repDist, "easy")) + "\\n" +
-                 makeLine(r, repDist, stroke + " strong", restFor(repDist, "moderate")) + "\\n" +
+          return makeLine(r, repDist, stroke + " steady", restFor(repDist, "easy")) + "\n" +
+                 makeLine(r, repDist, stroke + " strong", restFor(repDist, "moderate")) + "\n" +
                  makeLine(r, repDist, stroke + " fast", restFor(repDist, "hard"));
         }
         return null;
@@ -1259,7 +1259,7 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
           if (remaining > 0 && remaining % d50 === 0) {
             const r1 = remaining / d50;
             if (r1 >= 2 && r1 <= 12 && r1 * d50 + r2 * d100 === target) {
-              return makeLine(r1, d50, stroke + " build", restFor(d50, "moderate")) + "\\n" +
+              return makeLine(r1, d50, stroke + " build", restFor(d50, "moderate")) + "\n" +
                      makeLine(r2, d100, stroke + " strong", restFor(d100, "hard"));
             }
           }
@@ -1508,7 +1508,7 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       const buildReps = Math.round(buildDist / (base * 2));
       const buildRepDist = buildReps > 0 ? Math.round(buildDist / buildReps) : buildDist;
       if (buildReps > 1) {
-        return easyDist + " " + pick(descPool) + "\\n" + buildReps + "x" + snapToPoolMultiple(buildRepDist, base) + " build";
+        return easyDist + " " + pick(descPool) + "\n" + buildReps + "x" + snapToPoolMultiple(buildRepDist, base) + " build";
       }
       return dist + " " + pick(descPool);
     }
@@ -1671,7 +1671,7 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
     
     let workoutText = "";
     for (const s of sets) {
-      workoutText += s.label + ": " + s.body + "\\n\\n";
+      workoutText += s.label + ": " + s.body + "\n\n";
     }
     workoutText += "Total " + finalTotal + unitsShort;
     
@@ -1694,12 +1694,12 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
 
     function parseWorkoutTextToSections(text) {
       const raw = String(text || "");
-      const plines = raw.split("\\n");
+      const plines = raw.split("\n");
       const sections = [];
       let current = null;
       const flush = () => {
         if (!current) return;
-        current.body = current.bodyLines.join("\\n").trim();
+        current.body = current.bodyLines.join("\n").trim();
         delete current.bodyLines;
         sections.push(current);
         current = null;
