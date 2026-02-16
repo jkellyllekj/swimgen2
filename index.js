@@ -4209,11 +4209,11 @@ app.get("/", (req, res) => {
           splashEmoji.style.fontSize = '64px';
           splashEmoji.style.opacity = '1';
           splashEmoji.style.animation = 'none';
-          splashEmoji.style.filter = 'brightness(1.5) contrast(1.15) saturate(1.6) drop-shadow(0 2px 8px rgba(0,0,0,0.5))';
+          splashEmoji.style.filter = 'brightness(1.6) contrast(1.3) saturate(2.0) drop-shadow(0 2px 8px rgba(0,0,0,0.5))';
           splashEmoji.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
           line4.appendChild(splashEmoji);
           void splashEmoji.offsetWidth;
-          splashEmoji.style.transform = 'translate(-50%, -50%) rotate(-140deg) scale(1)';
+          splashEmoji.style.transform = 'translate(-50%, -50%) rotate(-140deg) scale(0.8)';
         }, 1300);
         setTimeout(function() {
           splash.style.transition = 'opacity 0.7s ease-out';
