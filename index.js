@@ -1427,9 +1427,9 @@ app.get("/", (req, res) => {
         <div id="footerBox" class="glassSummary" style="display:none; margin-top:8px; padding:12px;"></div>
       </div>
 
-      <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:24px; padding:12px; font-size:13px; border:none; background:rgba(255,255,255,0.4); order:1;">
+      <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:24px; padding:12px; font-size:13px; border:none; background:rgba(255,255,255,0.4); order:1; text-align:center;">
         <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to use SwimSum</h4>
-        <ul style="margin:0 0 10px 0; padding-left:18px; font-size:12px; line-height:1.8; list-style:disc;">
+        <ul style="margin:0 0 10px 0; padding-left:0; font-size:12px; line-height:1.8; list-style:none;">
           <li>Choose your pool length</li>
           <li>Swipe your distance</li>
           <li>Generate an instant workout!</li>
