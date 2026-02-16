@@ -4149,7 +4149,7 @@ app.get("/", (req, res) => {
 <body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh;">
 <div class="safe-area-spacer"></div>
 
-<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; align-items:center; justify-content:center; padding-bottom:20%; overflow:hidden;">
   <div id="splash-title" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:900; font-size:64px; color:#ffffff; text-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.2), 0 0 40px rgba(255,255,255,0.15); letter-spacing:2px; opacity:0; transform:scale(0.3); user-select:none;">SwimSum</div>
 </div>
 <script>
@@ -4163,13 +4163,9 @@ app.get("/", (req, res) => {
     if (isCapacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
       window.Capacitor.Plugins.SplashScreen.hide();
     }
-    title.style.transition = 'opacity 0.5s ease-out, transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+    title.style.transition = 'opacity 0.5s ease-out, transform 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     title.style.opacity = '1';
-    title.style.transform = 'scale(1)';
-    setTimeout(function() {
-      title.style.transition = 'transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-      title.style.transform = 'scale(1.15)';
-    }, 1200);
+    title.style.transform = 'scale(1.15)';
     setTimeout(function() {
       splash.style.transition = 'opacity 0.6s ease-out';
       splash.style.opacity = '0';
