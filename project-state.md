@@ -43,9 +43,9 @@ POST-LAUNCH ENHANCEMENTS (V1.1+):
 Project: SwimSum - Swim Workout Generator
 Working title(s): SwimSum (final name)
 
-Last updated: 2026-02-14
+Last updated: 2026-02-16
 
-Status: Active Development - App Store Submission / Visual Debugging
+Status: Active Development - v1.5 Layout Fix & Code Hygiene
 
 ============================================================================ READ THIS FIRST
 This file is the single source of truth for the project.
@@ -134,24 +134,25 @@ The goal is:
 Long term evolution is expected (years), but v1 must stand on its own.
 
 ============================================================================ CURRENT PHASE
-Phase: App Store Submission & Visual Polish
+Phase: v1.5 - Layout Fix & Code Hygiene
 
 Primary goals:
-- Ensure Android WebView looks 1:1 with Web Preview
-- Pass Internal Testing on Google Play
-- Configure AdMob/Monetization
-- Release Lite Mode (v1.0)
+- Ad banner moved to bottom of page (perpetual-banner class, position:fixed bottom:0)
+- Safe-area-spacer CSS added for notch/status bar clearance
+- Offline generation JS (~1855 lines) extracted from inline template to public/offline-engine.js
+- GOOGLE_CLIENT_ID and ADMOB_BANNER_ID placeholders added to index.js
+- App is fully offline (no server dependency for workout generation)
 
 Constraints:
 - Generator uses ONLY real-world templates (no algorithmic invention)
-- Current UI/gestures must be preserved during migration
+- Current UI/gestures must be preserved
 - All sets must be coach-plausible and wall-safe
-- Template collection is continuous process
+- ALL existing colors and backgrounds preserved (no CSS hex code changes)
 
 Phase is complete when:
-- App is live on Play Store (Internal Test passed)
-- Visuals are corrected on mobile device
-- Ads are displaying correctly
+- Layout fixes verified on mobile
+- Auth & Ad SDK integration ready for next phase
+- Code is clean and modular
 
 ============================================================================ ARCHITECTURE OVERVIEW (MIGRATION PATH)
 CURRENT (LITE RELEASE READY):
@@ -325,6 +326,16 @@ Rules:
 - Current color coded workout cards are a core engagement feature
 
 ============================================================================ RECENT WORK (FACTS, NOT PLANS)
+Recent Work (2026-02-16) - v1.5 Layout Fix & Code Hygiene
+✅ COMPLETED: Ad Banner moved to bottom (position:fixed bottom:0, perpetual-banner class)
+✅ COMPLETED: Safe-area-spacer CSS added to styles.css for notch clearance
+✅ COMPLETED: Offline generation JS (~1855 lines) extracted to public/offline-engine.js
+✅ COMPLETED: GOOGLE_CLIENT_ID and ADMOB_BANNER_ID placeholders added to index.js
+✅ COMPLETED: www/ rebuilt with external script reference and bottom banner
+✅ COMPLETED: android assets synced with updated www/
+✅ COMPLETED: Body padding changed from padding-top:85px to padding-bottom:65px
+✅ COMPLETED: Scroll offset no longer subtracts banner height (banner now at bottom)
+
 Recent Work (2026-02-14)
 ✅ COMPLETED: Android Build & Upload
 - Generated Signed Bundle (Release v1.0, 6.16MB).

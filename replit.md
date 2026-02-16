@@ -14,7 +14,7 @@ SwimSum is a swim workout generator application primarily targeting Android, wit
 ## System Architecture
 
 ### Application Structure
-The application is built using Node.js and Express, serving an inline HTML/CSS/JavaScript frontend. Key logic is modularized into several JavaScript files within `src/modules/` to promote organization and reusability, including modules for drag-and-drop functionality, mathematical calculations (`setMath.js`), static workout data (`workoutLibrary.js`), and the core workout generation logic (`workoutGenerator.js`). The system leverages a template-only generation approach, using pre-defined workout templates that are scaled to match user-specified distances, ensuring coach-plausible workouts. Critical deterministic functions for randomization and calculation are immutable to maintain workout consistency.
+The application is built using Node.js and Express, serving an inline HTML/CSS/JavaScript frontend. Key logic is modularized into several JavaScript files within `src/modules/` to promote organization and reusability, including modules for drag-and-drop functionality, mathematical calculations (`setMath.js`), static workout data (`workoutLibrary.js`), and the core workout generation logic (`workoutGenerator.js`). The offline workout generation engine (~1855 lines) has been extracted to `public/offline-engine.js` and is loaded via `<script src>` instead of inline. The system leverages a template-only generation approach, using pre-defined workout templates that are scaled to match user-specified distances, ensuring coach-plausible workouts. Critical deterministic functions for randomization and calculation are immutable to maintain workout consistency.
 
 ### Frontend
 The user interface allows selection of pool type (25m, 50m, 25yd, Custom) and target workout distance via a slider. Workouts are displayed as visually distinct chips, using a zone-based color scheme (e.g., Easy blue, Moderate green, Hard orange) for intensity, with white text on dark backgrounds for readability. UI elements include a workout name generator, a drill library, and an emoji intensity strip. The design emphasizes a clean layout, rounded corners, drop shadows, and a premium background image, creating a polished user experience. Individual sets can be re-rolled by the user.
@@ -47,6 +47,8 @@ User-selected workout parameters are processed, leading to the deterministic gen
 
 ### Environment Configuration
 - `OPENAI_API_KEY`: Replit Secret, not utilized by current generation logic.
+- `GOOGLE_CLIENT_ID`: Placeholder for future Google Sign-In integration.
+- `ADMOB_BANNER_ID`: Placeholder for future AdMob ad banner integration.
 - `PORT`: Optional, defaults to 5000.
 
 ### No Database

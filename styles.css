@@ -1,5 +1,18 @@
 /* Extracted from index.js template <style> blocks */
 
+.safe-area-spacer {
+  height: env(safe-area-inset-top, 20px);
+  background: transparent;
+  width: 100%;
+}
+
+.perpetual-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
 :root {
         /* Boulder shadow for heavy UI presence */
         --boulder-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 10px 25px rgba(0, 0, 0, 0.15);
