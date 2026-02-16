@@ -4158,7 +4158,7 @@ app.get("/", (req, res) => {
       <div id="splash-line1" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Choose your pool length</div>
       <div id="splash-line2" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Swipe your distance</div>
       <div id="splash-line3" style="opacity:0;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Generate an instant workout!</div>
-      <div id="splash-line4" style="opacity:0; margin-top:20px; position:relative; display:inline-block;"><img id="splash-dolphin-img" class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" style="width:72px; height:72px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));"></div>
+      <div id="splash-line4" style="opacity:0; margin-top:20px; position:relative; display:inline-block;"><img id="splash-dolphin-img" src="/assets/dolphins/dolphin-base.png" style="width:72px; height:72px; object-fit:contain; filter: saturate(1.4) brightness(1.1) drop-shadow(0 3px 8px rgba(0,0,0,0.4));"></div>
     </div>
   </div>
 </div>
