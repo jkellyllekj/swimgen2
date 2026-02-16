@@ -24,6 +24,8 @@ HIGH PRIORITY:
 ✅ COMPLETED: Update Data Safety Form & Account Deletion URLs (2026-02-16)
 ✅ COMPLETED: Align Triple-Link Privacy Policy (Store, Data Safety, Deletion)
 ✅ COMPLETED: Initialize AdMob Test Banner with Adaptive Height logic
+✅ COMPLETED: Redesign Splash Screen with sequential text animation (2026-02-16)
+✅ COMPLETED: Replace set reroll dolphins with spinning refresh icons (2026-02-16)
 ⏳ PENDING: Program Email Collection Logic & Firebase Integration
 - Fix Android Visual Fidelity (Current blocker: "Bloated" look/wrong backgrounds)
 - Add ad placement framework - Basic banner/interstitial ads
@@ -338,6 +340,10 @@ Recent Work (2026-02-16) - v1.5 Layout, AdMob Integration & Console Compliance
 ✅ COMPLETED: AdMob Test Initialization: Loaded Adaptive Banner (Test ID: ca-app-pub-3940256099942544/6300978111).
 ✅ COMPLETED: Splash Screen Update: Integrated "SwimSum" branding text above dolphin imagery.
 ✅ COMPLETED: Extraction: Moved ~1855 lines of generation logic to public/offline-engine.js with window-object scoping.
+✅ COMPLETED: Splash Screen Animation: Implemented high-position 'SwimSum' zoom with drop shadow, followed by sequential black subtitle fade-ins ('Choose pool', 'Swipe distance', 'Generate').
+✅ COMPLETED: Splash Screen Branding: Added enlarged (80% bigger) generator dolphin as the final stage of the splash sequence.
+✅ COMPLETED: UI Refresh: Replaced individual workout set reroll dolphins with spinning refresh icons for better UX clarity.
+✅ COMPLETED: AdMob: Upgraded banner logic to 'Adaptive Banner' for improved vertical weight (min-height: 60px).
 
 Recent Work (2026-02-14)
 ✅ COMPLETED: Android Build & Upload
