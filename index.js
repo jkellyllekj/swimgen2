@@ -4157,6 +4157,7 @@ app.get("/", (req, res) => {
       <div id="splash-line1" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Choose your pool length</div>
       <div id="splash-line2" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Swipe in your distance</div>
       <div id="splash-line3" style="opacity:0;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Generate an instant workout</div>
+      <div id="splash-line4" style="opacity:0; margin-top:20px;"><img src="/assets/dolphins/dolphin-base.png" style="width:40px; height:40px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));"></div>
     </div>
   </div>
 </div>
@@ -4168,6 +4169,7 @@ app.get("/", (req, res) => {
   var line1 = document.getElementById('splash-line1');
   var line2 = document.getElementById('splash-line2');
   var line3 = document.getElementById('splash-line3');
+  var line4 = document.getElementById('splash-line4');
 
   function fadeIn(el) {
     if (!el) return;
@@ -4184,13 +4186,14 @@ app.get("/", (req, res) => {
     content.style.opacity = '1';
     content.style.transform = 'scale(1.1)';
     setTimeout(function() { fadeIn(line1); }, 2200);
-    setTimeout(function() { fadeIn(line2); }, 2500);
-    setTimeout(function() { fadeIn(line3); }, 2800);
+    setTimeout(function() { fadeIn(line2); }, 2600);
+    setTimeout(function() { fadeIn(line3); }, 3000);
+    setTimeout(function() { fadeIn(line4); }, 3400);
     setTimeout(function() {
       splash.style.transition = 'opacity 0.7s ease-out';
       splash.style.opacity = '0';
       setTimeout(function() { splash.remove(); }, 750);
-    }, 4800);
+    }, 4900);
   }
 
   if (document.readyState === 'complete') startAnimation();
