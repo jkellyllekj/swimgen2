@@ -4154,10 +4154,10 @@ app.get("/", (req, res) => {
   <div id="splash-content" style="text-align:center; opacity:0; transform:scale(0.3);">
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:900; font-size:64px; color:#ffffff; text-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.2), 0 0 40px rgba(255,255,255,0.15); letter-spacing:2px; user-select:none;">SwimSum</div>
     <div id="splash-steps" style="margin-top:24px; opacity:0; transform:translateY(10px);">
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:17px; font-weight:400; color:rgba(255,255,255,0.9); line-height:2; letter-spacing:0.3px; text-shadow: 0 1px 6px rgba(0,0,0,0.25);">
-        <span style="margin-right:6px; opacity:0.7;">&#9679;</span> Choose your pool length<br>
-        <span style="margin-right:6px; opacity:0.7;">&#9679;</span> Swipe in your distance<br>
-        <span style="margin-right:6px; opacity:0.7;">&#9679;</span> Generate an instant workout
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:17px; font-weight:500; color:rgba(0,0,0,0.75); line-height:2; letter-spacing:0.3px; text-shadow: 0 1px 3px rgba(255,255,255,0.15);">
+        <span style="margin-right:6px; opacity:0.5;">&#9679;</span> Choose your pool length<br>
+        <span style="margin-right:6px; opacity:0.5;">&#9679;</span> Swipe in your distance<br>
+        <span style="margin-right:6px; opacity:0.5;">&#9679;</span> Generate an instant workout
       </div>
     </div>
   </div>
@@ -4188,7 +4188,7 @@ app.get("/", (req, res) => {
       splash.style.transition = 'opacity 0.7s ease-out';
       splash.style.opacity = '0';
       setTimeout(function() { splash.remove(); }, 750);
-    }, 3200);
+    }, 4200);
   }
 
   if (document.readyState === 'complete') startAnimation();
