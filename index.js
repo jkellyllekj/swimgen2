@@ -2792,7 +2792,7 @@ app.get("/", (req, res) => {
             '<button type="button" data-reroll-set="' +
               safeHtml(String(idx)) +
               '" style="padding:0; border-radius:8px; border:none; background:transparent; cursor:pointer; line-height:1;" title="Reroll this set">' +
-              '<span class="reroll-dolphin setDolphin"><img class="dolphinIcon setDolphinSpinTarget" src="/assets/dolphins/dolphin-base.png" alt=""></span>' +
+              '<span class="reroll-refresh"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></span>' +
             "</button>"
           );
           if (Number.isFinite(setDist)) {
@@ -2848,8 +2848,10 @@ app.get("/", (req, res) => {
             if (btn.dataset.busy === "1") return;
             btn.dataset.busy = "1";
             btn.blur();
-            const spinTarget = btn.querySelector('.setDolphinSpinTarget');
+            const spinTarget = btn.querySelector('.reroll-refresh');
             if (spinTarget) {
+              spinTarget.classList.remove('spinning');
+              void spinTarget.offsetWidth;
               spinTarget.classList.add('spinning');
             }
 
@@ -2971,12 +2973,11 @@ app.get("/", (req, res) => {
             } catch (e) {
               renderError("Reroll failed", [String(e && e.message ? e.message : e)]);
             } finally {
-              // Wait for the full 1.25s spin animation to complete before removing class
-              const spinTarget = btn.querySelector('.setDolphinSpinTarget');
-              await new Promise(r => setTimeout(r, 1250));
+              const spinTarget2 = btn.querySelector('.reroll-refresh');
+              await new Promise(r => setTimeout(r, 800));
               btn.dataset.busy = "0";
-              if (spinTarget) {
-                spinTarget.classList.remove('spinning');
+              if (spinTarget2) {
+                spinTarget2.classList.remove('spinning');
               }
             }
           });

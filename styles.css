@@ -384,18 +384,23 @@
         75% { transform: rotate(270deg); }
         100% { transform: rotate(360deg); }
       }
-      .reroll-dolphin {
-        display: inline-block;
-        font-size: 28px;
+      .reroll-refresh {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
       }
-      /* Set card dolphin spin target - GPU optimized */
-      .setDolphinSpinTarget {
+      .reroll-refresh svg {
+        width: 24px;
+        height: 24px;
         will-change: transform;
         backface-visibility: hidden;
         transform: translateZ(0);
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
       }
-      .setDolphinSpinTarget.spinning {
-        animation: reroll-spin 1.25s linear;
+      .reroll-refresh.spinning svg {
+        animation: reroll-spin 0.8s ease-in-out;
       }
       button[data-reroll-set] {
         opacity: 1 !important;
