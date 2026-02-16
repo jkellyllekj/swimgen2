@@ -27,6 +27,9 @@ HIGH PRIORITY:
 ✅ COMPLETED: Redesign Splash Screen with sequential text animation (2026-02-16)
 ✅ COMPLETED: Replace set reroll dolphins with spinning refresh icons (2026-02-16)
 ⏳ PENDING: Program Email Collection Logic & Firebase Integration
+⏳ PENDING: Implement Adaptive AdMob Banner height (Fix 'narrow' look).
+⏳ PENDING: Integrated Auth Flow: Google Sign-in / Email account creation gate.
+⏳ PENDING: Tester 'Skip' Logic: LocalStorage flag for internal test bypass.
 - Fix Android Visual Fidelity (Current blocker: "Bloated" look/wrong backgrounds)
 - Add ad placement framework - Basic banner/interstitial ads
 - Add email signup collection - For update notifications
@@ -344,6 +347,10 @@ Recent Work (2026-02-16) - v1.5 Layout, AdMob Integration & Console Compliance
 ✅ COMPLETED: Splash Screen Branding: Added enlarged (80% bigger) generator dolphin as the final stage of the splash sequence.
 ✅ COMPLETED: UI Refresh: Replaced individual workout set reroll dolphins with spinning refresh icons for better UX clarity.
 ✅ COMPLETED: AdMob: Upgraded banner logic to 'Adaptive Banner' for improved vertical weight (min-height: 60px).
+✅ COMPLETED: Splash Screen Overhaul: High-pos 'SwimSum' zoom, triple black-text subtitles (Choose, Swipe, Generate), and 80% enlarged dolphin finale.
+✅ COMPLETED: Animation Timings: 400ms subtitle fades with 500ms pauses and 1500ms final hold.
+✅ COMPLETED: Icon Refresh: Replaced all individual set reroll dolphins with spinning refresh icons for standard UX.
+✅ COMPLETED: Adaptive Banner Prep: Ad container moved to bottom:0 (currently narrow, fix pending).
 
 Recent Work (2026-02-14)
 ✅ COMPLETED: Android Build & Upload
