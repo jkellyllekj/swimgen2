@@ -30,6 +30,8 @@ HIGH PRIORITY:
 ⏳ PENDING: Implement Adaptive AdMob Banner height (Fix 'narrow' look).
 ⏳ PENDING: Integrated Auth Flow: Google Sign-in / Email account creation gate.
 ⏳ PENDING: Tester 'Skip' Logic: LocalStorage flag for internal test bypass.
+⏳ PENDING: Implement Adaptive Banner logic to resolve "narrow" layout.
+⏳ PENDING: Placeholder Auth Gate (Sign-in/Google) with "Skip" logic for testers.
 - Fix Android Visual Fidelity (Current blocker: "Bloated" look/wrong backgrounds)
 - Add ad placement framework - Basic banner/interstitial ads
 - Add email signup collection - For update notifications
@@ -351,6 +353,9 @@ Recent Work (2026-02-16) - v1.5 Layout, AdMob Integration & Console Compliance
 ✅ COMPLETED: Animation Timings: 400ms subtitle fades with 500ms pauses and 1500ms final hold.
 ✅ COMPLETED: Icon Refresh: Replaced all individual set reroll dolphins with spinning refresh icons for standard UX.
 ✅ COMPLETED: Adaptive Banner Prep: Ad container moved to bottom:0 (currently narrow, fix pending).
+✅ COMPLETED: Splash Screen Finalization: Sequential title zoom, instruction fade-ins, and 80% enlarged dolphin finale.
+✅ COMPLETED: UI Polish: Replaced set reroll dolphins with black, smooth-spinning refresh icons.
+✅ COMPLETED: Layout: Centered all instruction text on the generator page for visual balance.
 
 Recent Work (2026-02-14)
 ✅ COMPLETED: Android Build & Upload
