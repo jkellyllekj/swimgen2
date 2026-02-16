@@ -4205,12 +4205,15 @@ app.get("/", (req, res) => {
           splashEmoji.style.position = 'absolute';
           splashEmoji.style.top = '50%';
           splashEmoji.style.left = '50%';
-          splashEmoji.style.transform = 'translate(-50%, -50%) rotate(-130deg)';
-          splashEmoji.style.fontSize = '48px';
+          splashEmoji.style.transform = 'translate(-50%, -50%) rotate(-130deg) scale(0)';
+          splashEmoji.style.fontSize = '64px';
           splashEmoji.style.opacity = '1';
           splashEmoji.style.animation = 'none';
-          splashEmoji.style.filter = 'none';
+          splashEmoji.style.filter = 'contrast(1.6) saturate(1.8) brightness(0.85)';
+          splashEmoji.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
           line4.appendChild(splashEmoji);
+          void splashEmoji.offsetWidth;
+          splashEmoji.style.transform = 'translate(-50%, -50%) rotate(-130deg) scale(1)';
         }, 1300);
         setTimeout(function() {
           splash.style.transition = 'opacity 0.7s ease-out';
