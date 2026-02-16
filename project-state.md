@@ -21,6 +21,10 @@ HIGH PRIORITY:
 ✅ COMPLETED: Hide advanced options & set editor (Lite Mode Toggle implemented 2026-02-11)
 ✅ COMPLETED: Generate Signed Bundle (v1.0 uploaded to Internal Testing)
 ✅ COMPLETED: Fix Ad ID Declaration in Play Console
+✅ COMPLETED: Update Data Safety Form & Account Deletion URLs (2026-02-16)
+✅ COMPLETED: Align Triple-Link Privacy Policy (Store, Data Safety, Deletion)
+✅ COMPLETED: Initialize AdMob Test Banner with Adaptive Height logic
+⏳ PENDING: Program Email Collection Logic & Firebase Integration
 - Fix Android Visual Fidelity (Current blocker: "Bloated" look/wrong backgrounds)
 - Add ad placement framework - Basic banner/interstitial ads
 - Add email signup collection - For update notifications
@@ -45,7 +49,7 @@ Working title(s): SwimSum (final name)
 
 Last updated: 2026-02-16
 
-Status: Active Development - v1.5 Layout Fix & Code Hygiene
+Status: Active Development - v1.5 Layout, AdMob Integration & Console Compliance
 
 ============================================================================ READ THIS FIRST
 This file is the single source of truth for the project.
@@ -134,14 +138,13 @@ The goal is:
 Long term evolution is expected (years), but v1 must stand on its own.
 
 ============================================================================ CURRENT PHASE
-Phase: v1.5 - Layout Fix & Code Hygiene
+Phase: v1.5 - Layout, AdMob Integration & Console Compliance
 
 Primary goals:
-- Ad banner moved to bottom of page (perpetual-banner class, position:fixed bottom:0)
-- Safe-area-spacer CSS added for notch/status bar clearance
-- Offline generation JS (~1855 lines) extracted from inline template to public/offline-engine.js
-- GOOGLE_CLIENT_ID and ADMOB_BANNER_ID placeholders added to index.js
-- App is fully offline (no server dependency for workout generation)
+- Finalize AdMob layout with Adaptive Banners (pinned to bottom:0)
+- Splash screen professional branding ("SwimSum" text addition)
+- 2026 Play Store compliance (Web-based account deletion via Google Sites)
+- Extraction of offline-engine.js and resolution of scope/newline bugs
 
 Constraints:
 - Generator uses ONLY real-world templates (no algorithmic invention)
@@ -326,15 +329,15 @@ Rules:
 - Current color coded workout cards are a core engagement feature
 
 ============================================================================ RECENT WORK (FACTS, NOT PLANS)
-Recent Work (2026-02-16) - v1.5 Layout Fix & Code Hygiene
-✅ COMPLETED: Ad Banner moved to bottom (position:fixed bottom:0, perpetual-banner class)
-✅ COMPLETED: Safe-area-spacer CSS added to styles.css for notch clearance
-✅ COMPLETED: Offline generation JS (~1855 lines) extracted to public/offline-engine.js
-✅ COMPLETED: GOOGLE_CLIENT_ID and ADMOB_BANNER_ID placeholders added to index.js
-✅ COMPLETED: www/ rebuilt with external script reference and bottom banner
-✅ COMPLETED: android assets synced with updated www/
-✅ COMPLETED: Body padding changed from padding-top:85px to padding-bottom:65px
-✅ COMPLETED: Scroll offset no longer subtracts banner height (banner now at bottom)
+Recent Work (2026-02-16) - v1.5 Layout, AdMob Integration & Console Compliance
+✅ COMPLETED: Ad Banner moved to bottom (position:fixed bottom:0, perpetual-banner class).
+✅ COMPLETED: FIXED CRITICAL BUG: Resolved newline escape issue (\\n -> \n) in offline-engine.js that prevented colored chip rendering.
+✅ COMPLETED: Play Console Compliance: Updated Data Safety declarations for Email, User IDs, and Device IDs (AdMob).
+✅ COMPLETED: Triple-Link Privacy: Synced Privacy Policy URL across Store Settings, Data Safety, and Account Deletion fields.
+✅ COMPLETED: Google Sites Update: Established web-based account deletion portal for 2026 compliance.
+✅ COMPLETED: AdMob Test Initialization: Loaded Adaptive Banner (Test ID: ca-app-pub-3940256099942544/6300978111).
+✅ COMPLETED: Splash Screen Update: Integrated "SwimSum" branding text above dolphin imagery.
+✅ COMPLETED: Extraction: Moved ~1855 lines of generation logic to public/offline-engine.js with window-object scoping.
 
 Recent Work (2026-02-14)
 ✅ COMPLETED: Android Build & Upload
