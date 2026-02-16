@@ -1176,7 +1176,7 @@ app.get("/", (req, res) => {
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
       @keyframes cardSettle { 0% { opacity: 0.5; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
       .card-settling { animation: cardSettle 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-      body { padding-bottom: 65px !important; }
+      body { padding-bottom: 75px !important; }
     </style>
     <script>
       (function() {
@@ -4149,7 +4149,8 @@ app.get("/", (req, res) => {
 <body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh;">
 <div class="safe-area-spacer"></div>
 
-<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; align-items:center; justify-content:center;">
+<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;">
+  <div id="splash-title" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:900; font-size:42px; color:#ffffff; text-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.2); letter-spacing:1px; opacity:0; transition: opacity 0.4s ease-in; margin-bottom:16px;">SwimSum</div>
   <img id="splash-img" src="/assets/dolphins/FeatureGraphic.jpg"
     style="width:90%; max-width:600px; height:auto; display:block; border-radius:12px; box-shadow:0 4px 30px rgba(0,0,0,0.4); opacity:0; transition: opacity 0.4s ease-in;" />
 </div>
@@ -4171,6 +4172,8 @@ app.get("/", (req, res) => {
   }
 
   function onImageReady() {
+    var title = document.getElementById('splash-title');
+    if (title) title.style.opacity = '1';
     img.style.opacity = '1';
     setTimeout(startZoomAndFade, 800);
   }
@@ -4206,13 +4209,47 @@ ${HOME_JS_RENDER}
 ${HOME_JS_EVENTS}
 ${HOME_JS_GESTURES}
 ${HOME_JS_CLOSE}
-<div id="adBanner" class="perpetual-banner" style="position:fixed; bottom:0; left:0; width:100%; height:55px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:0 60px; box-sizing:border-box; z-index:9999; border-top:1px solid rgba(255,255,255,0.1); box-shadow:0 -4px 15px rgba(0,0,0,0.4);">
-  <div style="display:flex; flex-direction:column; gap:2px;">
+<div id="adBanner" class="perpetual-banner" style="position:fixed; bottom:0; left:0; width:100%; min-height:60px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:0 60px; box-sizing:border-box; z-index:9999; border-top:1px solid rgba(255,255,255,0.1); box-shadow:0 -4px 15px rgba(0,0,0,0.4);">
+  <div id="admob-container" style="width:100%; display:none;"></div>
+  <div id="fakeAdFallback" style="display:flex; flex-direction:column; gap:2px;">
     <div id="fakeAdContent" style="font-weight:800; color:#60a5fa; text-transform:uppercase; letter-spacing:1px; font-size:11px;">Enjoy a clean experience -- Remove Ads today</div>
     <div style="font-size:9px; color:#94a3b8; font-weight:500;">Check out upcoming Premium features in the menu below</div>
   </div>
   <button type="button" style="position:absolute; top:50%; right:12px; transform:translateY(-50%); background:rgba(255,255,255,0.9); color:#1e3a8a; border:none; border-radius:4px; padding:4px 10px; font-size:9px; font-weight:900; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">REMOVE ADS</button>
 </div>
+<script>
+(function() {
+  var isCapacitor = typeof window.Capacitor !== 'undefined';
+  if (!isCapacitor) return;
+  function initAdMob() {
+    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.AdMob) return;
+    var AdMob = window.Capacitor.Plugins.AdMob;
+    AdMob.initialize({ requestTrackingAuthorization: false }).then(function() {
+      var screenWidth = window.screen.width || 360;
+      var dpr = window.devicePixelRatio || 1;
+      var adWidth = Math.floor(screenWidth / dpr);
+      AdMob.showBanner({
+        adId: '${ADMOB_BANNER_ID || "ca-app-pub-3940256099942544/6300978111"}',
+        adSize: 'ADAPTIVE_BANNER',
+        position: 'BOTTOM_CENTER',
+        margin: 0,
+        isTesting: true
+      }).then(function() {
+        var fallback = document.getElementById('fakeAdFallback');
+        if (fallback) fallback.style.display = 'none';
+        var container = document.getElementById('admob-container');
+        if (container) container.style.display = 'block';
+      }).catch(function(err) {
+        console.warn('AdMob banner failed, showing fallback:', err);
+      });
+    }).catch(function(err) {
+      console.warn('AdMob init failed:', err);
+    });
+  }
+  if (document.readyState === 'complete') initAdMob();
+  else window.addEventListener('load', initAdMob);
+})();
+</script>
 </body>
 </html>`;
 
