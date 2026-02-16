@@ -4150,28 +4150,45 @@ app.get("/", (req, res) => {
 <body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh;">
 <div class="safe-area-spacer"></div>
 
-<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; align-items:center; justify-content:center; padding-bottom:20%; overflow:hidden;">
-  <div id="splash-title" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:900; font-size:64px; color:#ffffff; text-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.2), 0 0 40px rgba(255,255,255,0.15); letter-spacing:2px; opacity:0; transform:scale(0.3); user-select:none;">SwimSum</div>
+<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:28%; overflow:hidden;">
+  <div id="splash-content" style="text-align:center; opacity:0; transform:scale(0.3);">
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:900; font-size:64px; color:#ffffff; text-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.2), 0 0 40px rgba(255,255,255,0.15); letter-spacing:2px; user-select:none;">SwimSum</div>
+    <div id="splash-steps" style="margin-top:24px; opacity:0; transform:translateY(10px);">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:17px; font-weight:400; color:rgba(255,255,255,0.9); line-height:2; letter-spacing:0.3px; text-shadow: 0 1px 6px rgba(0,0,0,0.25);">
+        <span style="margin-right:6px; opacity:0.7;">&#9679;</span> Choose your pool length<br>
+        <span style="margin-right:6px; opacity:0.7;">&#9679;</span> Swipe in your distance<br>
+        <span style="margin-right:6px; opacity:0.7;">&#9679;</span> Generate an instant workout
+      </div>
+    </div>
+  </div>
 </div>
 <script>
 (function() {
   var isCapacitor = typeof window.Capacitor !== 'undefined';
   var splash = document.getElementById('swimsum-splash');
-  var title = document.getElementById('splash-title');
+  var content = document.getElementById('splash-content');
+  var steps = document.getElementById('splash-steps');
 
   function startAnimation() {
-    if (!splash || !title) return;
+    if (!splash || !content) return;
     if (isCapacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
       window.Capacitor.Plugins.SplashScreen.hide();
     }
-    title.style.transition = 'opacity 0.5s ease-out, transform 2.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    title.style.opacity = '1';
-    title.style.transform = 'scale(1.15)';
+    content.style.transition = 'opacity 0.6s ease-out, transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    content.style.opacity = '1';
+    content.style.transform = 'scale(1.1)';
     setTimeout(function() {
-      splash.style.transition = 'opacity 0.6s ease-out';
+      if (steps) {
+        steps.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+        steps.style.opacity = '1';
+        steps.style.transform = 'translateY(0)';
+      }
+    }, 600);
+    setTimeout(function() {
+      splash.style.transition = 'opacity 0.7s ease-out';
       splash.style.opacity = '0';
-      setTimeout(function() { splash.remove(); }, 650);
-    }, 2400);
+      setTimeout(function() { splash.remove(); }, 750);
+    }, 3200);
   }
 
   if (document.readyState === 'complete') startAnimation();
