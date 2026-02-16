@@ -4209,7 +4209,7 @@ app.get("/", (req, res) => {
           splashEmoji.style.fontSize = '64px';
           splashEmoji.style.opacity = '1';
           splashEmoji.style.animation = 'none';
-          splashEmoji.style.filter = 'contrast(2.2) saturate(2.5) brightness(0.7) drop-shadow(0 3px 6px rgba(0,0,0,0.45))';
+          splashEmoji.style.filter = 'brightness(1.3) saturate(1.6) drop-shadow(0 2px 8px rgba(0,0,0,0.5))';
           splashEmoji.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
           line4.appendChild(splashEmoji);
           void splashEmoji.offsetWidth;
