@@ -4158,7 +4158,7 @@ app.get("/", (req, res) => {
       <div id="splash-line1" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Choose your pool length</div>
       <div id="splash-line2" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Swipe your distance</div>
       <div id="splash-line3" style="opacity:0;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Generate an instant workout!</div>
-      <div id="splash-line4" style="opacity:0; margin-top:20px;"><img src="/assets/dolphins/dolphin-base.png" style="width:72px; height:72px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));"></div>
+      <div id="splash-line4" style="opacity:0; margin-top:20px; position:relative; display:inline-block;"><img id="splash-dolphin-img" class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" style="width:72px; height:72px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));"></div>
     </div>
   </div>
 </div>
@@ -4189,12 +4189,38 @@ app.get("/", (req, res) => {
     setTimeout(function() { fadeIn(line1); }, 2200);
     setTimeout(function() { fadeIn(line2); }, 3100);
     setTimeout(function() { fadeIn(line3); }, 4000);
-    setTimeout(function() { fadeIn(line4); }, 4900);
     setTimeout(function() {
-      splash.style.transition = 'opacity 0.7s ease-out';
-      splash.style.opacity = '0';
-      setTimeout(function() { splash.remove(); }, 750);
-    }, 6400);
+      fadeIn(line4);
+      var dolphinImg = document.getElementById('splash-dolphin-img');
+      if (line4 && dolphinImg) {
+        setTimeout(function() {
+          line4.classList.add('dolphinSpin');
+        }, 500);
+        setTimeout(function() {
+          line4.classList.remove('dolphinSpin');
+          dolphinImg.style.transition = 'opacity 0.2s ease';
+          dolphinImg.style.opacity = '0';
+          var splashEmoji = document.createElement('span');
+          splashEmoji.className = 'splashFixed';
+          splashEmoji.textContent = '\uD83D\uDCA6';
+          splashEmoji.style.position = 'absolute';
+          splashEmoji.style.top = '50%';
+          splashEmoji.style.left = '50%';
+          splashEmoji.style.transform = 'translate(-50%, -50%)';
+          splashEmoji.style.fontSize = '48px';
+          splashEmoji.style.opacity = '0';
+          splashEmoji.style.transition = 'opacity 0.2s ease';
+          line4.appendChild(splashEmoji);
+          void splashEmoji.offsetWidth;
+          splashEmoji.style.opacity = '1';
+        }, 1300);
+        setTimeout(function() {
+          splash.style.transition = 'opacity 0.7s ease-out';
+          splash.style.opacity = '0';
+          setTimeout(function() { splash.remove(); }, 750);
+        }, 2800);
+      }
+    }, 4900);
   }
 
   if (document.readyState === 'complete') startAnimation();
