@@ -4198,21 +4198,19 @@ app.get("/", (req, res) => {
         }, 500);
         setTimeout(function() {
           line4.classList.remove('dolphinSpin');
-          dolphinImg.style.transition = 'opacity 0.2s ease';
+          dolphinImg.style.transition = 'opacity 0.15s ease';
           dolphinImg.style.opacity = '0';
           var splashEmoji = document.createElement('span');
-          splashEmoji.className = 'splashFixed';
           splashEmoji.textContent = '\uD83D\uDCA6';
           splashEmoji.style.position = 'absolute';
           splashEmoji.style.top = '50%';
           splashEmoji.style.left = '50%';
-          splashEmoji.style.transform = 'translate(-50%, -50%)';
+          splashEmoji.style.transform = 'translate(-50%, -50%) rotate(-130deg)';
           splashEmoji.style.fontSize = '48px';
-          splashEmoji.style.opacity = '0';
-          splashEmoji.style.transition = 'opacity 0.2s ease';
-          line4.appendChild(splashEmoji);
-          void splashEmoji.offsetWidth;
           splashEmoji.style.opacity = '1';
+          splashEmoji.style.animation = 'none';
+          splashEmoji.style.filter = 'none';
+          line4.appendChild(splashEmoji);
         }, 1300);
         setTimeout(function() {
           splash.style.transition = 'opacity 0.7s ease-out';
