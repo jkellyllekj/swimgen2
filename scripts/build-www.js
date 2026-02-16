@@ -36,11 +36,7 @@ async function build() {
     console.log('Fetching main page...');
     let html = await fetchPage('/');
 
-    console.log('Injecting production API base URL:', PRODUCTION_API_URL);
-    html = html.replace(
-      "window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';",
-      `window.SWIMSUM_API_BASE = '${PRODUCTION_API_URL}';`
-    );
+    console.log('App is self-contained (offline mode) - no API base URL needed');
 
     fs.writeFileSync(path.join(WWW_DIR, 'index.html'), html);
     console.log('Wrote www/index.html');
