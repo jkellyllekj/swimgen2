@@ -1852,3 +1852,22 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       return { ok: false, error: "Reroll failed to produce a replacement set." };
     }
 
+    function fingerprintWorkoutText(text) {
+      return String(fnv1a32(String(text || "")));
+    }
+
+    window.WORKOUT_TEMPLATES_LOCAL = WORKOUT_TEMPLATES_LOCAL;
+    window.generateWorkoutLocal = generateWorkoutLocal;
+    window.rerollSetLocal = rerollSetLocal;
+    window.parseWorkoutTextToSections = parseWorkoutTextToSections;
+    window.inferZoneFromText = inferZoneFromText;
+    window.inferIsStriatedFromText = inferIsStriatedFromText;
+    window.fingerprintWorkoutText = fingerprintWorkoutText;
+    window.fnv1a32 = fnv1a32;
+    window.snapToPoolMultiple = snapToPoolMultiple;
+    window.snapRepDist = snapRepDist;
+    window.endsAtHomeEnd = endsAtHomeEnd;
+    window.pickEvenRepScheme = pickEvenRepScheme;
+    window.snapToPoolMultipleShared = snapToPoolMultipleShared;
+    window.shuffleWithSeed = shuffleWithSeed;
+    window.mulberry32 = mulberry32;

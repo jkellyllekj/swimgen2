@@ -1843,7 +1843,7 @@ app.get("/", (req, res) => {
       wireBackgroundCycleButton();
   `;
   const HOME_JS_OFFLINE = `
-    </script><script src="/offline-engine.js"></script><script>
+    // Offline engine loaded via <script src="/offline-engine.js"> in <head>
   `;
 
   const HOME_JS_PARSERS = `
@@ -4144,6 +4144,7 @@ app.get("/", (req, res) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Swim Sum</title>
   <script>window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';</script>
+  <script src="/offline-engine.js"></script>
 </head>
 <body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh;">
 <div class="safe-area-spacer"></div>
