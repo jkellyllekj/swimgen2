@@ -1176,7 +1176,7 @@ app.get("/", (req, res) => {
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
       @keyframes cardSettle { 0% { opacity: 0.5; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
       .card-settling { animation: cardSettle 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-      body { padding-bottom: 75px !important; }
+      body { padding-bottom: calc(75px + env(safe-area-inset-bottom, 15px)) !important; }
     </style>
     <script>
       (function() {
@@ -1811,6 +1811,7 @@ app.get("/", (req, res) => {
              activeBg.style.backgroundImage = 'none';
              activeBg.style.backgroundColor = 'transparent';
              document.body.style.background = '#121212';
+             document.documentElement.style.backgroundColor = '#121212';
           }, 600);
         };
         img.src = newImageUrl;
@@ -1830,6 +1831,7 @@ app.get("/", (req, res) => {
         bgB.style.opacity = '0';
         
         document.body.style.background = color;
+        document.documentElement.style.backgroundColor = color;
         
         const r = parseInt(color.slice(1,3), 16), g = parseInt(color.slice(3,5), 16), b = parseInt(color.slice(5,7), 16);
         document.body.style.color = (r*299 + g*587 + b*114)/1000 < 128 ? '#ffffff' : '#111111';
@@ -4186,10 +4188,10 @@ app.get("/", (req, res) => {
   <script>window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';</script>
   <script src="/offline-engine.js"></script>
 </head>
-<body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh;">
+<body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px);">
 <div class="safe-area-spacer"></div>
 
-<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:28%; overflow:hidden;">
+<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:28%; overflow:hidden; transform:scale(0.9); transform-origin:center center;">
   <div id="splash-content" style="text-align:center; opacity:0; transform:scale(0.3);">
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:900; font-size:64px; color:#ffffff; text-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.2), 0 0 40px rgba(255,255,255,0.15); letter-spacing:2px; user-select:none;">SwimSum</div>
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:700; font-size:22px; color:#6b0f2a; letter-spacing:1px; margin-top:6px; user-select:none;">Workout Generator</div>

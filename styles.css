@@ -1,8 +1,12 @@
 /* Extracted from index.js template <style> blocks */
 
+html, body {
+  background-color: #40c9e0;
+}
+
 .safe-area-spacer {
   height: env(safe-area-inset-top, 20px);
-  background: transparent;
+  background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%);
   width: 100%;
 }
 
@@ -12,6 +16,7 @@
   left: 0;
   width: 100%;
   min-height: 60px;
+  padding-bottom: env(safe-area-inset-bottom, 15px);
   opacity: 1 !important;
 }
 
