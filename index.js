@@ -1242,7 +1242,7 @@ app.get("/", (req, res) => {
                 </div>
 
                 <div id="premiumTeaserRow" style="display:flex; align-items:center; justify-content:flex-start; gap:10px; margin-top:10px; position:relative;">
-                  <button type="button" id="showPremiumInfo" onclick="window.location.href='/premium'" style="background:transparent; border:none; text-align:left; font-size:14px; opacity:0.85; display:flex; align-items:center; gap:8px; cursor:pointer; padding:0; font-weight:600; color:#0055aa;">
+                  <button type="button" id="showPremiumInfo" style="background:transparent; border:none; text-align:left; font-size:14px; opacity:0.85; display:flex; align-items:center; gap:8px; cursor:pointer; padding:0; font-weight:600; color:#0055aa;">
                     <span class="whiteChip">✨ Premium Options (Coming Soon)</span>
                   </button>
                 </div>
@@ -3552,18 +3552,55 @@ app.get("/", (req, res) => {
       // Initialize gesture editing system
       initGestureSystem();
 
-      // Direct Navigation for Premium/Ads
+      function showPremiumOverlay() {
+        var existing = document.getElementById('premium-overlay');
+        if (existing) { existing.style.opacity = '1'; existing.style.display = 'flex'; return; }
+        var overlay = document.createElement('div');
+        overlay.id = 'premium-overlay';
+        overlay.style.cssText = 'position:fixed; inset:0; z-index:99997; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s ease;';
+        overlay.innerHTML =
+          '<div class="glassPanel" style="max-width:600px; width:90%; margin:0 auto; padding:25px; background:#f0f4f8; border-radius:16px; max-height:85vh; overflow-y:auto;">' +
+            '<h1 style="margin-top:0;">✨ Premium Options</h1>' +
+            '<p>We are currently developing a suite of powerful features for competitive and fitness swimmers. Here is what we are considering for the Premium release:</p>' +
+            '<ul style="padding-left:20px;">' +
+              '<li><strong>Advanced Set Editor:</strong> Full manual control to add, edit, or reorder every single set.</li>' +
+              '<li><strong>Custom Pool Geometry:</strong> Support for any pool length (33m, 27yd, etc.) with perfect Swimmer Math.</li>' +
+              '<li><strong>Pace & Interval Engine:</strong> Calculate send-off times based on your CSS (Critical Swim Speed).</li>' +
+              '<li><strong>Equipment Integration:</strong> Toggle Fins, Paddles, Snorkel, and Buoy to match your bag.</li>' +
+              '<li><strong>Remove Advertisements:</strong> Enjoy a clean, distraction-free interface for only 5/year.</li>' +
+              '<li><strong>Workout History:</strong> Save your favorite sessions and track your total yardage over time.</li>' +
+              '<li><strong>Stroke Focus:</strong> Generate workouts specifically for IM, Distance Free, or Sprint Fly.</li>' +
+            '</ul>' +
+            '<hr style="border:0; border-top:1px solid #ccc; margin:20px 0;">' +
+            '<p style="font-size:14px;">Want to influence development? <a href="mailto:feedback@swimsum.com" style="color:#0055aa; font-weight:bold;">Email us your feature requests!</a></p>' +
+            '<button id="premium-back-btn" type="button" style="width:100%; padding:12px; background:#0055aa; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Back to Generator</button>' +
+          '</div>';
+        document.body.appendChild(overlay);
+        void overlay.offsetWidth;
+        overlay.style.opacity = '1';
+        document.getElementById('premium-back-btn').addEventListener('click', function() {
+          overlay.style.opacity = '0';
+          setTimeout(function() { overlay.style.display = 'none'; }, 200);
+        });
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) {
+            overlay.style.opacity = '0';
+            setTimeout(function() { overlay.style.display = 'none'; }, 200);
+          }
+        });
+      }
+
       const adBanner = document.getElementById("adBanner");
       const removeAdsBtn = adBanner ? adBanner.querySelector("button") : null;
 
       if (removeAdsBtn) {
-        removeAdsBtn.addEventListener("click", () => {
-          window.location.href = '/premium';
+        removeAdsBtn.addEventListener("click", function() {
+          showPremiumOverlay();
         });
       }
 
-      document.getElementById("showPremiumInfo")?.addEventListener("click", () => {
-        window.location.href = '/premium';
+      document.getElementById("showPremiumInfo")?.addEventListener("click", function() {
+        showPremiumOverlay();
       });
 
       const settings = loadUserSettings();
