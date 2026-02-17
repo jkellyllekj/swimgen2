@@ -53,9 +53,9 @@ POST-LAUNCH ENHANCEMENTS (V1.1+):
 Project: SwimSum - Swim Workout Generator
 Working title(s): SwimSum (final name)
 
-Last updated: 2026-02-16
+Last updated: 2026-02-17
 
-Status: Active Development - v1.5 Layout, AdMob Integration & Console Compliance
+Status: Active Development - v1.6 Internal Release Ready (2026-02-17)
 
 ============================================================================ READ THIS FIRST
 This file is the single source of truth for the project.
@@ -355,6 +355,13 @@ Recent Work (2026-02-16) - v1.5 Layout, AdMob Integration & Console Compliance
 ✅ COMPLETED: Splash Screen Finalization: Sequential title zoom, instruction fade-ins, and 80% enlarged dolphin finale.
 ✅ COMPLETED: UI Polish: Replaced set reroll dolphins with black, smooth-spinning refresh icons.
 ✅ COMPLETED: Layout: Centered all instruction text on the generator page for visual balance.
+
+Recent Work (2026-02-17) - v1.6 Internal Release Ready
+✅ COMPLETED: Version bump to 1.6 (versionCode 6) to force Play Store propagation fix.
+✅ COMPLETED: Splash/Auth branding: Locked in maroon 'WORKOUT GENERATOR' subtitle and 80% dolphin finale.
+✅ COMPLETED: UI Polish: Verified centering for all instructions and black smooth-spinning refresh icons.
+✅ COMPLETED: Navigation: Premium screen back button now an overlay (prevents splash re-trigger).
+✅ COMPLETED: AdMob: Standardized Adaptive Banner height (min-height: 60px).
 
 Recent Work (2026-02-14)
 ✅ COMPLETED: Android Build & Upload
