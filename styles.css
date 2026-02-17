@@ -12,6 +12,7 @@
   left: 0;
   width: 100%;
   min-height: 60px;
+  opacity: 1 !important;
 }
 
 :root {
@@ -397,7 +398,7 @@
         filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
       }
       .reroll-refresh.spinning svg {
-        animation: reroll-spin 0.8s linear;
+        animation: reroll-spin 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       }
       button[data-reroll-set] {
         opacity: 1 !important;
