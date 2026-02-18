@@ -1811,7 +1811,6 @@ app.get("/", (req, res) => {
              activeBg.style.backgroundImage = 'none';
              activeBg.style.backgroundColor = 'transparent';
              document.body.style.background = 'transparent';
-             document.documentElement.style.backgroundColor = '#40c9e0';
           }, 600);
         };
         img.src = newImageUrl;
@@ -1830,8 +1829,7 @@ app.get("/", (req, res) => {
         bgB.style.backgroundColor = 'transparent';
         bgB.style.opacity = '0';
         
-        document.body.style.background = color;
-        document.documentElement.style.backgroundColor = color;
+        document.body.style.background = 'transparent';
         
         const r = parseInt(color.slice(1,3), 16), g = parseInt(color.slice(3,5), 16), b = parseInt(color.slice(5,7), 16);
         document.body.style.color = (r*299 + g*587 + b*114)/1000 < 128 ? '#ffffff' : '#111111';
