@@ -4188,11 +4188,11 @@ app.get("/", (req, res) => {
   <script>window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';</script>
   <script src="/offline-engine.js"></script>
 </head>
-<body style="padding:5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px);">
+<body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px);">
 <div class="safe-area-spacer"></div>
 
-<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:28%; overflow:hidden; transform:scale(0.9); transform-origin:center center;">
-  <div id="splash-content" style="text-align:center; opacity:0; transform:scale(0.3);">
+<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:28%; overflow:hidden; width:100vw; height:100vh;">
+  <div id="splash-content" style="text-align:center; opacity:0; transform:scale(0.3); max-width:90vw; transform-origin:center center;">
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:900; font-size:64px; color:#ffffff; text-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.2), 0 0 40px rgba(255,255,255,0.15); letter-spacing:2px; user-select:none;">SwimSum</div>
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:700; font-size:22px; color:#6b0f2a; letter-spacing:1px; margin-top:6px; user-select:none;">Workout Generator</div>
     <div style="margin-top:24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:17px; font-weight:500; color:rgba(0,0,0,0.75); letter-spacing:0.3px; text-shadow: 0 1px 3px rgba(255,255,255,0.15);">

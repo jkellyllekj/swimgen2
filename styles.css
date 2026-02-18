@@ -5,8 +5,8 @@ html, body {
 }
 
 .safe-area-spacer {
-  height: env(safe-area-inset-top, 20px);
-  background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%);
+  height: calc(env(safe-area-inset-top, 25px) + 15px);
+  background: transparent;
   width: 100%;
 }
 
