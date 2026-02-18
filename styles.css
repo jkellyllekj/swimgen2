@@ -1,6 +1,8 @@
 /* Extracted from index.js template <style> blocks */
 
 html, body {
+  margin: 0;
+  padding: 0;
   background-color: #40c9e0;
 }
 

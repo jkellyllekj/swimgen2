@@ -1810,8 +1810,8 @@ app.get("/", (req, res) => {
           setTimeout(() => {
              activeBg.style.backgroundImage = 'none';
              activeBg.style.backgroundColor = 'transparent';
-             document.body.style.background = '#121212';
-             document.documentElement.style.backgroundColor = '#121212';
+             document.body.style.background = 'transparent';
+             document.documentElement.style.backgroundColor = '#40c9e0';
           }, 600);
         };
         img.src = newImageUrl;
