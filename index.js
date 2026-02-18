@@ -4186,7 +4186,7 @@ app.get("/", (req, res) => {
   <script>window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';</script>
   <script src="/offline-engine.js"></script>
 </head>
-<body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px);">
+<body style="margin:0; padding:0 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px); box-sizing:border-box;">
 <div class="safe-area-spacer"></div>
 
 <div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:28%; overflow:hidden; width:100vw; height:100vh;">

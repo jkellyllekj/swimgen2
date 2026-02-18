@@ -198,17 +198,17 @@ html, body {
       }
 
       #cards > div > div[data-effort] {
-        background: rgba(255, 255, 255, 0.85) !important;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.5);
-        margin-left: 10px !important;
-        margin-right: 10px !important;
-        width: auto !important;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        box-sizing: border-box;
       }
 
       #workout-list-scroll-area {
-        padding: 0 5px;
+        padding: 0;
         overflow-x: hidden;
       }
       .glassPanel::before {
