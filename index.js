@@ -3462,13 +3462,7 @@ app.get("/", (req, res) => {
             // STEP 2: Scroll to workout area when splash is visible
             const scrollTarget = nameDisplayEl && nameDisplayEl.style.display !== "none" ? nameDisplayEl : cards;
             if (scrollTarget) {
-              const elementPosition = scrollTarget.getBoundingClientRect().top + window.pageYOffset;
-              const offsetPosition = elementPosition - 20;
-
-              window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth"
-              });
+              scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
 
             // STEP 3: Fade in content after scroll starts

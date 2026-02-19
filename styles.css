@@ -210,6 +210,17 @@ html, body {
       #workout-list-scroll-area {
         padding: 0;
         overflow-x: hidden;
+        scroll-margin-top: calc(env(safe-area-inset-top, 25px) + 20px) !important;
+      }
+
+      #splash-content {
+        max-width: 80% !important;
+        margin: 0 auto !important;
+      }
+
+      #workoutNameDisplay,
+      #cards {
+        scroll-margin-top: calc(env(safe-area-inset-top, 25px) + 20px);
       }
       .glassPanel::before {
         content: "";
