@@ -2778,7 +2778,7 @@ app.get("/", (req, res) => {
           
           // Left column: title and detail lines
           html.push('<div style="flex:1; min-width:0;">');
-          html.push('<div style="font-weight:700; color:' + textColor + '; margin-bottom:6px;">' + safeHtml(label) + '</div>');
+          html.push('<div style="font-weight:700; color:' + textColor + '; margin-bottom:6px; display:flex; align-items:center;"><span class="drag-handle"><span></span></span>' + safeHtml(label) + '</div>');
           html.push('<div data-set-body="' + safeHtml(String(idx)) + '" data-original-body="' + safeHtml(body) + '" style="white-space:pre-wrap; line-height:1.35; font-weight:600; color:' + textColor + ';">' + safeHtml(bodyClean) + "</div>");
           if (restDisplay) {
             html.push('<div style="color:' + restColor + '; font-weight:600; font-size:14px; margin-top:4px;">' + safeHtml(restDisplay) + "</div>");
