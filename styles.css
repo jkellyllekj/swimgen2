@@ -19,6 +19,7 @@ html, body {
   width: 100%;
   min-height: 60px;
   padding-bottom: env(safe-area-inset-bottom, 15px);
+  margin-bottom: 30px !important;
   opacity: 1 !important;
 }
 
@@ -214,8 +215,10 @@ html, body {
       }
 
       #splash-content {
-        max-width: 80% !important;
+        width: 75vw !important;
+        max-width: 400px;
         margin: 0 auto !important;
+        display: block;
       }
 
       #workoutNameDisplay,
@@ -486,7 +489,7 @@ html, body {
         position: absolute;
         inset: 0;
         background-size: cover;
-        background-position: center;
+        background-position: center 65%;
         background-repeat: no-repeat;
         opacity: 0;
         transition: opacity 260ms ease;
