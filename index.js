@@ -1194,7 +1194,7 @@ app.get("/", (req, res) => {
           <div class="form-col">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
               <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-                <h3 style="margin:0; font-size:20px; font-weight:700; font-variant:small-caps; letter-spacing:0.5px;">
+                <h3 style="margin:0; font-size:clamp(1.2rem, 5vw, 1.5rem); font-weight:700; font-variant:small-caps; letter-spacing:0.5px;">
                   <span class="glassChip readChip">Swim Sum</span>
                 </h3>
               </div>
@@ -2778,7 +2778,7 @@ app.get("/", (req, res) => {
           
           // Left column: title and detail lines
           html.push('<div style="flex:1; min-width:0;">');
-          html.push('<div style="font-weight:700; color:' + textColor + '; margin-bottom:6px; display:flex; align-items:center;"><span class="drag-handle"><span></span></span>' + safeHtml(label) + '</div>');
+          html.push('<div style="font-weight:700; color:' + textColor + '; margin-bottom:6px; display:flex; align-items:center;"><span class="drag-handle">\u2261</span>' + safeHtml(label) + '</div>');
           html.push('<div data-set-body="' + safeHtml(String(idx)) + '" data-original-body="' + safeHtml(body) + '" style="white-space:pre-wrap; line-height:1.35; font-weight:600; color:' + textColor + ';">' + safeHtml(bodyClean) + "</div>");
           if (restDisplay) {
             html.push('<div style="color:' + restColor + '; font-weight:600; font-size:14px; margin-top:4px;">' + safeHtml(restDisplay) + "</div>");
@@ -4180,7 +4180,7 @@ app.get("/", (req, res) => {
   <script>window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';</script>
   <script src="/offline-engine.js"></script>
 </head>
-<body style="margin:0; padding:0 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px); box-sizing:border-box;">
+<body style="margin:0; padding:0 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px); box-sizing:border-box;">
 <div class="safe-area-spacer"></div>
 
 <div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:28%; overflow:hidden; width:100vw; height:100vh;">
