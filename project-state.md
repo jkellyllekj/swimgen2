@@ -58,6 +58,12 @@ Last updated: 2026-02-18
 Status: Active Development - Internal Testing (9/12 Testers Acquired) - Release Candidate Ready.
 Current Version: 1.8 (versionCode 20)
 
+### 🏢 BUSINESS & PLAY CONSOLE CREDENTIALS
+* **Organization Name:** CREATIVE ARTS GLOBAL LTD
+* **Address:** Unit 82A, BURY ST. EDMUNDS, IP28 7DE, United Kingdom
+* **D-U-N-S Number:** 234466045
+* **Play Console Status:** Pending conversion from Personal to Organization account.
+
 ============================================================================ READ THIS FIRST
 This file is the single source of truth for the project.
 
@@ -365,6 +371,7 @@ Recent Work (2026-02-18) - v1.8 Release Candidate (Stability Update)
     - Visual Polish: Confirmed margins and background rendering are functioning correctly on target devices (S24+).
 [2026-02-18] **Testing Status:**
     - 9/12 Testers acquired. Ready for next Internal/Closed track upload to trigger the 14-day clock.
+[2026-02-19] **Business Verification:** Acquired official D-U-N-S number. Documented business credentials in project state to prepare for Google Play Console Organization conversion and future Merchant Profile / IAP setup.
 
 Recent Work (2026-02-17) - v1.6 Internal Release Ready
 ✅ COMPLETED: Version bump to 1.6 (versionCode 6) to force Play Store propagation fix.
