@@ -1453,3 +1453,31 @@ html, body {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-18px); }
 }
+
+/* === GUTTER FIX === */
+#cards, #workout-list-scroll-area {
+    padding: 0 15px 50px 15px !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+}
+
+/* === SNUG CARDS FIX === */
+.workout-set, .warmup-set, .main-set, .cooldown-set, .drill-set, .pull-set, .sprint-set {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 0 12px 0 !important;
+    padding: 12px !important;
+    overflow: visible !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+}
+
+/* === BOTTOM BLEED FIX === */
+#ad-banner-container {
+    background-color: #1a1a1a !important;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 9999;
+    padding-bottom: env(safe-area-inset-bottom);
+}
