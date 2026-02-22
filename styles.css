@@ -109,8 +109,8 @@ html, body {
 
       /* Bigger icons, no margin tricks */
       .effortIcon {
-        width: 62px;
-        height: 62px;
+        width: 56px;
+        height: 56px;
         object-fit: contain;
         display: block;
         margin: 0;
