@@ -1477,6 +1477,7 @@ html, body {
     padding: 12px !important;
     overflow: visible !important;
     box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+    font-size: clamp(13px, 1rem, 18px) !important;
 }
 
 /* === PANEL MARGIN FIX === */
