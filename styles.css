@@ -1473,6 +1473,14 @@ html, body {
     box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
 }
 
+/* === PANEL MARGIN FIX === */
+#genForm, #howToUseCard, #sticky-footer-panel, #workoutNameDisplay {
+    margin-left: 6px !important;
+    margin-right: 6px !important;
+    width: calc(100% - 12px) !important;
+    box-sizing: border-box !important;
+}
+
 /* === BOTTOM BLEED FIX === */
 #ad-banner-container {
     background-color: #1a1a1a !important;
