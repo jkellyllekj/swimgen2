@@ -2560,7 +2560,8 @@ app.get("/", (req, res) => {
           '/assets/dolphins/dolphin-threshold.png',
           '/assets/dolphins/dolphin-fullgas.png'
         ];
-        const iconAlts = ['Easy', 'Moderate', 'Strong', 'Threshold', 'Full Gas'];
+        const iconAlts = ['Easy', 'Moderate', 'Strong', 'Hard', 'Full Gas'];
+        const iconLabels = ['Easy', 'Moderate', 'Strong', 'Hard', 'Full Gas'];
         
         // Gradient background colors matching CardGym: blue -> green -> yellow -> orange -> red
         const bgColors = ['#b9f0fd', '#cfffc0', '#fcf3d5', '#ffc374', '#fe5050'];
@@ -2577,6 +2578,7 @@ app.get("/", (req, res) => {
         for (let i = 0; i < 5; i++) {
           strip += '<div class=\\"effortTile\\" style=\\"background:' + bgColors[i] + ';\\">';
           strip += '<img class=\\"effortIcon\\" src=\\"' + dolphinIcons[i] + '\\" alt=\\"' + iconAlts[i] + '\\">';
+          strip += '<div style=\\"font-size:9px; font-weight:700; color:#333; margin-top:2px; text-align:center; line-height:1;\\">' + iconLabels[i] + '</div>';
           strip += '</div>';
         }
         
