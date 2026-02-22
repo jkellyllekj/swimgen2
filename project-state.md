@@ -994,3 +994,4 @@ User Feedback
 [To be implemented]
 
 ============================================================================ END OF DOCUMENT
+Milestone: Version 25 (1.0.3) built for production upload. Signing alias 'swimsum_alias' confirmed.
