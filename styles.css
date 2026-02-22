@@ -231,7 +231,7 @@ html, body {
         overflow-x: hidden;
         overflow-y: visible;
         padding-bottom: 20px;
-        scroll-margin-top: calc(env(safe-area-inset-top, 25px) + 20px) !important;
+        scroll-margin-top: env(safe-area-inset-top, 0px) !important;
         margin-top: 4px;
       }
 
@@ -272,12 +272,12 @@ html, body {
       }
 
       #workoutNameDisplay {
-        scroll-margin-top: calc(env(safe-area-inset-top, 25px) + 20px);
+        scroll-margin-top: env(safe-area-inset-top, 0px);
         text-align: center;
-        padding-top: calc(env(safe-area-inset-top, 25px) + 10px);
+        padding-top: 0;
       }
       #cards {
-        scroll-margin-top: calc(env(safe-area-inset-top, 25px) + 20px);
+        scroll-margin-top: env(safe-area-inset-top, 0px);
         padding: 3px;
         overflow: visible;
       }
