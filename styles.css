@@ -82,6 +82,8 @@ html, body {
         overflow-x: auto;
         overflow-y: hidden;
         -webkit-overflow-scrolling: touch;
+        -webkit-text-size-adjust: none;
+        text-size-adjust: none;
       }
 
       /* Effort strip: fills big phones, scrolls on tiny */
@@ -98,12 +100,14 @@ html, body {
       /* True square tiles + dead-centre content */
       .effortTile {
         flex: 1 1 0;
+        aspect-ratio: 1 / 1;
         box-sizing: border-box;
-        padding: 4px 2px 6px 2px;
+        padding: 2px 2px 4px 2px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 2px;
       }
 
       /* Bigger icons, no margin tricks */

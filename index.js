@@ -2578,8 +2578,8 @@ app.get("/", (req, res) => {
         for (let i = 0; i < 5; i++) {
           strip += '<div class=\\"effortTile\\" style=\\"background:' + bgColors[i] + ';\\">';
           strip += '<img class=\\"effortIcon\\" src=\\"' + dolphinIcons[i] + '\\" alt=\\"' + iconAlts[i] + '\\">';
-          var lblSize = iconLabels[i] === 'Moderate' ? '11px' : '13px';
-          strip += '<div style=\\"font-size:' + lblSize + '; font-weight:700; color:#333; margin-top:4px; text-align:center; line-height:1;\\">' + iconLabels[i] + '</div>';
+          var lblSize = iconLabels[i] === 'Moderate' ? '12px' : '14px';
+          strip += '<div style=\\"font-size:' + lblSize + '; font-weight:700; color:#333; text-align:center; line-height:1; -webkit-text-size-adjust:none; text-size-adjust:none;\\">' + iconLabels[i] + '</div>';
           strip += '</div>';
         }
         
