@@ -7,7 +7,7 @@ html, body {
 }
 
 .safe-area-spacer {
-  height: calc(env(safe-area-inset-top, 25px) + 15px);
+  height: env(safe-area-inset-top, 20px);
   background: transparent;
   width: 100%;
 }
@@ -16,11 +16,12 @@ html, body {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
+  width: 100% !important;
   min-height: 60px;
   padding-bottom: env(safe-area-inset-bottom, 15px);
   margin-bottom: 0 !important;
   opacity: 1 !important;
+  background-color: #1a1a1a !important;
 }
 
 .bottom-tray {
@@ -1456,7 +1457,7 @@ html, body {
 
 /* === GUTTER FIX === */
 #cards, #workout-list-scroll-area {
-    padding: 0 15px 50px 15px !important;
+    padding: 0 14px 90px 14px !important;
     width: 100% !important;
     box-sizing: border-box !important;
     overflow: visible !important;
@@ -1475,7 +1476,7 @@ html, body {
 /* === BOTTOM BLEED FIX === */
 #ad-banner-container {
     background-color: #1a1a1a !important;
-    width: 100%;
+    width: 100% !important;
     position: fixed;
     bottom: 0;
     left: 0;
