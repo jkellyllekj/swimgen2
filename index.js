@@ -2578,7 +2578,7 @@ app.get("/", (req, res) => {
         for (let i = 0; i < 5; i++) {
           strip += '<div class=\\"effortTile\\" style=\\"background:' + bgColors[i] + ';\\">';
           strip += '<img class=\\"effortIcon\\" src=\\"' + dolphinIcons[i] + '\\" alt=\\"' + iconAlts[i] + '\\">';
-          strip += '<div style=\\"font-size:9px; font-weight:700; color:#333; margin-top:2px; text-align:center; line-height:1;\\">' + iconLabels[i] + '</div>';
+          strip += '<div style=\\"font-size:11px; font-weight:700; color:#333; margin-top:2px; text-align:center; line-height:1;\\">' + iconLabels[i] + '</div>';
           strip += '</div>';
         }
         
