@@ -1457,7 +1457,7 @@ html, body {
 
 /* === GUTTER FIX === */
 #cards {
-    padding: 0 6px 3px 6px !important;
+    padding: 0 8px 3px 8px !important;
     width: 100% !important;
     box-sizing: border-box !important;
     overflow: visible !important;
@@ -1481,18 +1481,18 @@ html, body {
 
 /* === PANEL MARGIN FIX === */
 #genForm, #howToUseCard, #sticky-footer-panel {
-    margin-left: 6px !important;
-    margin-right: 6px !important;
-    width: calc(100% - 12px) !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+    width: calc(100% - 16px) !important;
     box-sizing: border-box !important;
 }
 #genForm {
     margin-top: 6px !important;
 }
 #workoutNameDisplay {
-    margin-left: 6px !important;
-    margin-right: 6px !important;
-    width: calc(100% - 12px) !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+    width: calc(100% - 16px) !important;
     box-sizing: border-box !important;
 }
 #totalBox {
