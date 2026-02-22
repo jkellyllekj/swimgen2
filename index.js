@@ -2778,7 +2778,7 @@ app.get("/", (req, res) => {
           
           // Left column: title and detail lines
           html.push('<div style="flex:1; min-width:0;">');
-          html.push('<div style="font-weight:700; color:' + textColor + '; margin-bottom:6px; display:flex; align-items:center;"><span class="drag-handle">\u2261</span>' + safeHtml(label) + '</div>');
+          html.push('<div style="font-weight:700; color:' + textColor + '; margin-bottom:6px;">' + safeHtml(label) + '</div>');
           html.push('<div data-set-body="' + safeHtml(String(idx)) + '" data-original-body="' + safeHtml(body) + '" style="white-space:pre-wrap; line-height:1.35; font-weight:600; color:' + textColor + ';">' + safeHtml(bodyClean) + "</div>");
           if (restDisplay) {
             html.push('<div style="color:' + restColor + '; font-weight:600; font-size:14px; margin-top:4px;">' + safeHtml(restDisplay) + "</div>");
@@ -4180,7 +4180,7 @@ app.get("/", (req, res) => {
   <script>window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';</script>
   <script src="/offline-engine.js"></script>
 </head>
-<body style="margin:0; padding:0 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px); box-sizing:border-box;">
+<body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px); box-sizing:border-box;">
 <div class="safe-area-spacer"></div>
 
 <div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:28%; overflow:hidden; width:100vw; height:100vh;">
@@ -4255,6 +4255,8 @@ app.get("/", (req, res) => {
             splash.remove();
             if (localStorage.getItem('swimsum_auth_skipped') !== 'true') {
               showAuthGate();
+            } else {
+              showCoachMark();
             }
           }, 750);
         }, 2800);
@@ -4284,17 +4286,34 @@ app.get("/", (req, res) => {
       e.preventDefault();
       localStorage.setItem('swimsum_auth_skipped', 'true');
       gate.style.opacity = '0';
-      setTimeout(function() { gate.remove(); }, 400);
+      setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
     });
     document.getElementById('auth-google-btn').addEventListener('click', function() {
       localStorage.setItem('swimsum_auth_skipped', 'true');
       gate.style.opacity = '0';
-      setTimeout(function() { gate.remove(); }, 400);
+      setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
     });
     document.getElementById('auth-email-btn').addEventListener('click', function() {
       localStorage.setItem('swimsum_auth_skipped', 'true');
       gate.style.opacity = '0';
-      setTimeout(function() { gate.remove(); }, 400);
+      setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+    });
+  }
+
+  function showCoachMark() {
+    if (localStorage.getItem('swimsum_coach_seen') === 'true') return;
+    var cm = document.createElement('div');
+    cm.id = 'coachMark';
+    cm.innerHTML = '<div class="coach-hand">&#9995;</div>' +
+      '<div style="font-size:20px; font-weight:700;">Hold & Drag to Reorder</div>' +
+      '<div style="font-size:14px; opacity:0.8;">Long-press any workout set, then drag it up or down to rearrange your session.</div>' +
+      '<button style="margin-top:16px; padding:10px 30px; border:none; border-radius:8px; background:#fff; color:#111; font-weight:700; font-size:15px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">Got it!</button>';
+    document.body.appendChild(cm);
+    cm.querySelector('button').addEventListener('click', function() {
+      localStorage.setItem('swimsum_coach_seen', 'true');
+      cm.style.transition = 'opacity 0.4s ease';
+      cm.style.opacity = '0';
+      setTimeout(function() { cm.remove(); }, 400);
     });
   }
 
@@ -4317,13 +4336,15 @@ ${HOME_JS_RENDER}
 ${HOME_JS_EVENTS}
 ${HOME_JS_GESTURES}
 ${HOME_JS_CLOSE}
-<div id="adBanner" class="perpetual-banner" style="position:fixed; bottom:0; left:0; width:100%; min-height:60px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:0 60px; box-sizing:border-box; z-index:9999; border-top:1px solid rgba(255,255,255,0.1); box-shadow:0 -4px 15px rgba(0,0,0,0.4);">
+<div class="bottom-tray">
+<div id="adBanner" class="perpetual-banner" style="position:relative; width:100%; min-height:60px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:0 60px; box-sizing:border-box; z-index:9999; border-top:1px solid rgba(255,255,255,0.1); box-shadow:0 -4px 15px rgba(0,0,0,0.4);">
   <div id="admob-container" style="width:100%; display:none;"></div>
   <div id="fakeAdFallback" style="display:flex; flex-direction:column; gap:2px;">
     <div id="fakeAdContent" style="font-weight:800; color:#60a5fa; text-transform:uppercase; letter-spacing:1px; font-size:11px;">Enjoy a clean experience -- Remove Ads today</div>
     <div style="font-size:9px; color:#94a3b8; font-weight:500;">Check out upcoming Premium features in the menu below</div>
   </div>
   <button type="button" style="position:absolute; top:50%; right:12px; transform:translateY(-50%); background:rgba(255,255,255,0.9); color:#1e3a8a; border:none; border-radius:4px; padding:4px 10px; font-size:9px; font-weight:900; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">REMOVE ADS</button>
+</div>
 </div>
 <script>
 (function() {
