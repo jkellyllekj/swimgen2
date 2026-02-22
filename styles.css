@@ -1474,11 +1474,26 @@ html, body {
 }
 
 /* === PANEL MARGIN FIX === */
-#genForm, #howToUseCard, #sticky-footer-panel, #workoutNameDisplay {
+#genForm, #howToUseCard, #sticky-footer-panel {
     margin-left: 6px !important;
     margin-right: 6px !important;
     width: calc(100% - 12px) !important;
     box-sizing: border-box !important;
+}
+#genForm {
+    margin-top: 6px !important;
+}
+#workoutNameDisplay {
+    margin-left: 6px !important;
+    margin-right: 6px !important;
+    width: calc(100% - 12px) !important;
+    box-sizing: border-box !important;
+}
+#totalBox {
+    margin-top: 3px !important;
+}
+#footerBox {
+    margin-top: 3px !important;
 }
 
 /* === BOTTOM BLEED FIX === */
