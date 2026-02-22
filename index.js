@@ -1400,7 +1400,7 @@ app.get("/", (req, res) => {
       <div id="resultWrap" style="margin-top:4px; min-height:400px; padding:0; background:transparent; border-radius:0; border:none; box-shadow:none; order:2;">
         <div id="errorBox" style="display:none; margin-bottom:10px; padding:10px; background:#fff; border:1px solid #e7e7e7; border-radius:8px;"></div>
 
-        <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:11px;">
+        <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:24px;">
           <div class="workoutTitleRow" style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:520px; height:44px;">
             <button id="lockBtn" class="icon-silhouette" title="Lock Interactions" style="color:#ffd700; font-size:28px; margin-right:8px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4));">&#128275;</button>
             <div style="display:flex; align-items:center; gap:10px;">
