@@ -1397,7 +1397,7 @@ app.get("/", (req, res) => {
 
     <div style="max-width:520px; box-sizing:border-box; padding:0; display:flex; flex-direction:column;">
 
-      <div id="resultWrap" style="margin-top:16px; min-height:400px; padding:0; background:transparent; border-radius:0; border:none; box-shadow:none; order:2;">
+      <div id="resultWrap" style="margin-top:4px; min-height:400px; padding:0; background:transparent; border-radius:0; border:none; box-shadow:none; order:2;">
         <div id="errorBox" style="display:none; margin-bottom:10px; padding:10px; background:#fff; border:1px solid #e7e7e7; border-radius:8px;"></div>
 
         <div id="workoutNameDisplay" style="display:none; margin-bottom:8px; margin-top:11px;">

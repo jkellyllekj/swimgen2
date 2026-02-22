@@ -7,7 +7,7 @@ html, body {
 }
 
 .safe-area-spacer {
-  height: env(safe-area-inset-top, 20px);
+  height: env(safe-area-inset-top, 0px);
   background: transparent;
   width: 100%;
 }
