@@ -56,7 +56,7 @@ Working title(s): SwimSum (final name)
 Last updated: 2026-02-18
 
 Status: Active Development - Internal Testing (9/12 Testers Acquired) - Release Candidate Ready.
-Current Version: 1.8 (versionCode 20)
+Current Version: 1.8.2 (versionCode 22)
 
 ### 🏢 BUSINESS & PLAY CONSOLE CREDENTIALS
 * **Organization Name:** CREATIVE ARTS GLOBAL LTD
@@ -385,6 +385,13 @@ Recent Work (2026-02-16) - v1.5 Layout, AdMob Integration & Console Compliance
 ✅ COMPLETED: Splash Screen Finalization: Sequential title zoom, instruction fade-ins, and 80% enlarged dolphin finale.
 ✅ COMPLETED: UI Polish: Replaced set reroll dolphins with black, smooth-spinning refresh icons.
 ✅ COMPLETED: Layout: Centered all instruction text on the generator page for visual balance.
+
+Recent Work (2026-02-22) - v1.8.2 CSS Geometry Lock & Signing Key Verification
+[2026-02-22] Signing Key Verified: 'swimsum_alias' confirmed as the production alias. Version Code bumped for Google Play upload.
+[2026-02-22] CSS Baseline Locked: 15px margins, 12px set-gaps, 24px scroll-offset confirmed stable.
+[2026-02-22] Splash Screen: Migrated all splash text from fixed px to viewport-width (vw) units to prevent Android font-scaling overflow.
+[2026-02-22] Scroll Margin: Tuned to `calc(env(safe-area-inset-top, 0px) + 14px)` for precise title bar clearance on S24+.
+[2026-02-22] Version bump: 1.8.2 (versionCode 22).
 
 Recent Work (2026-02-18) - v1.8 Release Candidate (Stability Update)
 [2026-02-18] **v1.8 Release Candidate (Stability Update):**
