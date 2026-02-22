@@ -298,6 +298,29 @@ All edit modal effort selectors must use these exact colors:
 13. Generator never returns null or fails silently
 14. Reroll must always produce a valid workout
 
+============================================================================ CSS GEOMETRY LOCKS (2026-02-22)
+These values are device-tested on Samsung S24+ and must not be changed without physical device verification.
+
+1. **Side Gutters:** 15px fixed for all panels (generator, instruction, totals, workout cards).
+2. **Card Gaps:** 12px vertical spacing between workout set cards.
+3. **Scroll Offset:** 24px margin-top on `#workoutNameDisplay` ensures the generator panel scrolls fully out of view while keeping cards perfectly aligned below the status bar.
+4. **Scroll Margin:** `scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 14px)` on `#workoutNameDisplay` and `#cards` -- tuned to position content just below the Android title bar.
+5. **Safe Area Spacer:** `.safe-area-spacer` height set to `env(safe-area-inset-top, 0px)` -- fallback is 0px because Android WebView handles its own inset.
+6. **ResultWrap Top Margin:** 4px (reduced from 16px to tighten generator-to-workout gap).
+
+============================================================================ EFFORT LEVEL BAR LOCKS (2026-02-22)
+- Labels ("Easy", "Moderate", "Strong", "Hard", "Full Gas") are centered below dolphin icons.
+- "Moderate" uses 12px font (longest word); all others use 14px.
+- Fixed point-size constraints are active to prevent Android accessibility/font-scaling from breaking the layout.
+
+============================================================================ SPLASH SCREEN LOCKS (2026-02-22)
+- All splash text uses viewport-width (vw) units instead of fixed px to prevent Android system font scaling from causing overflow.
+- "SwimSum" title: `font-size: 15vw` (~54px on 360px phone).
+- "Workout Generator" subtitle: `font-size: 5.5vw` (~20px on 360px phone).
+- Bullet point text: `font-size: 4.2vw` (~15px on 360px phone).
+- Container: `#splash-content` width 90vw, max-width 500px, centered with `margin: 0 auto`.
+- **Known High-Priority Bug:** On devices with very high zoom/accessibility settings, the text may still appear oversized. Future fix: transition to an SVG logo or hard-constrained container for the title.
+
 ============================================================================ PRODUCT TIERS AND MONETISATION (v1)
 SwimSum uses a subscription based model. Generator rerolls are deterministic and local. Monetisation is not tied to generation count.
 

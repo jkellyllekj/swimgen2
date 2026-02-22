@@ -59,3 +59,13 @@ The application is stateless and does not use persistent storage.
 - **Offline Capability**: The packaged app is fully offline, with all workout generation logic embedded client-side.
 - **Build Process**: A script (`scripts/build-www.js`) captures rendered HTML, CSS, and assets into the `www/` directory, which Capacitor then uses.
 - **Splash Screen**: Configured with a custom splash overlay that includes animation.
+
+### CSS Geometry Locks (2026-02-22, device-tested on S24+)
+- Side Gutters: 15px fixed for all panels.
+- Card Gaps: 12px vertical spacing between sets.
+- Scroll Offset: 24px margin-top on `#workoutNameDisplay`.
+- Scroll Margin: `calc(env(safe-area-inset-top, 0px) + 14px)` on `#workoutNameDisplay` and `#cards`.
+- Safe Area Spacer: `env(safe-area-inset-top, 0px)` -- 0px fallback (Android WebView handles its own inset).
+- ResultWrap Top Margin: 4px.
+- Splash text uses vw units (not px) to prevent Android font-scaling overflow.
+- Effort labels use fixed point-size constraints to prevent accessibility scaling breaks.

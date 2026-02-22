@@ -312,6 +312,34 @@ The project’s designated project state file is the memory. The handover and pr
 Stability note
 This document should change rarely. The project’s designated project state file changes often. If this document needs to change, it should be discussed and agreed deliberately.
 
+CSS & Layout Architecture Locks (2026-02-22)
+The following CSS geometry values have been device-tested on Samsung S24+ and are locked. Do not modify without physical device verification.
+
+Final CSS Geometry:
+- Side Gutters: 15px (fixed for all devices, all panels).
+- Card Gaps: 12px vertical spacing between sets.
+- Scroll Offset: 24px margin-top on `#workoutNameDisplay` to ensure the generator panel scrolls fully out of view while keeping cards perfectly aligned below the status bar.
+- Scroll Margin: `scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 14px)` on `#workoutNameDisplay` and `#cards`.
+- Safe Area Spacer: `.safe-area-spacer` height `env(safe-area-inset-top, 0px)` -- 0px fallback because Android WebView handles its own inset.
+- ResultWrap Top Margin: 4px.
+
+Effort Level Bar:
+- Labels ("Easy", "Moderate", "Strong", "Hard", "Full Gas") centered below icons.
+- "Moderate" uses 12px font-size (longest word); others use 14px.
+- Fixed point-size constraints active to prevent Android accessibility/font-scaling from breaking layout.
+
+Safe Area Logic:
+- Top-spacer height optimized for S24+ notch at `env(safe-area-inset-top, 0px)`.
+- Do not add extra px fallback -- Android WebView provides the correct inset value natively.
+
+Splash Screen Text:
+- All splash text uses viewport-width (vw) units (not px) to prevent Android system font scaling overflow.
+- "SwimSum": 15vw, "Workout Generator": 5.5vw, bullets: 4.2vw.
+- Container: 90vw width, max-width 500px.
+- Known High-Priority Bug: Splash text may still break on devices with very high zoom/accessibility settings. Future fix: SVG logo or hard-constrained container.
+
+============================================================================
+
 Agent Instruction Boundaries (Snapping + Regeneration Logic)
 Effective Jan 2026, the Agent must follow these rules when working on snapping, set math, or regeneration logic:
 
