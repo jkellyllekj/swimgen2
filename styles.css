@@ -236,10 +236,11 @@ html, body {
       }
 
       #splash-content {
-        width: 75vw !important;
-        max-width: 400px;
+        width: 90vw !important;
+        max-width: 500px;
         margin: 0 auto !important;
         display: block;
+        text-align: center;
       }
 
       #coachMark {
