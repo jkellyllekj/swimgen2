@@ -1456,8 +1456,14 @@ html, body {
 }
 
 /* === GUTTER FIX === */
-#cards, #workout-list-scroll-area {
-    padding: 0 6px 10px 6px !important;
+#cards {
+    padding: 0 6px 3px 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+#workout-list-scroll-area {
+    padding: 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
     overflow: visible !important;
@@ -1490,7 +1496,7 @@ html, body {
     box-sizing: border-box !important;
 }
 #totalBox {
-    margin-top: 3px !important;
+    margin-top: 2px !important;
 }
 #footerBox {
     margin-top: 3px !important;
