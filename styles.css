@@ -216,7 +216,7 @@ html, body {
         border: 1px solid rgba(255, 255, 255, 0.5);
         margin-left: 0;
         margin-right: 0;
-        margin-bottom: 12px;
+        margin-bottom: 3px;
         width: 100%;
         box-sizing: border-box;
         overflow: visible;
@@ -573,13 +573,13 @@ html, body {
       }
       [data-effort]:not(.live-drag-active) {
         box-shadow: var(--boulder-shadow) !important;
-        margin-bottom: 12px !important;
+        margin-bottom: 3px !important;
         transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         will-change: transform;
       }
       [data-effort].live-drag-active {
         box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
-        margin-bottom: 12px !important;
+        margin-bottom: 3px !important;
         will-change: transform;
       }
       .live-drag-active {
@@ -1457,7 +1457,7 @@ html, body {
 
 /* === GUTTER FIX === */
 #cards, #workout-list-scroll-area {
-    padding: 0 4px 20px 4px !important;
+    padding: 0 6px 10px 6px !important;
     width: 100% !important;
     box-sizing: border-box !important;
     overflow: visible !important;
@@ -1467,7 +1467,7 @@ html, body {
 .workout-set, .warmup-set, .main-set, .cooldown-set, .drill-set, .pull-set, .sprint-set {
     width: 100% !important;
     box-sizing: border-box !important;
-    margin: 0 0 6px 0 !important;
+    margin: 0 0 3px 0 !important;
     padding: 12px !important;
     overflow: visible !important;
     box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
