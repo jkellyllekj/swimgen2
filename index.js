@@ -4181,6 +4181,12 @@ app.get("/", (req, res) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Swim Sum</title>
   <script>window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';</script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+  <script>
+   window.firebaseConfig = { apiKey: "AIzaSyB8rh3jBQddKCsP__NEI98wg0AKkp-xiX4", authDomain: "swimsum-production.firebaseapp.com", projectId: "swimsum-production", storageBucket: "swimsum-production.firebasestorage.app", messagingSenderId: "660683677456", appId: "1:660683677456:web:4099e24d17229d0a6e4f95", measurementId: "G-TT6NRVFG18" };
+   if (typeof firebase !== "undefined") firebase.initializeApp(window.firebaseConfig);
+  </script>
   <script src="/offline-engine.js"></script>
 </head>
 <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px); box-sizing:border-box;">
@@ -4207,6 +4213,23 @@ app.get("/", (req, res) => {
   var line2 = document.getElementById('splash-line2');
   var line3 = document.getElementById('splash-line3');
   var line4 = document.getElementById('splash-line4');
+
+  var authReadyPromise = new Promise(function(resolve) {
+    if (typeof firebase === 'undefined') { resolve(null); return; }
+    var resolved = false;
+    if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
+      var emailForLink = localStorage.getItem('swimsum_email_for_link');
+      if (emailForLink) {
+        firebase.auth().signInWithEmailLink(emailForLink, window.location.href).then(function(cred) {
+          localStorage.removeItem('swimsum_email_for_link');
+          if (window.history && window.history.replaceState) window.history.replaceState({}, document.title, window.location.pathname || '/');
+          if (!resolved) { resolved = true; resolve(cred.user); }
+        }).catch(function() { if (!resolved) { resolved = true; resolve(null); } });
+        return;
+      }
+    }
+    firebase.auth().onAuthStateChanged(function(user) { if (!resolved) { resolved = true; resolve(user); } });
+  });
 
   function fadeIn(el) {
     if (!el) return;
@@ -4256,11 +4279,10 @@ app.get("/", (req, res) => {
           splash.style.opacity = '0';
           setTimeout(function() {
             splash.remove();
-            if (localStorage.getItem('swimsum_auth_skipped') !== 'true') {
-              showAuthGate();
-            } else {
-              showCoachMark();
-            }
+            authReadyPromise.then(function(user) {
+              var skip = localStorage.getItem('swimsum_auth_skipped') === 'true';
+              if (user || skip) showCoachMark(); else showAuthGate();
+            });
           }, 750);
         }, 2800);
       }
@@ -4292,14 +4314,45 @@ app.get("/", (req, res) => {
       setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
     });
     document.getElementById('auth-google-btn').addEventListener('click', function() {
-      localStorage.setItem('swimsum_auth_skipped', 'true');
-      gate.style.opacity = '0';
-      setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+      if (typeof firebase === 'undefined') {
+        localStorage.setItem('swimsum_auth_skipped', 'true');
+        gate.style.opacity = '0';
+        setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+        return;
+      }
+      var auth = firebase.auth();
+      var provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).then(function() {
+        gate.style.opacity = '0';
+        setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+      }).catch(function(err) {
+        if (err.code === 'auth/popup-blocked') {
+          auth.signInWithRedirect(provider);
+        } else {
+          alert('Sign-in failed: ' + (err.message || 'Unknown error'));
+        }
+      });
     });
     document.getElementById('auth-email-btn').addEventListener('click', function() {
-      localStorage.setItem('swimsum_auth_skipped', 'true');
-      gate.style.opacity = '0';
-      setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+      if (typeof firebase === 'undefined') {
+        localStorage.setItem('swimsum_auth_skipped', 'true');
+        gate.style.opacity = '0';
+        setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+        return;
+      }
+      var email = prompt('Enter your email to receive a sign-in link:');
+      if (!email || !email.trim()) return;
+      email = email.trim();
+      var actionUrl = window.location.origin + (window.location.pathname || '/');
+      var actionCodeSettings = { url: actionUrl, handleCodeInApp: true };
+      firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings).then(function() {
+        localStorage.setItem('swimsum_email_for_link', email);
+        alert('Check your email for the sign-in link.');
+        gate.style.opacity = '0';
+        setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+      }).catch(function(err) {
+        alert('Could not send link: ' + (err.message || 'Unknown error'));
+      });
     });
   }
 

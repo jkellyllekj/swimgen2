@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "660683677456",
+    "project_id": "swimsum-production",
+    "storage_bucket": "swimsum-production.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660683677456:android:c05a7dc989ce0dfa6e4f95",
+        "android_client_info": {
+          "package_name": "com.creativearts.swimsum"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDl8fbX0lTiZTPK_KorvAM5SvhYThsBexw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

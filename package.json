@@ -7,7 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node scripts/build-www.js",
     "cap:sync": "npx cap sync android",
-    "cap:build": "npm run build && npx cap sync android"
+    "cap:build": "npm run build && npx cap sync android",
+    "sync:privacy": "node -e \"require('fs').copyFileSync('privacy-policy.html', 'hosting/privacy.html')\"",
+    "deploy:hosting": "npm run sync:privacy && firebase deploy --only hosting",
+    "connect-phone": "powershell -ExecutionPolicy Bypass -File ./connect-phone.ps1"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +22,7 @@
     "@capacitor/splash-screen": "^8.0.1",
     "@types/node": "^22.19.5",
     "express": "^5.2.1",
+    "firebase": "^12.9.0",
     "node-fetch": "^3.3.2",
     "openai": "^6.16.0",
     "typescript": "^5.9.3"

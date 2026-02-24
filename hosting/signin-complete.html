@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in complete - SwimSum</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <p id="msg">Completing sign-in…</p>
+  <script>
+    var config = {
+      apiKey: "AIzaSyB8rh3jBQddKCsP__NEI98wg0AKkp-xiX4",
+      authDomain: "swimsum-production.firebaseapp.com",
+      projectId: "swimsum-production",
+      storageBucket: "swimsum-production.firebasestorage.app",
+      messagingSenderId: "660683677456",
+      appId: "1:660683677456:web:4099e24d17229d0a6e4f95",
+      measurementId: "G-TT6NRVFG18"
+    };
+    if (typeof firebase !== 'undefined') firebase.initializeApp(config);
+    var auth = firebase.auth();
+    if (auth.isSignInWithEmailLink(window.location.href)) {
+      var email = window.localStorage.getItem('swimsum_email_for_link');
+      if (!email) {
+        document.getElementById('msg').textContent = 'Please open this link on the same device where you requested the sign-in link, or try again from the app.';
+        document.getElementById('msg').style.color = '#c00';
+      } else {
+        auth.signInWithEmailLink(email, window.location.href)
+          .then(function() {
+            window.localStorage.removeItem('swimsum_email_for_link');
+            document.getElementById('msg').textContent = "You're signed in! Open the SwimSum app to continue.";
+            document.getElementById('msg').style.color = '#0a0';
+          })
+          .catch(function(err) {
+            document.getElementById('msg').textContent = 'Sign-in failed: ' + (err.message || 'Unknown error');
+            document.getElementById('msg').style.color = '#c00';
+          });
+      }
+    } else {
+      document.getElementById('msg').textContent = 'This page is for completing sign-in. Open the link from your email.';
+    }
+  </script>
+</body>
+</html>

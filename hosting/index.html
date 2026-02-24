@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SwimSum – Coach-quality swim workouts in seconds</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      line-height: 1.6;
+      background: linear-gradient(180deg, #e8f7fa 0%, #fff 40%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 24px 20px 48px; }
+    h1 {
+      font-size: clamp(1.75rem, 5vw, 2.25rem);
+      font-weight: 800;
+      color: #0d47a1;
+      margin: 0 0 12px 0;
+      letter-spacing: -0.02em;
+    }
+    .tagline {
+      font-size: 1.1rem;
+      color: #555;
+      margin: 0 0 32px 0;
+    }
+    .steps {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 32px 0;
+    }
+    .steps li {
+      padding: 12px 0 12px 36px;
+      position: relative;
+      border-bottom: 1px solid #eee;
+    }
+    .steps li:before {
+      content: attr(data-step);
+      position: absolute;
+      left: 0;
+      width: 24px;
+      height: 24px;
+      background: #1e3a8a;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .screenshots {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin: 32px 0;
+    }
+    .screenshot {
+      aspect-ratio: 9/16;
+      background: #e0e0e0;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 14px;
+      text-align: center;
+      padding: 12px;
+    }
+    .screenshot img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+    .cta {
+      display: inline-block;
+      margin: 16px 0 24px 0;
+      padding: 14px 28px;
+      background: #1e3a8a;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .cta:hover { background: #0d47a1; }
+    .links { margin: 24px 0; }
+    .links a {
+      color: #1e3a8a;
+      text-decoration: none;
+      margin-right: 16px;
+      font-size: 0.95rem;
+    }
+    .links a:hover { text-decoration: underline; }
+    footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #eee;
+      font-size: 0.85rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>SwimSum</h1>
+    <p class="tagline">Coach-quality swim workouts in seconds. Choose your pool, set your distance, get a structured session—no signup required.</p>
+
+    <ol class="steps" aria-label="How it works">
+      <li data-step="1"><strong>Choose your pool length</strong> – 25 m, 50 m, or any length you swim.</li>
+      <li data-step="2"><strong>Set your distance</strong> – From a quick 500 m to a long 10 km.</li>
+      <li data-step="3"><strong>Get your workout</strong> – Warm-up, build, main set, and cool-down, ready to go.</li>
+    </ol>
+
+    <p>Every workout is built from real coach templates. No algorithm invention—just proven, wall-safe sets you can trust.</p>
+
+    <div class="screenshots" aria-label="App screenshots">
+      <div class="screenshot">
+        <img src="screenshots/phone-1.png" alt="SwimSum app – workout with warm up, build, main, sprint, cool down">
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/phone-2.png" alt="SwimSum app – technique workout with dolphin effort levels">
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/phone-3.png" alt="SwimSum app – longer workout with main sets and pull">
+      </div>
+    </div>
+
+    <a href="https://play.google.com/store/apps/details?id=com.creativearts.swimsum" class="cta">Get the app on Google Play</a>
+
+    <div class="links">
+      <a href="/privacy.html">Privacy policy</a>
+      <a href="mailto:creativearts.com@gmail.com">Contact</a>
+    </div>
+
+    <footer>
+      <p>SwimSum – Swim Workout Generator. &copy; 2026 CREATIVE ARTS GLOBAL LTD. All rights reserved.</p>
+    </footer>
+  </div>
+</body>
+</html>

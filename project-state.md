@@ -26,9 +26,9 @@ HIGH PRIORITY:
 ✅ COMPLETED: Initialize AdMob Test Banner with Adaptive Height logic
 ✅ COMPLETED: Redesign Splash Screen with sequential text animation (2026-02-16)
 ✅ COMPLETED: Replace set reroll dolphins with spinning refresh icons (2026-02-16)
-⏳ PENDING: Program Email Collection Logic & Firebase Integration
+✅ COMPLETED: Program Email Collection Logic & Firebase Integration (2026-02; Web SDK + Email Link).
 ⏳ PENDING: Implement Adaptive AdMob Banner height (Fix 'narrow' look).
-⏳ PENDING: Integrated Auth Flow: Google Sign-in / Email account creation gate.
+✅ COMPLETED: Integrated Auth Flow: Google Sign-in / Email account creation gate (2026-02; Firebase Web SDK).
 ✅ COMPLETED: Tester 'Skip' Logic: LocalStorage flag for internal test bypass (2026-02-16).
 ✅ COMPLETED: Placeholder Auth Gate (Sign-in/Google) with "Skip" logic for testers (2026-02-16).
 - Fix Android Visual Fidelity (Current blocker: "Bloated" look/wrong backgrounds)
@@ -53,9 +53,9 @@ POST-LAUNCH ENHANCEMENTS (V1.1+):
 Project: SwimSum - Swim Workout Generator
 Working title(s): SwimSum (final name)
 
-Last updated: 2026-02-18
+Last updated: 2026-02-23
 
-Status: Active Development - Internal Testing (9/12 Testers Acquired) - Release Candidate Ready.
+Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented (Firebase). Testing: Internal/closed testing in progress (second week). Working build protected on branch cursor-transition.
 Current Version: 1.8.2 (versionCode 22)
 
 ### 🏢 BUSINESS & PLAY CONSOLE CREDENTIALS
@@ -995,3 +995,16 @@ User Feedback
 
 ============================================================================ END OF DOCUMENT
 Milestone: Version 25 (1.0.3) built for production upload. Signing alias 'swimsum_alias' confirmed.
+
+## Milestones & Native Integration (Feb 2026)
+
+- Successfully bridged Web code to Native Android via Capacitor.
+- Established Wireless ADB connectivity via Mobile Hotspot + USB Handshake (Port 5555) to bypass coworking network isolation.
+- Pivoted Google Auth from Web-only to Native Android implementation; pending SHA-1 extraction via Gradle for Firebase registration.
+
+## What's Coming Up / Active Focus (Feb 2026)
+
+- **UI fixes:** A couple more UI issues to address from testing feedback.
+- **Help redesign:** Move away from splash-only help; add a persistent **?** (question mark) near the top of the app for instructions/help so users can skip splash and still get guidance.
+- **Ads:** Make ads a bit more intrusive for testing; define placement and behaviour.
+- **Premium features (behind flags):** Continue development of premium features (custom pool sizes, equipment, editing sets, etc.) but keep them **switched off** until launch strategy is set. No pruning of existing notes; all 1000+ lines retained.
