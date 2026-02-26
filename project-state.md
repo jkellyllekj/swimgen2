@@ -56,7 +56,7 @@ Working title(s): SwimSum (final name)
 Last updated: 2026-02-23
 
 Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented (Firebase). Testing: Internal/closed testing in progress (second week). Working build protected on branch cursor-transition.
-Current Version: 1.8.2 (versionCode 22)
+Current Version: 1.8.3 (versionCode 26)
 
 ### 🏢 BUSINESS & PLAY CONSOLE CREDENTIALS
 * **Organization Name:** CREATIVE ARTS GLOBAL LTD

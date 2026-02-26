@@ -4,4 +4,5 @@
     <string name="title_activity_main">SwimSum</string>
     <string name="package_name">com.creativearts.swimsum</string>
     <string name="custom_url_scheme">com.creativearts.swimsum</string>
+    <string name="default_web_client_id">660683677456-hpnoj6kff9klsu4mfg0imui5bbcdug1j.apps.googleusercontent.com</string>
 </resources>

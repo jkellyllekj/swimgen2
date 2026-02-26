@@ -1445,6 +1445,7 @@ app.get("/", (req, res) => {
             <li><strong>Eyedropper/Frame Icons:</strong> Custom colors or image backgrounds.</li>
             <li><strong>Feedback:</strong> <a href="#" style="color:#007bff;">Leave a comment here.</a></li>
             <li style="margin-top:6px;"><a href="#" onclick="localStorage.removeItem('swimsum_auth_skipped'); location.reload(); return false;" style="color:#999; font-size:10px; text-decoration:none;">DEV: Reset New User State</a></li>
+            <li style="margin-top:2px; font-size:10px; color:#666;">Build: v1.8.3 (versionCode 26)</li>
           </ul>
         </details>
       </div>
@@ -4181,15 +4182,10 @@ app.get("/", (req, res) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Swim Sum</title>
   <script>window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';</script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
-  <script>
-   window.firebaseConfig = { apiKey: "AIzaSyB8rh3jBQddKCsP__NEI98wg0AKkp-xiX4", authDomain: "swimsum-production.firebaseapp.com", projectId: "swimsum-production", storageBucket: "swimsum-production.firebasestorage.app", messagingSenderId: "660683677456", appId: "1:660683677456:web:4099e24d17229d0a6e4f95", measurementId: "G-TT6NRVFG18" };
-   if (typeof firebase !== "undefined") firebase.initializeApp(window.firebaseConfig);
-  </script>
-  <script src="/offline-engine.js"></script>
+  <script>window.firebaseConfig = { apiKey: "AIzaSyB8rh3jBQddKCsP__NEI98wg0AKkp-xiX4", authDomain: "swimsum-production.firebaseapp.com", projectId: "swimsum-production", storageBucket: "swimsum-production.firebasestorage.app", messagingSenderId: "660683677456", appId: "1:660683677456:web:4099e24d17229d0a6e4f95", measurementId: "G-TT6NRVFG18" };</script>
 </head>
 <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px); box-sizing:border-box;">
+<script>try{if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.SplashScreen)window.Capacitor.Plugins.SplashScreen.hide();}catch(e){}</script>
 <div class="safe-area-spacer"></div>
 
 <div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:28%; overflow:hidden; width:100vw; height:100vh; -webkit-text-size-adjust:none; text-size-adjust:none;">
@@ -4214,21 +4210,83 @@ app.get("/", (req, res) => {
   var line3 = document.getElementById('splash-line3');
   var line4 = document.getElementById('splash-line4');
 
+  (function loadScriptsAfterFirstPaint() {
+    var s1 = document.createElement('script'); s1.src = 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js'; s1.async = true;
+    var s2 = document.createElement('script'); s2.src = 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js'; s2.async = true;
+    s2.onload = function() { if (window.firebaseConfig && typeof firebase !== 'undefined') firebase.initializeApp(window.firebaseConfig); };
+    document.head.appendChild(s1); s1.onload = function() { document.head.appendChild(s2); };
+    var s3 = document.createElement('script'); s3.src = '/offline-engine.js'; s3.async = true; document.head.appendChild(s3);
+  })();
+
   var authReadyPromise = new Promise(function(resolve) {
-    if (typeof firebase === 'undefined') { resolve(null); return; }
     var resolved = false;
-    if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
-      var emailForLink = localStorage.getItem('swimsum_email_for_link');
-      if (emailForLink) {
-        firebase.auth().signInWithEmailLink(emailForLink, window.location.href).then(function(cred) {
-          localStorage.removeItem('swimsum_email_for_link');
-          if (window.history && window.history.replaceState) window.history.replaceState({}, document.title, window.location.pathname || '/');
-          if (!resolved) { resolved = true; resolve(cred.user); }
-        }).catch(function() { if (!resolved) { resolved = true; resolve(null); } });
-        return;
+    function done(user) {
+      if (!resolved) {
+        resolved = true;
+        resolve(user || null);
       }
     }
-    firebase.auth().onAuthStateChanged(function(user) { if (!resolved) { resolved = true; resolve(user); } });
+    // Safety: never wait forever for auth (e.g. if native bridge hangs)
+    var timeout = setTimeout(function() { done(null); }, 8000);
+
+    try {
+      var plugins = (window.Capacitor && window.Capacitor.Plugins) || window.CapacitorPlugins || {};
+      var authBridge = plugins.AuthBridge || plugins.authBridge || null;
+
+      // In the native app, rely solely on the native bridge and do NOT use Firebase Web redirect/popup flows.
+      if (isCapacitor) {
+        if (authBridge && typeof authBridge.getCurrentUser === 'function') {
+          authBridge.getCurrentUser().then(function(result) {
+            clearTimeout(timeout);
+            var user = result && result.user ? result.user : null;
+            done(user);
+          }).catch(function() {
+            clearTimeout(timeout);
+            done(null);
+          });
+        } else {
+          clearTimeout(timeout);
+          done(null);
+        }
+        return;
+      }
+    } catch (e) {
+      clearTimeout(timeout);
+      done(null);
+      return;
+    }
+
+    // Web-only behavior: keep existing Firebase Web email/redirect handling for the hosted app.
+    if (typeof firebase === 'undefined') { clearTimeout(timeout); done(null); return; }
+    function finishAuth(user) {
+      clearTimeout(timeout);
+      done(user || null);
+    }
+
+    function handleEmailLinkOrState() {
+      if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
+        var emailForLink = localStorage.getItem('swimsum_email_for_link');
+        if (emailForLink) {
+          firebase.auth().signInWithEmailLink(emailForLink, window.location.href).then(function(cred) {
+            localStorage.removeItem('swimsum_email_for_link');
+            if (window.history && window.history.replaceState) window.history.replaceState({}, document.title, window.location.pathname || '/');
+            finishAuth(cred.user);
+          }).catch(function() { finishAuth(null); });
+          return;
+        }
+      }
+      firebase.auth().onAuthStateChanged(function(user) { finishAuth(user); });
+    }
+
+    firebase.auth().getRedirectResult().then(function(result) {
+      if (result && result.user) {
+        finishAuth(result.user);
+        return;
+      }
+      handleEmailLinkOrState();
+    }).catch(function() {
+      handleEmailLinkOrState();
+    });
   });
 
   function fadeIn(el) {
@@ -4239,9 +4297,11 @@ app.get("/", (req, res) => {
 
   function startAnimation() {
     if (!splash || !content) return;
-    if (isCapacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
-      window.Capacitor.Plugins.SplashScreen.hide();
-    }
+    try {
+      if (isCapacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
+        window.Capacitor.Plugins.SplashScreen.hide();
+      }
+    } catch (e) {}
     content.style.transition = 'opacity 0.6s ease-out, transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     content.style.opacity = '1';
     content.style.transform = 'scale(1.1)';
@@ -4297,27 +4357,43 @@ app.get("/", (req, res) => {
     card.style.cssText = 'background:#ffffff; border-radius:16px; padding:36px 28px; max-width:340px; width:90%; text-align:center; box-shadow:0 8px 40px rgba(0,0,0,0.35); font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;';
     card.innerHTML =
       '<h2 style="margin:0 0 6px 0; font-size:24px; font-weight:800; color:#800000; text-transform:uppercase; letter-spacing:1px;">Workout Generator</h2>' +
-      '<p style="margin:0 0 24px 0; font-size:13px; color:#666;">Enter your email to sign in or create a free account.</p>' +
+      '<p style="margin:0 0 16px 0; font-size:13px; color:#666;">Sign in with Google or Email to continue.</p>' +
       '<button id="auth-google-btn" type="button" style="width:100%; padding:12px 16px; margin-bottom:10px; border:1px solid #dadce0; border-radius:8px; background:#fff; color:#333; font-size:14px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">' +
-        '<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.9 7.35 2.56 10.56l7.97-5.97z"/><path fill="#FBBC05" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.97C6.51 42.62 14.62 48 24 48z"/></svg>' +
+      '<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.9 7.35 2.56 10.56l7.97-5.97z"/><path fill="#FBBC05" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.97C6.51 42.62 14.62 48 24 48z"/></svg>' +
         'Continue with Google</button>' +
-      '<button id="auth-email-btn" type="button" style="width:100%; padding:12px 16px; margin-bottom:18px; border:none; border-radius:8px; background:#1e3a8a; color:#fff; font-size:14px; font-weight:600; cursor:pointer;">Continue with Email</button>' +
-      '<a id="auth-skip-btn" href="#" style="font-size:13px; color:#888; text-decoration:none;">Skip for now</a>';
+      '<div style="margin:12px 0; font-size:12px; color:#999;">or</div>' +
+      '<input id="auth-email-input" type="email" placeholder="Email" autocomplete="email" style="width:100%; padding:10px 12px; margin-bottom:8px; border:1px solid #dadce0; border-radius:8px; font-size:14px; box-sizing:border-box;">' +
+      '<input id="auth-password-input" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="width:100%; padding:10px 12px; margin-bottom:4px; border:1px solid #dadce0; border-radius:8px; font-size:14px; box-sizing:border-box;">' +
+      '<p style="margin:0 0 10px 0; font-size:11px; color:#999;">Password must be at least 6 characters.</p>' +
+      '<button id="auth-email-btn" type="button" style="width:100%; padding:12px 16px; margin-bottom:10px; border:1px solid #800000; border-radius:8px; background:#800000; color:#fff; font-size:14px; font-weight:600; cursor:pointer;">Continue with Email</button>' +
+      '<a id="auth-skip-btn" href="#" style="display:block; margin-top:10px; font-size:12px; color:#999; text-decoration:none;">DEV: Continue without sign-in (testing only)</a>';
     gate.appendChild(card);
     document.body.appendChild(gate);
     void gate.offsetWidth;
     gate.style.opacity = '1';
-    document.getElementById('auth-skip-btn').addEventListener('click', function(e) {
-      e.preventDefault();
-      localStorage.setItem('swimsum_auth_skipped', 'true');
-      gate.style.opacity = '0';
-      setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
-    });
     document.getElementById('auth-google-btn').addEventListener('click', function() {
+      var plugins = (window.Capacitor && window.Capacitor.Plugins) || window.CapacitorPlugins || {};
+      var authBridge = plugins.AuthBridge || plugins.authBridge || null;
+
+      // In the native app, ONLY use the native bridge. Do not fall back to Firebase Web popup/redirect.
+      if (isCapacitor) {
+        if (authBridge && typeof authBridge.signInWithGoogle === 'function') {
+          authBridge.signInWithGoogle().then(function(result) {
+            gate.style.opacity = '0';
+            setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+          }).catch(function(err) {
+            var message = (err && err.message) ? err.message : 'Unknown error';
+            alert('Sign-in failed: ' + message);
+          });
+        } else {
+          alert('Native Google sign-in is not available in this build. Please use the DEV skip option for now.');
+        }
+        return;
+      }
+
+      // Web-only fallback: Firebase Web popup sign-in.
       if (typeof firebase === 'undefined') {
-        localStorage.setItem('swimsum_auth_skipped', 'true');
-        gate.style.opacity = '0';
-        setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+        alert('Sign-in not available (Firebase not loaded).');
         return;
       }
       var auth = firebase.auth();
@@ -4326,34 +4402,90 @@ app.get("/", (req, res) => {
         gate.style.opacity = '0';
         setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
       }).catch(function(err) {
-        if (err.code === 'auth/popup-blocked') {
-          auth.signInWithRedirect(provider);
-        } else {
-          alert('Sign-in failed: ' + (err.message || 'Unknown error'));
-        }
+        alert('Sign-in failed: ' + (err && err.message ? err.message : 'Unknown error'));
       });
     });
     document.getElementById('auth-email-btn').addEventListener('click', function() {
+      var emailEl = document.getElementById('auth-email-input');
+      var passwordEl = document.getElementById('auth-password-input');
+      var email = (emailEl && emailEl.value) ? emailEl.value.trim() : '';
+      var password = (passwordEl && passwordEl.value) ? passwordEl.value : '';
+      if (!email || !password) {
+        alert('Please enter your email and password.');
+        return;
+      }
+      if (email.indexOf('@') === -1 || email.indexOf('.') === -1) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      if (password.length < 6) {
+        alert('Password must be at least 6 characters.');
+        return;
+      }
+
+      var plugins = (window.Capacitor && window.Capacitor.Plugins) || window.CapacitorPlugins || {};
+      var authBridge = plugins.AuthBridge || plugins.authBridge || null;
+
+      function onEmailSignInSuccess() {
+        gate.style.opacity = '0';
+        setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+      }
+      function onEmailSignInError(err) {
+        var msg = (err && err.message) ? err.message : (err && err.code) ? err.code : 'Unknown error';
+        var hint = '';
+        if (msg.indexOf('credential') !== -1 || msg.indexOf('invalid') !== -1 || msg.indexOf('malformed') !== -1) {
+          hint = ' If you usually sign in with Google for this email, try "Continue with Google" instead.';
+        }
+        alert('Sign-in failed: ' + msg + hint);
+      }
+
+      if (isCapacitor && authBridge && typeof authBridge.signInWithEmail === 'function') {
+        authBridge.signInWithEmail({ email: email, password: password }).then(function(result) {
+          onEmailSignInSuccess();
+          if (result && result.verificationEmailSent) {
+            alert('We\'ve sent a verification link to your email. Please check your inbox to verify your address.');
+          }
+        }).catch(function(err) {
+          onEmailSignInError(err);
+        });
+        return;
+      }
+
       if (typeof firebase === 'undefined') {
+        alert('Email sign-in not available (Firebase not loaded).');
+        return;
+      }
+      var auth = firebase.auth();
+      auth.signInWithEmailAndPassword(email, password).then(function() {
+        onEmailSignInSuccess();
+      }).catch(function(err) {
+        if (err && err.code === 'auth/user-not-found') {
+          auth.createUserWithEmailAndPassword(email, password).then(function() {
+            onEmailSignInSuccess();
+            var u = auth.currentUser;
+            if (u && !u.emailVerified) {
+              u.sendEmailVerification().then(function() {
+                alert('We\'ve sent a verification link to your email. Please check your inbox to verify your address.');
+              });
+            }
+          }).catch(function(e2) {
+            onEmailSignInError(e2);
+          });
+        } else {
+          onEmailSignInError(err);
+        }
+      });
+    });
+
+    var skipLink = document.getElementById('auth-skip-btn');
+    if (skipLink) {
+      skipLink.addEventListener('click', function(e) {
+        e.preventDefault();
         localStorage.setItem('swimsum_auth_skipped', 'true');
         gate.style.opacity = '0';
         setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
-        return;
-      }
-      var email = prompt('Enter your email to receive a sign-in link:');
-      if (!email || !email.trim()) return;
-      email = email.trim();
-      var actionUrl = window.location.origin + (window.location.pathname || '/');
-      var actionCodeSettings = { url: actionUrl, handleCodeInApp: true };
-      firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings).then(function() {
-        localStorage.setItem('swimsum_email_for_link', email);
-        alert('Check your email for the sign-in link.');
-        gate.style.opacity = '0';
-        setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
-      }).catch(function(err) {
-        alert('Could not send link: ' + (err.message || 'Unknown error'));
       });
-    });
+    }
   }
 
   function showCoachMark() {
@@ -4373,8 +4505,15 @@ app.get("/", (req, res) => {
     });
   }
 
-  if (document.readyState === 'complete') startAnimation();
-  else window.addEventListener('load', startAnimation);
+  (function runSplashNow() {
+    function tryStart() {
+      var s = document.getElementById('swimsum-splash');
+      var c = document.getElementById('splash-content');
+      if (s && c) startAnimation();
+    }
+    tryStart();
+    if (!splash || !content) setTimeout(tryStart, 0);
+  })();
 })();
 </script>
 

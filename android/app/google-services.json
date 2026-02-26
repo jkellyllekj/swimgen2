@@ -12,7 +12,20 @@
           "package_name": "com.creativearts.swimsum"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "660683677456-s78ce9u80e4a6n3e3rc8aaj63nmgb7ga.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.creativearts.swimsum",
+            "certificate_hash": "e200e91743a081fed8d1551d1337c8aedd682fc6"
+          }
+        },
+        {
+          "client_id": "660683677456-hpnoj6kff9klsu4mfg0imui5bbcdug1j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDl8fbX0lTiZTPK_KorvAM5SvhYThsBexw"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "660683677456-hpnoj6kff9klsu4mfg0imui5bbcdug1j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
