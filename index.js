@@ -1444,8 +1444,7 @@ app.get("/", (req, res) => {
             <li><strong>Swipe Left:</strong> Send set to bottom.</li>
             <li><strong>Eyedropper/Frame Icons:</strong> Custom colors or image backgrounds.</li>
             <li><strong>Feedback:</strong> <a href="#" style="color:#007bff;">Leave a comment here.</a></li>
-            <li style="margin-top:6px;"><a href="#" onclick="localStorage.removeItem('swimsum_auth_skipped'); location.reload(); return false;" style="color:#999; font-size:10px; text-decoration:none;">DEV: Reset New User State</a></li>
-            <li style="margin-top:2px; font-size:10px; color:#666;">Build: v1.8.3 (versionCode 26)</li>
+            <li style="margin-top:6px;"><a href="#" onclick="if(window.resetNewUserState){window.resetNewUserState();}else{localStorage.removeItem('swimsum_auth_skipped');location.reload();} return false;" style="color:#999; font-size:10px; text-decoration:none;">DEV: Reset New User State</a></li>
           </ul>
         </details>
       </div>
@@ -4182,7 +4181,13 @@ app.get("/", (req, res) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Swim Sum</title>
   <script>window.SWIMSUM_API_BASE = window.SWIMSUM_API_BASE || '';</script>
-  <script>window.firebaseConfig = { apiKey: "AIzaSyB8rh3jBQddKCsP__NEI98wg0AKkp-xiX4", authDomain: "swimsum-production.firebaseapp.com", projectId: "swimsum-production", storageBucket: "swimsum-production.firebasestorage.app", messagingSenderId: "660683677456", appId: "1:660683677456:web:4099e24d17229d0a6e4f95", measurementId: "G-TT6NRVFG18" };</script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+  <script>
+   window.firebaseConfig = { apiKey: "AIzaSyB8rh3jBQddKCsP__NEI98wg0AKkp-xiX4", authDomain: "swimsum-production.firebaseapp.com", projectId: "swimsum-production", storageBucket: "swimsum-production.firebasestorage.app", messagingSenderId: "660683677456", appId: "1:660683677456:web:4099e24d17229d0a6e4f95", measurementId: "G-TT6NRVFG18" };
+   if (typeof firebase !== "undefined") firebase.initializeApp(window.firebaseConfig);
+  </script>
+  <script src="/offline-engine.js"></script>
 </head>
 <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px); box-sizing:border-box;">
 <script>try{if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.SplashScreen)window.Capacitor.Plugins.SplashScreen.hide();}catch(e){}</script>
@@ -4210,40 +4215,26 @@ app.get("/", (req, res) => {
   var line3 = document.getElementById('splash-line3');
   var line4 = document.getElementById('splash-line4');
 
-  (function loadScriptsAfterFirstPaint() {
-    var s1 = document.createElement('script'); s1.src = 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js'; s1.async = true;
-    var s2 = document.createElement('script'); s2.src = 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js'; s2.async = true;
-    s2.onload = function() { if (window.firebaseConfig && typeof firebase !== 'undefined') firebase.initializeApp(window.firebaseConfig); };
-    document.head.appendChild(s1); s1.onload = function() { document.head.appendChild(s2); };
-    var s3 = document.createElement('script'); s3.src = '/offline-engine.js'; s3.async = true; document.head.appendChild(s3);
-  })();
-
   var authReadyPromise = new Promise(function(resolve) {
     var resolved = false;
     function done(user) {
-      if (!resolved) {
-        resolved = true;
-        resolve(user || null);
-      }
+      if (!resolved) { resolved = true; resolve(user || null); }
     }
-    // Safety: never wait forever for auth (e.g. if native bridge hangs)
     var timeout = setTimeout(function() { done(null); }, 8000);
-
     try {
       var plugins = (window.Capacitor && window.Capacitor.Plugins) || window.CapacitorPlugins || {};
       var authBridge = plugins.AuthBridge || plugins.authBridge || null;
-
-      // In the native app, rely solely on the native bridge and do NOT use Firebase Web redirect/popup flows.
       if (isCapacitor) {
         if (authBridge && typeof authBridge.getCurrentUser === 'function') {
           authBridge.getCurrentUser().then(function(result) {
             clearTimeout(timeout);
-            var user = result && result.user ? result.user : null;
-            done(user);
-          }).catch(function() {
-            clearTimeout(timeout);
-            done(null);
-          });
+            var nativeUser = result && result.user ? result.user : null;
+            // For safety, treat any native user with emailVerified === false as unauthenticated
+            if (nativeUser && nativeUser.emailVerified === false) {
+              nativeUser = null;
+            }
+            done(nativeUser);
+          }).catch(function() { clearTimeout(timeout); done(null); });
         } else {
           clearTimeout(timeout);
           done(null);
@@ -4255,38 +4246,27 @@ app.get("/", (req, res) => {
       done(null);
       return;
     }
-
-    // Web-only behavior: keep existing Firebase Web email/redirect handling for the hosted app.
     if (typeof firebase === 'undefined') { clearTimeout(timeout); done(null); return; }
     function finishAuth(user) {
       clearTimeout(timeout);
+      // In web environments, require verified email before treating email/password users as signed in.
+      if (user && user.emailVerified === false) {
+        user = null;
+      }
       done(user || null);
     }
-
-    function handleEmailLinkOrState() {
-      if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
-        var emailForLink = localStorage.getItem('swimsum_email_for_link');
-        if (emailForLink) {
-          firebase.auth().signInWithEmailLink(emailForLink, window.location.href).then(function(cred) {
-            localStorage.removeItem('swimsum_email_for_link');
-            if (window.history && window.history.replaceState) window.history.replaceState({}, document.title, window.location.pathname || '/');
-            finishAuth(cred.user);
-          }).catch(function() { finishAuth(null); });
-          return;
-        }
-      }
-      firebase.auth().onAuthStateChanged(function(user) { finishAuth(user); });
-    }
-
-    firebase.auth().getRedirectResult().then(function(result) {
-      if (result && result.user) {
-        finishAuth(result.user);
+    if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
+      var emailForLink = localStorage.getItem('swimsum_email_for_link');
+      if (emailForLink) {
+        firebase.auth().signInWithEmailLink(emailForLink, window.location.href).then(function(cred) {
+          localStorage.removeItem('swimsum_email_for_link');
+          if (window.history && window.history.replaceState) window.history.replaceState({}, document.title, window.location.pathname || '/');
+          finishAuth(cred.user);
+        }).catch(function() { finishAuth(null); });
         return;
       }
-      handleEmailLinkOrState();
-    }).catch(function() {
-      handleEmailLinkOrState();
-    });
+    }
+    firebase.auth().onAuthStateChanged(function(user) { finishAuth(user); });
   });
 
   function fadeIn(el) {
@@ -4360,10 +4340,11 @@ app.get("/", (req, res) => {
       '<p style="margin:0 0 16px 0; font-size:13px; color:#666;">Sign in with Google or Email to continue.</p>' +
       '<button id="auth-google-btn" type="button" style="width:100%; padding:12px 16px; margin-bottom:10px; border:1px solid #dadce0; border-radius:8px; background:#fff; color:#333; font-size:14px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">' +
       '<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.9 7.35 2.56 10.56l7.97-5.97z"/><path fill="#FBBC05" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.97C6.51 42.62 14.62 48 24 48z"/></svg>' +
-        'Continue with Google</button>' +
+      'Continue with Google</button>' +
       '<div style="margin:12px 0; font-size:12px; color:#999;">or</div>' +
       '<input id="auth-email-input" type="email" placeholder="Email" autocomplete="email" style="width:100%; padding:10px 12px; margin-bottom:8px; border:1px solid #dadce0; border-radius:8px; font-size:14px; box-sizing:border-box;">' +
-      '<input id="auth-password-input" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="width:100%; padding:10px 12px; margin-bottom:4px; border:1px solid #dadce0; border-radius:8px; font-size:14px; box-sizing:border-box;">' +
+      '<input id="auth-password-input" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="width:100%; padding:10px 12px; margin-bottom:2px; border:1px solid #dadce0; border-radius:8px; font-size:14px; box-sizing:border-box;">' +
+      '<div style="text-align:right; margin-bottom:4px; font-size:11px;"><a id="auth-toggle-password" href="#" style="color:#666; text-decoration:none;">Show password</a></div>' +
       '<p style="margin:0 0 10px 0; font-size:11px; color:#999;">Password must be at least 6 characters.</p>' +
       '<button id="auth-email-btn" type="button" style="width:100%; padding:12px 16px; margin-bottom:10px; border:1px solid #800000; border-radius:8px; background:#800000; color:#fff; font-size:14px; font-weight:600; cursor:pointer;">Continue with Email</button>' +
       '<a id="auth-skip-btn" href="#" style="display:block; margin-top:10px; font-size:12px; color:#999; text-decoration:none;">DEV: Continue without sign-in (testing only)</a>';
@@ -4371,27 +4352,34 @@ app.get("/", (req, res) => {
     document.body.appendChild(gate);
     void gate.offsetWidth;
     gate.style.opacity = '1';
+    // Password visibility toggle
+    var passwordInput = document.getElementById('auth-password-input');
+    var togglePassword = document.getElementById('auth-toggle-password');
+    if (passwordInput && togglePassword) {
+      togglePassword.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (!passwordInput) return;
+        var isHidden = passwordInput.type === 'password';
+        passwordInput.type = isHidden ? 'text' : 'password';
+        togglePassword.textContent = isHidden ? 'Hide password' : 'Show password';
+      });
+    }
     document.getElementById('auth-google-btn').addEventListener('click', function() {
       var plugins = (window.Capacitor && window.Capacitor.Plugins) || window.CapacitorPlugins || {};
       var authBridge = plugins.AuthBridge || plugins.authBridge || null;
-
-      // In the native app, ONLY use the native bridge. Do not fall back to Firebase Web popup/redirect.
       if (isCapacitor) {
         if (authBridge && typeof authBridge.signInWithGoogle === 'function') {
           authBridge.signInWithGoogle().then(function(result) {
             gate.style.opacity = '0';
             setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
           }).catch(function(err) {
-            var message = (err && err.message) ? err.message : 'Unknown error';
-            alert('Sign-in failed: ' + message);
+            alert('Sign-in failed: ' + ((err && err.message) ? err.message : 'Unknown error'));
           });
         } else {
-          alert('Native Google sign-in is not available in this build. Please use the DEV skip option for now.');
+          alert('Native Google sign-in is not available. Use DEV skip for now.');
         }
         return;
       }
-
-      // Web-only fallback: Firebase Web popup sign-in.
       if (typeof firebase === 'undefined') {
         alert('Sign-in not available (Firebase not loaded).');
         return;
@@ -4422,70 +4410,90 @@ app.get("/", (req, res) => {
         alert('Password must be at least 6 characters.');
         return;
       }
-
       var plugins = (window.Capacitor && window.Capacitor.Plugins) || window.CapacitorPlugins || {};
       var authBridge = plugins.AuthBridge || plugins.authBridge || null;
-
-      function onEmailSignInSuccess() {
+      function onSuccess() {
         gate.style.opacity = '0';
         setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
       }
-      function onEmailSignInError(err) {
+      function onError(err) {
         var msg = (err && err.message) ? err.message : (err && err.code) ? err.code : 'Unknown error';
-        var hint = '';
-        if (msg.indexOf('credential') !== -1 || msg.indexOf('invalid') !== -1 || msg.indexOf('malformed') !== -1) {
-          hint = ' If you usually sign in with Google for this email, try "Continue with Google" instead.';
+        if (msg.indexOf('credential') !== -1 || msg.indexOf('invalid') !== -1) {
+          msg += ' If you use Google for this email, try Continue with Google.';
         }
-        alert('Sign-in failed: ' + msg + hint);
+        alert('Sign-in failed: ' + msg);
       }
-
       if (isCapacitor && authBridge && typeof authBridge.signInWithEmail === 'function') {
         authBridge.signInWithEmail({ email: email, password: password }).then(function(result) {
-          onEmailSignInSuccess();
-          if (result && result.verificationEmailSent) {
-            alert('We\'ve sent a verification link to your email. Please check your inbox to verify your address.');
+          var user = result && result.user;
+          var verified = !!(user && user.emailVerified);
+          if (verified) {
+            onSuccess();
+            return;
           }
-        }).catch(function(err) {
-          onEmailSignInError(err);
-        });
+          // Account created / signed in but email is not verified yet.
+          if (result && result.verificationEmailSent) {
+            alert('We sent a verification link to your email. Check your inbox and spam folder for the verification email. After you verify, return to the app and sign in again.');
+          } else {
+            alert('Please verify your email via the link we sent, then return to the app and sign in again.');
+          }
+          // For safety, sign out and return to the auth gate until they verify.
+          if (authBridge && typeof authBridge.signOut === 'function') {
+            authBridge.signOut();
+          }
+          gate.style.opacity = '0';
+          setTimeout(function() { gate.remove(); showAuthGate(); }, 400);
+        }).catch(onError);
         return;
       }
-
       if (typeof firebase === 'undefined') {
         alert('Email sign-in not available (Firebase not loaded).');
         return;
       }
       var auth = firebase.auth();
-      auth.signInWithEmailAndPassword(email, password).then(function() {
-        onEmailSignInSuccess();
+      auth.signInWithEmailAndPassword(email, password).then(function(cred) {
+        var u = (cred && cred.user) || auth.currentUser;
+        var verified = !!(u && u.emailVerified);
+        if (verified) {
+          onSuccess();
+          return;
+        }
+        if (u) {
+          u.sendEmailVerification().then(function() {
+            alert('We sent a verification link to your email. Check your inbox and spam folder for the verification email. After you verify, return to the app and sign in again.');
+          }).catch(function() {
+            alert('Please check your inbox and spam folder for the verification email, then return to the app and sign in again.');
+          });
+          auth.signOut();
+        }
+        gate.style.opacity = '0';
+        setTimeout(function() { gate.remove(); showAuthGate(); }, 400);
       }).catch(function(err) {
         if (err && err.code === 'auth/user-not-found') {
-          auth.createUserWithEmailAndPassword(email, password).then(function() {
-            onEmailSignInSuccess();
-            var u = auth.currentUser;
-            if (u && !u.emailVerified) {
+          auth.createUserWithEmailAndPassword(email, password).then(function(cred) {
+            var u = (cred && cred.user) || auth.currentUser;
+            if (u) {
               u.sendEmailVerification().then(function() {
-                alert('We\'ve sent a verification link to your email. Please check your inbox to verify your address.');
+                alert('We sent a verification link to your email. Check your inbox and spam folder for the verification email. After you verify, return to the app and sign in again.');
+              }).catch(function() {
+                alert('Please check your inbox and spam folder for the verification email, then return to the app and sign in again.');
               });
+              auth.signOut();
             }
-          }).catch(function(e2) {
-            onEmailSignInError(e2);
-          });
+            gate.style.opacity = '0';
+            setTimeout(function() { gate.remove(); showAuthGate(); }, 400);
+          }).catch(onError);
         } else {
-          onEmailSignInError(err);
+          onError(err);
         }
       });
     });
-
-    var skipLink = document.getElementById('auth-skip-btn');
-    if (skipLink) {
-      skipLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        localStorage.setItem('swimsum_auth_skipped', 'true');
-        gate.style.opacity = '0';
-        setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
-      });
-    }
+    document.getElementById('auth-skip-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.setItem('swimsum_auth_skipped', 'true');
+      gate.style.opacity = '0';
+      setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+    });
   }
 
   function showCoachMark() {
@@ -4505,15 +4513,24 @@ app.get("/", (req, res) => {
     });
   }
 
-  (function runSplashNow() {
-    function tryStart() {
-      var s = document.getElementById('swimsum-splash');
-      var c = document.getElementById('splash-content');
-      if (s && c) startAnimation();
+  window.resetNewUserState = function() {
+    localStorage.removeItem('swimsum_auth_skipped');
+    var plugins = (window.Capacitor && window.Capacitor.Plugins) || window.CapacitorPlugins || {};
+    var authBridge = plugins.AuthBridge || plugins.authBridge || null;
+    function doReload() { location.reload(); }
+    if (isCapacitor && authBridge && typeof authBridge.signOut === 'function') {
+      authBridge.signOut().then(doReload).catch(doReload);
+      return;
     }
-    tryStart();
-    if (!splash || !content) setTimeout(tryStart, 0);
-  })();
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().signOut().then(doReload).catch(doReload);
+      return;
+    }
+    doReload();
+  };
+
+  if (document.readyState === 'complete') startAnimation();
+  else window.addEventListener('load', startAnimation);
 })();
 </script>
 

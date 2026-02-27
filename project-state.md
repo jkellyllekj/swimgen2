@@ -53,9 +53,9 @@ POST-LAUNCH ENHANCEMENTS (V1.1+):
 Project: SwimSum - Swim Workout Generator
 Working title(s): SwimSum (final name)
 
-Last updated: 2026-02-23
+Last updated: 2026-02-27
 
-Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented (Firebase). Testing: Internal/closed testing in progress (second week). Working build protected on branch cursor-transition.
+Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented via AuthBridge (Firebase). Email+password sign-in implemented with verification emails working; gating behavior (require verified email before generator) in progress. Firebase Hosting + custom domain (swimsum.com) live for privacy policy and sign-in-complete landing. Testing: Internal/closed testing in progress (second week). Working build protected on branch cursor-transition.
 Current Version: 1.8.3 (versionCode 26)
 
 ### 🏢 BUSINESS & PLAY CONSOLE CREDENTIALS
@@ -111,6 +111,19 @@ Strict process for generating App Store builds from Replit:
 🐛 BUG: Replit Auth on Published Web App
    - Symptom: Friends asked to login to Replit to view app.
    - Fix: Must toggle Deployment setting to "Public".
+
+🐛 AUTH & SPLASH SAGA (Feb 2026)
+   - History:
+     - Initial app used Firebase Web SDK (`signInWithPopup` / `signInWithRedirect`) inside the Capacitor WebView. On device this opened an external Firebase page that never returned to the app, often showing a blank page or “missing initial state” errors.
+     - Introduced native `AuthBridge` plugin using FirebaseAuth + GoogleSignIn, added SHA‑1 fingerprint, updated `google-services.json`, and added `com.google.android.gms:play-services-auth` in `android/app/build.gradle`.
+     - Several iterations of splash/auth timing changes caused regressions: frozen blue splash (no animation), missing auth gate, or `generateWorkoutLocal is not defined` when the offline engine was not loaded.
+   - Current behaviour:
+     - Google sign-in: Native AuthBridge flow now works; users can sign in with Google on device and appear in Firebase Auth, then proceed into the app.
+     - Email sign-in: Email+password sign-in path creates accounts and sends verification emails; users can still reach the generator immediately after account creation (gating on `emailVerified` is still being hardened).
+     - Splash: Current build sometimes skips or briefly flashes the Capacitor/native splash before showing the SwimSum splash; earlier builds could freeze on a plain blue screen. Long‑term goal is to minimise/remove the splash in favour of a simple logo + in‑app help overlay.
+   - Remaining issues:
+     - Email path should enforce `emailVerified === true` before allowing access to the generator, with clear “verify your email, then sign in again” messaging.
+     - Splash/boot path is fragile; changes to script loading order or auth gate wiring can still cause a stuck blue screen or skipped animation.
 
 ============================================================================ ACTIVE DEVELOPMENT - SWIMGEN2
 Repository: https://github.com/jkellyllekj/swimgen2
@@ -1008,3 +1021,41 @@ Milestone: Version 25 (1.0.3) built for production upload. Signing alias 'swimsu
 - **Help redesign:** Move away from splash-only help; add a persistent **?** (question mark) near the top of the app for instructions/help so users can skip splash and still get guidance.
 - **Ads:** Make ads a bit more intrusive for testing; define placement and behaviour.
 - **Premium features (behind flags):** Continue development of premium features (custom pool sizes, equipment, editing sets, etc.) but keep them **switched off** until launch strategy is set. No pruning of existing notes; all 1000+ lines retained.
+
+## Auth Iterations & Lessons (Feb 2026)
+
+- **Web SDK in WebView is a dead end for Google sign-in.** Using Firebase Web SDK (`signInWithPopup` / `signInWithRedirect`) inside the Capacitor WebView consistently led to blank Firebase pages and “missing initial state” errors; the correct pattern is **native Firebase Auth + a thin JS bridge (AuthBridge)**.
+- **Firebase wiring matters: SHA‑1 + `google-services.json` + `default_web_client_id`.** Google sign-in only works reliably after:
+  - Adding the debug SHA‑1 fingerprint via Gradle `signingReport` into Firebase Project Settings.
+  - Downloading and committing the updated `android/app/google-services.json`.
+  - Adding the Web client ID from `google-services.json` as `@string/default_web_client_id` in `android/app/src/main/res/values/strings.xml` so `GoogleSignInOptions.requestIdToken(...)` matches the project.
+- **Email+password sign-in now sends verification emails.** Email+password accounts are created via native Firebase Auth and verification links are sent successfully; product decision still pending on whether unverified users may continue to generate workouts or must verify first.
+- **Splash and boot timing are tightly coupled to auth.** Changing when scripts load (Firebase, offline-engine, auth gate) can freeze the blue splash or skip animations. Long‑term pattern is to keep native splash minimal, hide it early, and rely on in‑app logo + help overlay instead of a heavy blocking splash sequence.
+- **Dated log:** 2026‑02‑26 – Full‑day auth debugging: retired Web SDK popup/redirect in WebView, adopted native AuthBridge path, added SHA‑1 + updated `google-services.json`, confirmed Google sign-in on device, implemented email verification flow; remaining work is stricter gating on `emailVerified` and hardening splash/auth timing.
+- **Dated log:** 2026‑02‑27 – Hardened email gating on both native and web paths so email+password users cannot reach the generator until `emailVerified === true`, added a password visibility toggle in the auth gate, and confirmed that deleting a Google user in Firebase does not revoke Google account consent (Google sign-in continues to recreate the user once the device account has approved the app).
+
+## Next 7 Days – Launch Checklist (Feb 2026)
+
+- ✅ **Google sign-in:** Keep validating native AuthBridge Google sign-in on real devices (internal testers) and ensure it behaves the same in closed testing builds from Play Console.
+- ✅ **Email gating:** Email+password users can no longer reach the generator until `emailVerified === true`; both native AuthBridge and Firebase Web fallback paths now (1) send or re-send verification emails, (2) sign the user out, and (3) show “check your inbox and spam folder, then sign in again” copy before returning them to the auth gate.
+- ⏳ **Ads:** Confirm AdMob test banners render correctly in debug and that production AdMob IDs and Consent/Privacy configuration are ready for release; verify banners appear in closed testing builds without layout regressions.
+- ⏳ **Closed testing build:** Push a fresh closed‑testing release with the final sign‑in behaviour and capture tester feedback (especially around auth friction, splash timing, and ad intrusiveness). Current status: auth‑gated build 1.0.5 (versionCode 27) has been prepared and submitted to the closed testing track; review and tester feedback are pending.
+- ⏳ **Marketing hooks & site:** Ensure privacy policy and supporting pages are live at `https://swimsum.com` (backed by Firebase Hosting), and sketch first‑pass plan for using Firebase Auth emails (with explicit consent) to announce future premium tiers and content (e.g., drill videos, technique tips).
+
+## Monetisation & Ad Strategy (Feb 2026)
+
+- **AdMob configuration (current):**
+  - AdMob App ID: `ca-app-pub-8975918152073391~1783741253`.
+  - Banner Ad Unit ID (bottom Adaptive Banner): `ca-app-pub-8975918152073391/1711443276`.
+  - Interstitial Ad Unit ID (welcome full‑screen ad): `ca-app-pub-8975918152073391/7973599297`.
+  - Code currently uses Google’s test banner ID; production IDs and consent prompts will be wired in a subsequent iteration.
+- **Remove-ads subscription (planned):**
+  - Single paid tier for launch: **“Remove ads” yearly subscription** (target price ~£5/year, region-adjusted equivalents via Play Console).
+  - Behaviour: paying users see no bottom banner and no welcome interstitial; free users see an Adaptive Banner at the bottom plus a one-time “welcome” interstitial per session.
+  - UI entry points:
+    - Small inline prompt near the banner (e.g. “Ads keep SwimSum free. Remove ads for £5/year to support development.”).
+    - A clearer option in a settings/help area (“Remove ads – £5/year”) that explains the benefit and that purchases help fund SwimSum’s ongoing development.
+- **Payments / merchant account status:**
+  - Google Payments merchant profile created as an Individual, using personal legal details with public branding under the SwimSum / Creative Arts umbrella.
+  - Revolut Pro bank account connected for payouts; micro-deposit verification is in progress and must complete before in‑app products can be created in Play Console.
+  - Once verification is complete, Play Console will allow creation of the `remove_ads_yearly` subscription product, which will then be wired to a `hasRemoveAds` entitlement flag inside the app via Google Play Billing.
