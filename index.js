@@ -1188,33 +1188,34 @@ app.get("/", (req, res) => {
       })();
     </script>
 
-    <div style="max-width:520px;">
-      <form id="genForm" class="glassPanel" style="position:relative; max-width:520px; padding:16px;">
+    <div id="appShell" style="max-width:520px; opacity:0; transition:opacity 0.35s ease-out;">
+      <form id="genForm" class="glassPanel" style="position:relative; max-width:520px; padding:10px 14px 6px 12px;">
         <div class="form-row">
           <div class="form-col">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
               <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-                <h3 style="margin:0; font-size:clamp(1.2rem, 5vw, 1.5rem); font-weight:700; font-variant:small-caps; letter-spacing:0.5px;">
-                  <span class="glassChip readChip">Swim Sum</span>
+                <h3 style="margin:0; font-size:clamp(1.15rem, 4.6vw, 1.45rem); font-weight:700; font-variant:small-caps; letter-spacing:0.5px; white-space:nowrap;">
+                  <span class="glassChip readChip">Swim&nbsp;Sum</span>
                 </h3>
               </div>
 
               <div style="flex:1; display:flex; justify-content:center;">
                 <div style="display:flex; align-items:center; gap:12px; margin-left:8px;">
-  <div style="position:relative; width:26px; height:26px; display:flex; align-items:center; justify-content:center;">
-    <input type="color" id="solidColorPicker" oninput="setBgColor(this.value)" value="#40c9e0" title="Choose background color" style="position:absolute; width:100%; height:100%; opacity:0.01; cursor:pointer; z-index:2;">
-    <span style="font-size:22px; z-index:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128167;</span>
-  </div>
-  <button id="bgCycleBtn" type="button" aria-label="Change background" class="icon-silhouette" style="font-size:22px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128444;&#65039;</button>
-</div>
+                  <div style="position:relative; width:26px; height:26px; display:flex; align-items:center; justify-content:center;">
+                    <input type="color" id="solidColorPicker" oninput="setBgColor(this.value)" value="#40c9e0" title="Choose background color" style="position:absolute; width:100%; height:100%; opacity:0.01; cursor:pointer; z-index:2;">
+                    <span style="font-size:22px; z-index:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128167;</span>
+                  </div>
+                  <button id="bgCycleBtn" type="button" aria-label="Change background" class="icon-silhouette" style="font-size:22px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128444;&#65039;</button>
+                  <button id="helpBtn" type="button" aria-label="How to use SwimSum" class="icon-silhouette" style="font-size:18px; font-weight:900; padding:0 8px; border-radius:999px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">?</button>
+                </div>
               </div>
 
-              <span class="glassChip readChip" style="white-space:nowrap; border-radius:8px; padding:6px 12px;">
+              <span class="glassChip readChip" style="white-space:nowrap; border-radius:8px; padding:6px 12px; margin-left:10px;">
                 <strong id="distanceLabel">2000</strong>
               </span>
             </div>
 
-            <div style="display:flex; align-items:center;">
+            <div style="display:flex; align-items:center; margin-top:0;">
               <input
                 id="distanceSlider"
                 type="range"
@@ -1236,9 +1237,9 @@ app.get("/", (req, res) => {
             <div id="controlsGrid">
               <div id="leftControls">
                 <div id="poolButtons" class="poolRow">
-                  <button type="button" data-pool="25m" class="active" style="padding:6px 14px; border-radius:5px; cursor:pointer;">25m</button>
-                  <button type="button" data-pool="50m" style="padding:6px 14px; border-radius:5px; cursor:pointer;">50m</button>
-                  <button type="button" data-pool="25yd" style="padding:6px 14px; border-radius:5px; cursor:pointer;">25yd</button>
+                  <button type="button" data-pool="25m" class="active" style="padding:6px 16px; border-radius:5px; cursor:pointer;">25m</button>
+                  <button type="button" data-pool="50m" style="padding:6px 16px; border-radius:5px; cursor:pointer;">50m</button>
+                  <button type="button" data-pool="25yd" style="padding:6px 16px; border-radius:5px; cursor:pointer;">25yd</button>
                 </div>
 
                 <div id="premiumTeaserRow" style="display:flex; align-items:center; justify-content:flex-start; gap:10px; margin-top:10px; position:relative;">
@@ -1249,7 +1250,7 @@ app.get("/", (req, res) => {
               </div>
 
               <div id="generateStack">
-                <button id="generateBtn" type="submit" class="generateBox">
+                <button id="generateBtn" type="submit" class="generateBox" style="border:2px solid #facc15; margin-right:-8px;">
                   <div class="genLabel"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>Generate</div>
                   <div id="dolphinLoader" class="genDolphin"><img class="dolphinIcon dolphinIcon--generate" src="/assets/dolphins/dolphin-base.png" alt=""></div>
                 </button>
@@ -1384,7 +1385,7 @@ app.get("/", (req, res) => {
           </div>
         </div>
 
-        <div style="margin-top:14px; display:flex; align-items:flex-end; justify-content:space-between;">
+              <div style="margin-top:6px; display:flex; align-items:flex-end; justify-content:space-between;">
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <button id="copyBtn" type="button" style="display:none; padding:8px 12px; border-radius:8px; border:1px solid #777; background:#fff; color:#111; cursor:pointer;" disabled>
               Copy
@@ -1425,28 +1426,6 @@ app.get("/", (req, res) => {
       <div id="sticky-footer-panel" style="max-width:520px; width:100%; order:3;">
         <div id="totalBox" style="display:none; text-align:right; margin-top:8px;"><span id="totalText" style="display:inline-block; font-weight:700; font-size:15px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow:0 2px 6px rgba(0,0,0,0.25);"></span></div>
         <div id="footerBox" class="glassSummary" style="display:none; margin-top:8px; padding:12px;"></div>
-      </div>
-
-      <div id="howToUseCard" class="glassPanel" style="max-width:520px; margin-top:24px; padding:12px; font-size:13px; border:none; background:rgba(255,255,255,0.4); order:1; text-align:center;">
-        <h4 style="margin:0 0 8px 0; font-size:14px; font-weight:700;">How to use SwimSum</h4>
-        <ul style="margin:0 0 10px 0; padding-left:0; font-size:12px; line-height:1.8; list-style:none;">
-          <li>Choose your pool length</li>
-          <li>Swipe your distance</li>
-          <li>Generate an instant workout!</li>
-        </ul>
-        <details class="more-features-details">
-          <summary style="cursor:pointer; color:#007bff; text-decoration:underline; font-weight:bold; margin-bottom:10px; font-size:12px; list-style:none;">How to use added features</summary>
-          <ul style="list-style-type:disc; padding-left:20px; margin:8px 0 0 0; line-height:1.5; color:#333; font-size:12px;">
-            <li><strong>Top Dolphin:</strong> New full workout.</li>
-            <li><strong>Refresh Icon:</strong> Reroll just that set.</li>
-            <li><strong>Long Press (300ms):</strong> Drag and drop sets.</li>
-            <li><strong>Swipe Right:</strong> Remove a set.</li>
-            <li><strong>Swipe Left:</strong> Send set to bottom.</li>
-            <li><strong>Eyedropper/Frame Icons:</strong> Custom colors or image backgrounds.</li>
-            <li><strong>Feedback:</strong> <a href="#" style="color:#007bff;">Leave a comment here.</a></li>
-            <li style="margin-top:6px;"><a href="#" onclick="if(window.resetNewUserState){window.resetNewUserState();}else{localStorage.removeItem('swimsum_auth_skipped');location.reload();} return false;" style="color:#999; font-size:10px; text-decoration:none;">DEV: Reset New User State</a></li>
-          </ul>
-        </details>
       </div>
     </div>
 
@@ -1501,8 +1480,8 @@ app.get("/", (req, res) => {
       </div>
     </div>
     <!-- GESTURE EDIT MODAL END -->
-
-    <div id="toastContainer" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:white; padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:opacity 0.3s ease; pointer-events:none; z-index:10000; white-space:nowrap;"></div>
+  
+    <div id="toastContainer" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.85); color:white; padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:opacity 0.3s ease; pointer-events:none; z-index:10000; max-width:90%; text-align:center; white-space:normal;"></div>
   `;
   const HOME_JS_OPEN = `
     <script>
@@ -1639,6 +1618,335 @@ app.get("/", (req, res) => {
         };
         localStorage.setItem('swimWorkoutSettings', JSON.stringify(settings));
       }
+
+      // ===== Onboarding sequence (instruction cards) =====
+      let onboardingActive = false;
+
+      function clearOnboardingHighlights() {
+        const highlighted = document.querySelectorAll("[data-onboarding-highlight='true']");
+        highlighted.forEach((el) => {
+          el.style.boxShadow = el.getAttribute("data-prev-boxshadow") || "";
+          el.style.transform = el.getAttribute("data-prev-transform") || "";
+          el.style.animation = el.getAttribute("data-prev-animation") || "";
+          el.removeAttribute("data-onboarding-highlight");
+          el.removeAttribute("data-prev-boxshadow");
+          el.removeAttribute("data-prev-transform");
+          el.removeAttribute("data-prev-animation");
+        });
+      }
+
+      function highlightElement(el) {
+        if (!el) return;
+        if (el.getAttribute("data-onboarding-highlight") === "true") return;
+        el.setAttribute("data-onboarding-highlight", "true");
+        el.setAttribute("data-prev-boxshadow", el.style.boxShadow || "");
+        el.setAttribute("data-prev-transform", el.style.transform || "");
+         el.setAttribute("data-prev-animation", el.style.animation || "");
+        el.style.boxShadow = "0 0 0 3px rgba(255,255,255,0.9), 0 0 18px rgba(0,0,0,0.6)";
+        el.style.transform = "scale(1.03)";
+      }
+
+      function speakOnboarding(text) {
+        if (!text) return;
+        try {
+          if (!("speechSynthesis" in window)) return;
+          const synth = window.speechSynthesis;
+          synth.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.rate = 0.95;
+          utter.pitch = 1.0;
+          synth.speak(utter);
+        } catch (e) {
+          // Ignore speech errors silently
+        }
+      }
+
+      function buildInstructionCard(effort, title, body) {
+        const dropShadow = "0 6px 16px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.25)";
+        const boxStyle = colorStyleForEffort(effort, 1) + " box-shadow:" + dropShadow + "; border-radius:12px; padding:10px 12px;";
+        const textColor = effort === "fullgas" ? "#fff" : "#111";
+        const subTextColor = textColor === "#fff" ? "#eee" : "#333";
+        return (
+          '<div data-effort="' + effort + '" style="' + boxStyle + '">' +
+            '<div style="font-weight:700; color:' + textColor + '; margin-bottom:6px;">' + safeHtml(title) + "</div>" +
+            '<div style="font-size:13px; line-height:1.4; color:' + subTextColor + ';">' + safeHtml(body) + "</div>" +
+          "</div>"
+        );
+      }
+
+      function runOnboardingSequence(options) {
+        if (onboardingActive && !options?.force) return;
+        onboardingActive = true;
+
+        const container = cards;
+        if (!container) {
+          onboardingActive = false;
+          return;
+        }
+
+        clearOnboardingHighlights();
+        container.innerHTML = "";
+        container.style.display = "block";
+
+        // Static mode: render all four cards at once with no animation/finger
+        if (options && options.mode === "static") {
+        const staticSteps = [
+          { effort: "moderate", title: "Step 1: Pick your pool size", body: "Tap 25m, 50m or 25yd to match your pool." },
+          { effort: "strong", title: "Step 2: Slide your distance", body: "Move the slider to choose your total distance." },
+          { effort: "hard", title: "Step 3: Tap Generate", body: "Tap Generate to roll a coach-plausible session." },
+          { effort: "fullgas", title: "Step 4: Drag and delete sets", body: "Long-press to drag or delete a set." }
+          ];
+        const html = [];
+        html.push('<div id="onboardingStaticWrap" style="display:flex; flex-direction:column; gap:6px; margin-top:5px;">');
+        staticSteps.forEach(function(step) {
+          html.push(buildInstructionCard(step.effort, step.title, step.body));
+        });
+        html.push("</div>");
+        container.innerHTML = html.join("");
+
+        // Quick staggered fade-in of all four cards
+        const wrap = document.getElementById("onboardingStaticWrap");
+        if (wrap) {
+          const children = Array.from(wrap.children || []);
+          children.forEach(function(card, idx) {
+            card.style.opacity = "0";
+            card.style.transform = "translateY(4px)";
+            setTimeout(function() {
+              card.style.transition = "opacity 0.25s ease-out, transform 0.25s ease-out";
+              card.style.opacity = "1";
+              card.style.transform = "translateY(0)";
+            }, idx * 80);
+          });
+        }
+        onboardingActive = false;
+        return;
+        }
+
+        const steps = [
+          {
+            id: "pool",
+            effort: "moderate",
+            title: "Step 1: Pick your pool size",
+            body: "Tap 25m, 50m or 25yd to match your pool.",
+            duration: 3200,
+          },
+          {
+            id: "distance",
+            effort: "strong",
+            title: "Step 2: Slide your distance",
+            body: "Move the slider to choose your total distance.",
+            duration: 3400,
+          },
+          {
+            id: "generate",
+            effort: "hard",
+            title: "Step 3: Tap Generate",
+            body: "Tap Generate to roll a coach-plausible session.",
+            duration: 3200,
+          },
+          {
+            id: "drag",
+            effort: "fullgas",
+            title: "Step 4: Drag and delete sets",
+            body: "Long-press to drag or delete a set.",
+            duration: 3400,
+          },
+        ];
+
+        const finger = (function ensureFinger() {
+          let el = document.getElementById("onboardingFinger");
+          if (!el) {
+            el = document.createElement("div");
+            el.id = "onboardingFinger";
+            el.style.position = "fixed";
+            el.style.zIndex = "99997";
+            el.style.width = "32px";
+            el.style.height = "32px";
+            el.style.borderRadius = "50%";
+            el.style.background = "rgba(255,255,255,0.95)";
+            el.style.boxShadow = "0 3px 10px rgba(0,0,0,0.5)";
+            el.style.display = "none";
+            el.style.alignItems = "center";
+            el.style.justifyContent = "center";
+            el.style.fontSize = "18px";
+            el.style.transition = "top 0.5s cubic-bezier(0.16, 1, 0.3, 1), left 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out";
+            el.textContent = "👆";
+            document.body.appendChild(el);
+          }
+          return el;
+        })();
+
+        function hideFinger() {
+          finger.style.opacity = "0";
+          setTimeout(() => { finger.style.display = "none"; }, 250);
+        }
+
+        function moveFingerToRect(rect, opts) {
+          if (!rect) return;
+          finger.style.display = "flex";
+          finger.style.opacity = "1";
+          const offsetX = (opts && opts.offsetX) || 0;
+          const offsetY = (opts && opts.offsetY) || 0;
+          finger.style.left = (rect.left + rect.width / 2 + offsetX) + "px";
+          finger.style.top = (rect.top + rect.height / 2 + offsetY) + "px";
+        }
+
+        let htmlParts = [];
+        let stepIndex = 0;
+
+        function applyStep(step) {
+          clearOnboardingHighlights();
+
+          // Append this step's instruction card so they stack in order: Step 1, 2, 3, 4 (same as static view)
+          const cardHtml = buildInstructionCard(step.effort, step.title, step.body);
+          htmlParts.push(cardHtml);
+          container.innerHTML = '<div id="onboardingAnimatedWrap" style="display:flex; flex-direction:column; gap:6px; margin-top:5px;">' + htmlParts.join("") + "</div>";
+          container.style.display = "block";
+
+          // Fade/float-in of each visible card so new ones don't just "pop" in
+          const wrap = document.getElementById("onboardingAnimatedWrap");
+          if (wrap) {
+            const children = Array.from(wrap.children || []);
+            children.forEach(function(card, idx) {
+              card.style.opacity = "0";
+              card.style.transform = "translateY(4px)";
+              setTimeout(function() {
+                card.style.transition = "opacity 0.25s ease-out, transform 0.25s ease-out";
+                card.style.opacity = "1";
+                card.style.transform = "translateY(0)";
+              }, idx * 80);
+            });
+          }
+
+          if (step.id === "pool") {
+            speakOnboarding("Pick your pool size");
+            const poolBtns = document.querySelectorAll("#poolButtons button[data-pool]");
+            poolBtns.forEach(highlightElement);
+            const defaultBtn = document.querySelector("#poolButtons button[data-pool='25m']");
+            if (defaultBtn) {
+              setActivePool("25m", true);
+              const rect = defaultBtn.getBoundingClientRect();
+              moveFingerToRect(rect, { offsetY: 20 });
+              setTimeout(function() {
+                // small tap motion
+                finger.style.top = (rect.top + rect.height / 2 + 10) + "px";
+                setTimeout(function() {
+                  finger.style.top = (rect.top + rect.height / 2 + 20) + "px";
+                }, 220);
+                // trigger real click for visual feedback
+                defaultBtn.click();
+              }, 350);
+            }
+          } else if (step.id === "distance") {
+            speakOnboarding("Slide your distance");
+            const slider = distanceSlider;
+            if (slider) {
+              highlightElement(slider);
+              const trackRect = slider.getBoundingClientRect();
+              const y = trackRect.top + trackRect.height / 2;
+              const minVal = Number(slider.min) || 500;
+              const maxVal = Number(slider.max) || 10000;
+              let current = 5000; // demo start value
+
+              function xFor(val) {
+                const clamped = Math.min(maxVal, Math.max(minVal, val));
+                const ratio = (clamped - minVal) / (maxVal - minVal);
+                return trackRect.left + trackRect.width * ratio;
+              }
+
+              // Start demo at 5000
+              slider.value = String(current);
+              distanceLabel.textContent = String(current);
+              finger.style.display = "flex";
+              finger.style.opacity = "1";
+              finger.style.top = y + "px";
+              finger.style.left = xFor(current) + "px";
+
+              const animId = setInterval(function() {
+                if (!onboardingActive) { clearInterval(animId); return; }
+
+                current -= 400;
+                if (current <= 2000) {
+                  current = 2000;
+                  clearInterval(animId);
+                }
+
+                slider.value = String(current);
+                distanceLabel.textContent = String(current);
+                finger.style.left = xFor(current) + "px";
+
+                if (current === 2000) {
+                  setDistance(2000, true);
+                }
+              }, 220);
+            }
+          } else if (step.id === "generate") {
+            speakOnboarding("Generate your workout");
+            const genBtn = document.getElementById("generateBtn");
+            if (genBtn) {
+              highlightElement(genBtn);
+              genBtn.style.animation = "pulse 1s infinite";
+              const rect = genBtn.getBoundingClientRect();
+              moveFingerToRect(rect, { offsetY: 28 });
+              setTimeout(function() {
+                finger.style.top = (rect.top + rect.height / 2 + 10) + "px";
+              }, 350);
+            }
+          } else if (step.id === "drag") {
+            highlightElement(container);
+            // Use the last card (Step 4 / red) for the drag demo so it animates at the bottom
+            const allCards = container.querySelectorAll("[data-effort]");
+            const dragCard = allCards.length ? allCards[allCards.length - 1] : null;
+            if (dragCard) {
+              const rect = dragCard.getBoundingClientRect();
+              moveFingerToRect(rect, { offsetX: -40 });
+              setTimeout(function() {
+                dragCard.style.transition = "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)";
+                dragCard.style.transform = "translateY(-8px)";
+                setTimeout(function() {
+                  dragCard.style.transform = "translateY(8px)";
+                  setTimeout(function() {
+                    dragCard.style.transform = "translateX(40px)";
+                    setTimeout(function() {
+                      dragCard.style.transform = "translateX(0px)";
+                      setTimeout(function() {
+                        dragCard.style.transform = "";
+                        dragCard.style.transition = "";
+                      }, 350);
+                    }, 550);
+                  }, 550);
+                }, 550);
+              }, 300);
+            }
+          }
+        }
+
+        function finish() {
+          clearOnboardingHighlights();
+          onboardingActive = false;
+          hideFinger();
+          const genBtn = document.getElementById("generateBtn");
+          if (genBtn && genBtn.getAttribute("data-prev-bg-onb") !== null) {
+            genBtn.style.background = genBtn.getAttribute("data-prev-bg-onb") || "";
+            genBtn.removeAttribute("data-prev-bg-onb");
+          }
+        }
+
+        function nextStep() {
+          if (stepIndex >= steps.length) {
+            finish();
+            return;
+          }
+          const step = steps[stepIndex++];
+          applyStep(step);
+          setTimeout(nextStep, step.duration);
+        }
+
+        nextStep();
+      }
+
+      // Expose for auth/CoachMark logic and Help button
+      window.runOnboardingSequence = runOnboardingSequence;
 
       function updateSetting(category, key, value) {
         const settings = loadUserSettings() || {
@@ -1817,6 +2125,10 @@ app.get("/", (req, res) => {
       }
 
       window.setBgColor = function(color) {
+        if (typeof checkLock === "function" && checkLock()) {
+          showToast("Screen locked. Hold the lock to unlock.");
+          return;
+        }
         const bgA = document.getElementById("bgA");
         const bgB = document.getElementById("bgB");
         if (!bgA || !bgB) return;
@@ -1838,7 +2150,13 @@ app.get("/", (req, res) => {
       function wireBackgroundCycleButton() {
         const btn = document.getElementById("bgCycleBtn");
         if (!btn) return;
-        btn.addEventListener("click", cycleBackgroundManually);
+        btn.addEventListener("click", (e) => {
+          if (typeof checkLock === "function" && checkLock()) {
+            showToast("Screen locked. Hold the lock to unlock.");
+            return;
+          }
+          cycleBackgroundManually();
+        });
       }
 
       initBackgroundLayers();
@@ -2815,9 +3133,6 @@ app.get("/", (req, res) => {
         cards.innerHTML = html.join("");
         cards.style.display = "block";
 
-        const howToCard = document.getElementById("howToUseCard");
-        if (howToCard) howToCard.style.order = "3";
-
         // Setup gesture editing for the workout
         setupGestureEditing(sections);
 
@@ -3247,12 +3562,22 @@ app.get("/", (req, res) => {
       }
 
       poolButtons.addEventListener("click", (e) => {
+        if (typeof checkLock === "function" && checkLock()) {
+          showToast("Screen locked. Hold the lock to unlock.");
+          return;
+        }
         const btn = e.target.closest("button[data-pool]");
         if (!btn) return;
         setActivePool(btn.getAttribute("data-pool"));
       });
-
+      
       distanceSlider.addEventListener("input", (e) => {
+        if (typeof checkLock === "function" && checkLock()) {
+          showToast("Screen locked. Hold the lock to unlock.");
+          // Snap the slider back to the last saved distance
+          setDistance(distanceHidden.value, true);
+          return;
+        }
         setDistance(e.target.value);
       });
 
@@ -3286,6 +3611,11 @@ app.get("/", (req, res) => {
 
       // Update lastPoolBtn when user clicks a pool button (capture phase to run before setActivePool)
       poolButtons.addEventListener("click", (e) => {
+        if (typeof checkLock === "function" && checkLock()) {
+          // Block pool changes entirely while locked
+          e.stopPropagation();
+          return;
+        }
         const btn = e.target.closest("button[data-pool]");
         if (btn) {
           lastPoolBtn = btn.getAttribute("data-pool");
@@ -3351,6 +3681,10 @@ app.get("/", (req, res) => {
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        if (typeof checkLock === "function" && checkLock()) {
+          showToast("Screen locked. Hold the lock to unlock.");
+          return;
+        }
         
         // STEP 0: Check if there's an existing workout to fade out
         const hasExistingWorkout = cards.innerHTML.trim().length > 0 && cards.style.display !== "none";
@@ -3530,6 +3864,18 @@ app.get("/", (req, res) => {
         document.getElementById("bgCycleBtn")?.click();
       });
 
+      const helpBtn = document.getElementById("helpBtn");
+      if (helpBtn) {
+        helpBtn.addEventListener("click", () => {
+          // Replay the full animated onboarding sequence on demand
+          if (typeof runOnboardingSequence === "function") {
+            runOnboardingSequence({ force: true });
+          } else if (typeof window.runOnboardingSequence === "function") {
+            window.runOnboardingSequence({ force: true });
+          }
+        });
+      }
+
       // Load saved settings on page load
       (function loadSavedSettings() {
         const savedSettings = loadUserSettings();
@@ -3592,11 +3938,19 @@ app.get("/", (req, res) => {
 
       if (removeAdsBtn) {
         removeAdsBtn.addEventListener("click", function() {
+          if (typeof checkLock === "function" && checkLock()) {
+            showToast("Screen locked. Hold the lock to unlock.");
+            return;
+          }
           showPremiumOverlay();
         });
       }
 
       document.getElementById("showPremiumInfo")?.addEventListener("click", function() {
+        if (typeof checkLock === "function" && checkLock()) {
+          showToast("Screen locked. Hold the lock to unlock.");
+          return;
+        }
         showPremiumOverlay();
       });
 
@@ -4192,29 +4546,11 @@ app.get("/", (req, res) => {
 <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px); box-sizing:border-box;">
 <script>try{if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.SplashScreen)window.Capacitor.Plugins.SplashScreen.hide();}catch(e){}</script>
 <div class="safe-area-spacer"></div>
-
-<div id="swimsum-splash" style="position:fixed; inset:0; z-index:99999; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:28%; overflow:hidden; width:100vw; height:100vh; -webkit-text-size-adjust:none; text-size-adjust:none;">
-  <div id="splash-content" style="text-align:center; opacity:0; transform:scale(0.3); max-width:90vw; transform-origin:center center;">
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:900; font-size:15vw; color:#ffffff; text-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 8px 30px rgba(0,0,0,0.2), 0 0 40px rgba(255,255,255,0.15); letter-spacing:2px; user-select:none;">SwimSum</div>
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight:700; font-size:5.5vw; color:#6b0f2a; letter-spacing:1px; margin-top:6px; user-select:none;">Workout Generator</div>
-    <div style="margin-top:24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:4.2vw; font-weight:500; color:rgba(0,0,0,0.75); letter-spacing:0.3px; text-shadow: 0 1px 3px rgba(255,255,255,0.15);">
-      <div id="splash-line1" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Choose your pool length</div>
-      <div id="splash-line2" style="opacity:0; margin-bottom:8px;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Swipe your distance</div>
-      <div id="splash-line3" style="opacity:0;"><span style="margin-right:6px; opacity:0.5;">&#9679;</span> Generate an instant workout!</div>
-      <div id="splash-line4" style="opacity:0; margin-top:20px; position:relative; display:inline-block;"><img id="splash-dolphin-img" src="/assets/dolphins/dolphin-base.png" style="width:72px; height:72px; object-fit:contain; filter: saturate(1.4) brightness(1.1) drop-shadow(0 3px 8px rgba(0,0,0,0.4));"></div>
-    </div>
-  </div>
-</div>
 <script>
 (function() {
   var isCapacitor = typeof window.Capacitor !== 'undefined';
-  var splash = document.getElementById('swimsum-splash');
-  var content = document.getElementById('splash-content');
-  var line1 = document.getElementById('splash-line1');
-  var line2 = document.getElementById('splash-line2');
-  var line3 = document.getElementById('splash-line3');
-  var line4 = document.getElementById('splash-line4');
 
+  // Resolve the current auth user (native or web) with a safety timeout
   var authReadyPromise = new Promise(function(resolve) {
     var resolved = false;
     function done(user) {
@@ -4269,64 +4605,64 @@ app.get("/", (req, res) => {
     firebase.auth().onAuthStateChanged(function(user) { finishAuth(user); });
   });
 
-  function fadeIn(el) {
-    if (!el) return;
-    el.style.transition = 'opacity 0.4s ease-out';
-    el.style.opacity = '1';
-  }
-
-  function startAnimation() {
-    if (!splash || !content) return;
+  // Lightweight SwimSum logo fly-in that drops into the header chip
+  function runLogoFlyIn(next) {
     try {
       if (isCapacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
         window.Capacitor.Plugins.SplashScreen.hide();
       }
     } catch (e) {}
-    content.style.transition = 'opacity 0.6s ease-out, transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    content.style.opacity = '1';
-    content.style.transform = 'scale(1.1)';
-    setTimeout(function() { fadeIn(line1); }, 2200);
-    setTimeout(function() { fadeIn(line2); }, 3100);
-    setTimeout(function() { fadeIn(line3); }, 4000);
+
+    var headerChip = document.querySelector('.glassChip.readChip');
+    if (!headerChip) {
+      if (typeof next === 'function') next();
+      return;
+    }
+
+    var fly = document.createElement('div');
+    fly.id = 'swimsum-logo-flyin';
+    fly.textContent = 'Swim Sum';
+    fly.style.position = 'fixed';
+    fly.style.top = '40%';
+    fly.style.left = '50%';
+    fly.style.transform = 'translate(-50%, -50%) scale(1.35)';
+    fly.style.zIndex = '99998';
+    fly.style.padding = '10px 18px';
+    fly.style.borderRadius = '999px';
+    fly.style.background = 'rgba(255,255,255,0.96)';
+    fly.style.color = '#111';
+    fly.style.fontFamily = \"-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif\";
+    fly.style.fontWeight = '800';
+    fly.style.letterSpacing = '1px';
+    fly.style.boxShadow = '0 10px 30px rgba(0,0,0,0.45)';
+    fly.style.opacity = '0';
+    fly.style.transition = 'opacity 0.3s ease-out, top 0.8s cubic-bezier(0.16, 1, 0.3, 1), left 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+
+    document.body.appendChild(fly);
+
+    // Fade in at center
+    requestAnimationFrame(function() {
+      fly.style.opacity = '1';
+    });
+
     setTimeout(function() {
-      fadeIn(line4);
-      var dolphinImg = document.getElementById('splash-dolphin-img');
-      if (line4 && dolphinImg) {
-        setTimeout(function() {
-          line4.classList.add('dolphinSpin');
-        }, 500);
-        setTimeout(function() {
-          line4.classList.remove('dolphinSpin');
-          dolphinImg.style.transition = 'opacity 0.15s ease';
-          dolphinImg.style.opacity = '0';
-          var splashEmoji = document.createElement('span');
-          splashEmoji.textContent = '\uD83D\uDCA6';
-          splashEmoji.style.position = 'absolute';
-          splashEmoji.style.top = '50%';
-          splashEmoji.style.left = '50%';
-          splashEmoji.style.transform = 'translate(-50%, -50%) rotate(-140deg) scale(0)';
-          splashEmoji.style.fontSize = '64px';
-          splashEmoji.style.opacity = '1';
-          splashEmoji.style.animation = 'none';
-          splashEmoji.style.filter = 'brightness(1.6) contrast(1.3) saturate(2.0) drop-shadow(0 2px 8px rgba(0,0,0,0.5))';
-          splashEmoji.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
-          line4.appendChild(splashEmoji);
-          void splashEmoji.offsetWidth;
-          splashEmoji.style.transform = 'translate(-50%, -50%) rotate(-140deg) scale(0.8)';
-        }, 1300);
-        setTimeout(function() {
-          splash.style.transition = 'opacity 0.7s ease-out';
-          splash.style.opacity = '0';
-          setTimeout(function() {
-            splash.remove();
-            authReadyPromise.then(function(user) {
-              var skip = localStorage.getItem('swimsum_auth_skipped') === 'true';
-              if (user || skip) showCoachMark(); else showAuthGate();
-            });
-          }, 750);
-        }, 2800);
-      }
-    }, 4900);
+      var rect = headerChip.getBoundingClientRect();
+      var targetTop = rect.top + rect.height / 2;
+      var targetLeft = rect.left + rect.width / 2;
+      fly.style.top = targetTop + 'px';
+      fly.style.left = targetLeft + 'px';
+      fly.style.transform = 'translate(-50%, -50%) scale(1.0)';
+    }, 250);
+
+    // After drop, fade out and remove, then continue
+    setTimeout(function() {
+      fly.style.opacity = '0';
+      fly.style.transform = 'translate(-50%, -50%) scale(0.9)';
+      setTimeout(function() {
+        fly.remove();
+        if (typeof next === 'function') next();
+      }, 350);
+    }, 1400);
   }
 
   function showAuthGate() {
@@ -4371,7 +4707,7 @@ app.get("/", (req, res) => {
         if (authBridge && typeof authBridge.signInWithGoogle === 'function') {
           authBridge.signInWithGoogle().then(function(result) {
             gate.style.opacity = '0';
-            setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+            setTimeout(function() { gate.remove(); startOnboardingFlow(); }, 400);
           }).catch(function(err) {
             alert('Sign-in failed: ' + ((err && err.message) ? err.message : 'Unknown error'));
           });
@@ -4388,7 +4724,7 @@ app.get("/", (req, res) => {
       var provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider).then(function() {
         gate.style.opacity = '0';
-        setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+        setTimeout(function() { gate.remove(); startOnboardingFlow(); }, 400);
       }).catch(function(err) {
         alert('Sign-in failed: ' + (err && err.message ? err.message : 'Unknown error'));
       });
@@ -4414,7 +4750,7 @@ app.get("/", (req, res) => {
       var authBridge = plugins.AuthBridge || plugins.authBridge || null;
       function onSuccess() {
         gate.style.opacity = '0';
-        setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+        setTimeout(function() { gate.remove(); startOnboardingFlow(); }, 400);
       }
       function onError(err) {
         var msg = (err && err.message) ? err.message : (err && err.code) ? err.code : 'Unknown error';
@@ -4492,25 +4828,31 @@ app.get("/", (req, res) => {
       e.preventDefault();
       localStorage.setItem('swimsum_auth_skipped', 'true');
       gate.style.opacity = '0';
-      setTimeout(function() { gate.remove(); showCoachMark(); }, 400);
+      setTimeout(function() { gate.remove(); startOnboardingFlow(); }, 400);
     });
   }
 
   function showCoachMark() {
-    if (localStorage.getItem('swimsum_coach_seen') === 'true') return;
-    var cm = document.createElement('div');
-    cm.id = 'coachMark';
-    cm.innerHTML = '<div class="coach-hand">&#9995;</div>' +
-      '<div style="font-size:20px; font-weight:700;">Hold & Drag to Reorder</div>' +
-      '<div style="font-size:14px; opacity:0.8;">Long-press any workout set, then drag it up or down to rearrange your session.</div>' +
-      '<button style="margin-top:16px; padding:10px 30px; border:none; border-radius:8px; background:#fff; color:#111; font-weight:700; font-size:15px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">Got it!</button>';
-    document.body.appendChild(cm);
-    cm.querySelector('button').addEventListener('click', function() {
-      localStorage.setItem('swimsum_coach_seen', 'true');
-      cm.style.transition = 'opacity 0.4s ease';
-      cm.style.opacity = '0';
-      setTimeout(function() { cm.remove(); }, 400);
-    });
+    // Auto-run the onboarding sequence (instruction cards) a limited number of times
+    var runs = 0;
+    try {
+      runs = parseInt(localStorage.getItem('swimsum_onboarding_runs') || '0', 10);
+      if (!Number.isFinite(runs) || runs < 0) runs = 0;
+    } catch (e) {
+      runs = 0;
+    }
+
+    if (typeof window.runOnboardingSequence !== 'function') return;
+
+    if (runs < 2) {
+      try {
+        localStorage.setItem('swimsum_onboarding_runs', String(runs + 1));
+      } catch (e) {}
+      window.runOnboardingSequence({});
+    } else {
+      // From the third session onward, show static instruction cards only
+      window.runOnboardingSequence({ mode: 'static' });
+    }
   }
 
   window.resetNewUserState = function() {
@@ -4529,8 +4871,27 @@ app.get("/", (req, res) => {
     doReload();
   };
 
-  if (document.readyState === 'complete') startAnimation();
-  else window.addEventListener('load', startAnimation);
+  function startOnboardingFlow() {
+    var appShell = document.getElementById('appShell');
+    if (appShell) {
+      appShell.style.opacity = '1';
+    }
+    runLogoFlyIn(showCoachMark);
+  }
+
+  function startApp() {
+    authReadyPromise.then(function(user) {
+      var skip = localStorage.getItem('swimsum_auth_skipped') === 'true';
+      if (user || skip) {
+        startOnboardingFlow();
+      } else {
+        showAuthGate();
+      }
+    });
+  }
+
+  if (document.readyState === 'complete') startApp();
+  else window.addEventListener('load', startApp);
 })();
 </script>
 

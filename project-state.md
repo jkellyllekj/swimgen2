@@ -55,8 +55,8 @@ Working title(s): SwimSum (final name)
 
 Last updated: 2026-02-27
 
-Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented via AuthBridge (Firebase). Email+password sign-in implemented with verification emails working; gating behavior (require verified email before generator) in progress. Firebase Hosting + custom domain (swimsum.com) live for privacy policy and sign-in-complete landing. Testing: Internal/closed testing in progress (second week). Working build protected on branch cursor-transition.
-Current Version: 1.8.3 (versionCode 26)
+Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented via AuthBridge (Firebase). Email+password sign-in implemented with verification emails working and **hard email-gating** enforced (unverified email+password users are kept at the auth gate with clear “verify then sign in again” copy). Heavy splash screen removed in favour of a lightweight logo fly-in and a 4-card onboarding sequence (Step 1–4) that auto-plays twice, then remains as a static instruction stack with a `?` help button to replay the animation. AdMob test banner integrated at bottom. Testing: Internal/closed testing in progress (second week). Working build protected on branch `cursor-transition`.
+Current Version: 1.0.7 (versionCode 29) – closed testing build with hardened auth, new onboarding flow, lock button for poolside use, and updated SwimSum launcher icon.
 
 ### 🏢 BUSINESS & PLAY CONSOLE CREDENTIALS
 * **Organization Name:** CREATIVE ARTS GLOBAL LTD
@@ -241,6 +241,13 @@ Rules:
 
 Pinning rule:
 For precise debugging, pin index.js to a commit permalink when investigating a bug so the file cannot change under us.
+
+### Handoff note – end of 2026‑02‑27
+
+- **Current build:** 1.0.7 (versionCode 29) – hardened email gating, simplified logo + onboarding instead of heavy splash, lock button that freezes generator/controls while still allowing scroll, AdMob test banner at bottom, and new SwimSum S‑logo launcher icon created via Asset Studio.
+- **Play Console:** latest closed‑testing release has been submitted and is awaiting Google review; once approved we can invite more testers and gauge real‑world behaviour (auth friction, onboarding clarity, lock button usefulness, icon appearance, and ad intrusiveness).
+- **Next focus for future chats:** return to the **math and logic** inside the generator (pace/interval reasoning, set composition, edge cases for distances) and the **Advanced options** surface (strokes, equipment, templates) which are still roughly wired but not final. The v1 Lite app is shippable today, but we want v1.1+ to have more polished, coach‑plausible logic and clearer options.
+- **Reminder to future agent:** do **not** abridge this file; only append / update sections with precise patches. Follow the existing Android build protocol (npm run build → npx cap copy android → Android Studio signed bundle) and the “Launcher Icon & Branding Workflow” section if the S‑logo or icon assets are touched again.
 
 ============================================================================ WORKOUT STRUCTURE RULES
 Standard section order:
@@ -1017,9 +1024,10 @@ Milestone: Version 25 (1.0.3) built for production upload. Signing alias 'swimsu
 
 ## What's Coming Up / Active Focus (Feb 2026)
 
-- **UI fixes:** A couple more UI issues to address from testing feedback.
-- **Help redesign:** Move away from splash-only help; add a persistent **?** (question mark) near the top of the app for instructions/help so users can skip splash and still get guidance.
-- **Ads:** Make ads a bit more intrusive for testing; define placement and behaviour.
+- **UI fixes (onboarding & layout):** Onboarding cards now animate in order (Step 1 green, Step 2 yellow, Step 3 orange, Step 4 red) and then live as a static 4‑card stack under the generator. Next tweaks are mostly polish: timing/verbiage adjustments and any additional spacing changes from real‑device testing.
+- **Help redesign (DONE for v1 Lite):** Heavy splash replaced with a logo fly‑in and in‑context onboarding; persistent **?** help button in the header replays the animated sequence on demand. No separate fullscreen “coach mark” overlay any more.
+- **Ad polish:** Make ads a bit more intrusive for testing; define placement and behaviour, then wire the production AdMob IDs and remove the fake bottom banner text once `remove_ads` subscription is live.
+- **Advanced options & math tweaks:** After this closed‑testing build stabilises, return to the underlying workout math and advanced options (stroke filters, equipment flags, send‑off estimates) for a v1.1+ iteration – the current Lite build is functional and shippable, but the sets and options still need refinement.
 - **Premium features (behind flags):** Continue development of premium features (custom pool sizes, equipment, editing sets, etc.) but keep them **switched off** until launch strategy is set. No pruning of existing notes; all 1000+ lines retained.
 
 ## Auth Iterations & Lessons (Feb 2026)
@@ -1032,14 +1040,14 @@ Milestone: Version 25 (1.0.3) built for production upload. Signing alias 'swimsu
 - **Email+password sign-in now sends verification emails.** Email+password accounts are created via native Firebase Auth and verification links are sent successfully; product decision still pending on whether unverified users may continue to generate workouts or must verify first.
 - **Splash and boot timing are tightly coupled to auth.** Changing when scripts load (Firebase, offline-engine, auth gate) can freeze the blue splash or skip animations. Long‑term pattern is to keep native splash minimal, hide it early, and rely on in‑app logo + help overlay instead of a heavy blocking splash sequence.
 - **Dated log:** 2026‑02‑26 – Full‑day auth debugging: retired Web SDK popup/redirect in WebView, adopted native AuthBridge path, added SHA‑1 + updated `google-services.json`, confirmed Google sign-in on device, implemented email verification flow; remaining work is stricter gating on `emailVerified` and hardening splash/auth timing.
-- **Dated log:** 2026‑02‑27 – Hardened email gating on both native and web paths so email+password users cannot reach the generator until `emailVerified === true`, added a password visibility toggle in the auth gate, and confirmed that deleting a Google user in Firebase does not revoke Google account consent (Google sign-in continues to recreate the user once the device account has approved the app).
+- **Dated log:** 2026‑02‑27 – Hardened email gating on both native and web paths so email+password users cannot reach the generator until `emailVerified === true`, added a password visibility toggle in the auth gate, and confirmed that deleting a Google user in Firebase does not revoke Google account consent (Google sign-in continues to recreate the user once the device account has approved the app). Also removed the heavy blocking splash in favour of a lightweight logo fly‑in plus a 4‑card onboarding sequence that auto‑plays twice on first launches and then remains as a static “How to use SwimSum” stack under the generator, with a `?` help button to replay the animation.
 
 ## Next 7 Days – Launch Checklist (Feb 2026)
 
 - ✅ **Google sign-in:** Keep validating native AuthBridge Google sign-in on real devices (internal testers) and ensure it behaves the same in closed testing builds from Play Console.
 - ✅ **Email gating:** Email+password users can no longer reach the generator until `emailVerified === true`; both native AuthBridge and Firebase Web fallback paths now (1) send or re-send verification emails, (2) sign the user out, and (3) show “check your inbox and spam folder, then sign in again” copy before returning them to the auth gate.
 - ⏳ **Ads:** Confirm AdMob test banners render correctly in debug and that production AdMob IDs and Consent/Privacy configuration are ready for release; verify banners appear in closed testing builds without layout regressions.
-- ⏳ **Closed testing build:** Push a fresh closed‑testing release with the final sign‑in behaviour and capture tester feedback (especially around auth friction, splash timing, and ad intrusiveness). Current status: auth‑gated build 1.0.5 (versionCode 27) has been prepared and submitted to the closed testing track; review and tester feedback are pending.
+- ⏳ **Closed testing build:** Push a fresh closed‑testing release with the final sign‑in behaviour and capture tester feedback (especially around auth friction, onboarding clarity, lock‑button behaviour, icon appearance, and ad intrusiveness). **Current status:** hardened‑auth build 1.0.7 (versionCode 29) with new onboarding, lock button, and SwimSum S‑logo launcher icon has been prepared and submitted to the closed testing track; review and tester feedback are pending.
 - ⏳ **Marketing hooks & site:** Ensure privacy policy and supporting pages are live at `https://swimsum.com` (backed by Firebase Hosting), and sketch first‑pass plan for using Firebase Auth emails (with explicit consent) to announce future premium tiers and content (e.g., drill videos, technique tips).
 
 ## Monetisation & Ad Strategy (Feb 2026)
@@ -1059,3 +1067,47 @@ Milestone: Version 25 (1.0.3) built for production upload. Signing alias 'swimsu
   - Google Payments merchant profile created as an Individual, using personal legal details with public branding under the SwimSum / Creative Arts umbrella.
   - Revolut Pro bank account connected for payouts; micro-deposit verification is in progress and must complete before in‑app products can be created in Play Console.
   - Once verification is complete, Play Console will allow creation of the `remove_ads_yearly` subscription product, which will then be wired to a `hasRemoveAds` entitlement flag inside the app via Google Play Billing.
+
+## Launcher Icon & Branding Workflow (Feb 2026)
+
+This section captures the **exact steps** for updating the SwimSum launcher icon and keeping the look consistent in future chats. Do **not** abridge or delete; only append.
+
+### Current state
+
+- The launcher icon now uses the **blue S‑shaped SwimSum logo** as the foreground.
+- The icon is generated via Android Studio’s **Asset Studio → Image Asset → Launcher Icons (Adaptive and Legacy)**.
+- Different Android launchers apply their own mask (circle / squircle / rounded square), so slight differences in outer shape between devices are expected.
+
+### Preparing the logo artwork
+
+- **Goal:** a square PNG where the S fills most of the canvas and the corners are transparent (or a solid colour we actually want), **no accidental green grid or layout guides**.
+- Easiest path on Windows without paid tools:
+  - Use **Paint 3D** or an online editor like **Photopea** to:
+    - Open the source logo.
+    - Remove any unwanted background (magic select / magic wand → delete) so only the S and its intended backdrop remain.
+    - Ensure the canvas is square (e.g. 1024×1024) and the S is centered.
+    - Export as **PNG** with transparency enabled.
+
+### Asset Studio steps (Android Studio)
+
+1. In Android Studio, open the inner `android` project.
+2. From the `app` module, choose **File → New → Image Asset**.
+3. **Icon Type:** `Launcher Icons (Adaptive and Legacy)`.
+4. **Foreground Layer tab:**
+   - Asset type: **Image**.
+   - Source: the cleaned PNG logo (no green grid).
+   - Turn **Trim = Yes**.
+   - Adjust **Resize** so the S nearly touches the safe‑zone guides without clipping.
+5. **Background Layer tab:**
+   - Asset type: **Color** (not Image).
+   - Choose a solid colour that fits SwimSum’s palette (e.g. a light or dark blue), or white if desired.
+   - Avoid using an image here unless we explicitly want a pattern; this is where the accidental green grid came from.
+6. Click **Next → Finish** to overwrite `ic_launcher` and `ic_launcher_round` in the `mipmap-*` folders.
+7. Rebuild and reinstall the app (or generate a new signed bundle) to see the updated icon on device.
+
+### Notes / Gotchas
+
+- Android always applies the system mask to adaptive icons – we **cannot** have a free‑floating S with the phone wallpaper directly behind it. There will always be some platform‑defined shape.
+- If the S looks too small or has a thick border:
+  - Re‑open **Image Asset**, go to **Foreground Layer**, and move the **Resize** slider up so the S fills more of the safe zone.
+  - Ensure we are not feeding Asset Studio a logo that already contains its own rounded‑square border plus additional padding.
