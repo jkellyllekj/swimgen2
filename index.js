@@ -28,6 +28,22 @@ const IS_LITE_MODE = true; // Set to true for App Store "SwimSum Lite" release
 // Auth & Ads placeholders (v1.5)
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const ADMOB_BANNER_ID = process.env.ADMOB_BANNER_ID || '';
+const ADMOB_INTERSTITIAL_ID = process.env.ADMOB_INTERSTITIAL_ID || '';
+
+// Ad behaviour flags for v1 Lite
+const ADS_CONFIG = {
+  TEST_ADS: process.env.TEST_ADS ? process.env.TEST_ADS === 'true' : true, // default true for debug builds
+  ENABLE_INTERSTITIAL: process.env.ENABLE_INTERSTITIAL
+    ? process.env.ENABLE_INTERSTITIAL === 'true'
+    : true, // default enabled
+  // When TEST_ADS is false, use the production IDs documented in project-state.md
+  BANNER_TEST_ID: 'ca-app-pub-3940256099942544/6300978111',
+  INTERSTITIAL_TEST_ID: 'ca-app-pub-3940256099942544/1033173712',
+  BANNER_PROD_ID:
+    ADMOB_BANNER_ID || 'ca-app-pub-8975918152073391/1711443276',
+  INTERSTITIAL_PROD_ID:
+    ADMOB_INTERSTITIAL_ID || 'ca-app-pub-8975918152073391/7973599297',
+};
 
 // Aliases for backward compatibility - these functions are now in modules
 const { 
@@ -1661,11 +1677,27 @@ app.get("/", (req, res) => {
         }
       }
 
-      function buildInstructionCard(effort, title, body) {
-        const dropShadow = "0 6px 16px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.25)";
-        const boxStyle = colorStyleForEffort(effort, 1) + " box-shadow:" + dropShadow + "; border-radius:12px; padding:10px 12px;";
-        const textColor = effort === "fullgas" ? "#fff" : "#111";
-        const subTextColor = textColor === "#fff" ? "#eee" : "#333";
+      // Washed-out (desaturated) backgrounds for onboarding cards only - same colour family as workout cards but not button-like
+      function colorStyleForEffortOnboarding(effort) {
+        // Base (reference) colours for possible future revert:
+        // moderate: #a8d9d5, strong: #cad9c7, hard: #bcbc93, fullgas: #bdb4bb
+        //
+        // Current palette: ~20% less saturation (nudged toward a softer, lighter look).
+        const washed = {
+          moderate: "#c1e4e1",
+          strong:   "#d9e3d4",
+          hard:     "#ceceb0",
+          fullgas:  "#d1c8d0"
+        };
+        const bg = washed[effort] || "#f5f5f5";
+        return "background:" + bg + ";";
+      }
+
+      function buildInstructionCard(effort, title, body, washedOut) {
+        const dropShadow = washedOut ? "0 2px 8px rgba(0,0,0,0.08)" : "0 6px 16px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.25)";
+        const boxStyle = (washedOut ? colorStyleForEffortOnboarding(effort) : colorStyleForEffort(effort, 1)) + " box-shadow:" + dropShadow + "; border-radius:12px; padding:10px 12px;";
+        const textColor = washedOut ? "#111" : (effort === "fullgas" ? "#fff" : "#111");
+        const subTextColor = washedOut ? "#333" : (textColor === "#fff" ? "#eee" : "#333");
         return (
           '<div data-effort="' + effort + '" style="' + boxStyle + '">' +
             '<div style="font-weight:700; color:' + textColor + '; margin-bottom:6px;">' + safeHtml(title) + "</div>" +
@@ -1694,12 +1726,12 @@ app.get("/", (req, res) => {
           { effort: "moderate", title: "Step 1: Pick your pool size", body: "Tap 25m, 50m or 25yd to match your pool." },
           { effort: "strong", title: "Step 2: Slide your distance", body: "Move the slider to choose your total distance." },
           { effort: "hard", title: "Step 3: Tap Generate", body: "Tap Generate to roll a coach-plausible session." },
-          { effort: "fullgas", title: "Step 4: Drag and delete sets", body: "Long-press to drag or delete a set." }
+          { effort: "fullgas", title: "Step 4: Drag and delete sets", body: "Long-press to drag or delete a set. You can support SwimSum later by purchasing Remove Ads from the banner or Premium options." }
           ];
         const html = [];
         html.push('<div id="onboardingStaticWrap" style="display:flex; flex-direction:column; gap:6px; margin-top:5px;">');
         staticSteps.forEach(function(step) {
-          html.push(buildInstructionCard(step.effort, step.title, step.body));
+          html.push(buildInstructionCard(step.effort, step.title, step.body, true));
         });
         html.push("</div>");
         container.innerHTML = html.join("");
@@ -1748,7 +1780,7 @@ app.get("/", (req, res) => {
             id: "drag",
             effort: "fullgas",
             title: "Step 4: Drag and delete sets",
-            body: "Long-press to drag or delete a set.",
+            body: "Long-press to drag or delete a set. You can support SwimSum later by purchasing Remove Ads from the banner or Premium options.",
             duration: 3400,
           },
         ];
@@ -1798,7 +1830,7 @@ app.get("/", (req, res) => {
           clearOnboardingHighlights();
 
           // Append this step's instruction card so they stack in order: Step 1, 2, 3, 4 (same as static view)
-          const cardHtml = buildInstructionCard(step.effort, step.title, step.body);
+          const cardHtml = buildInstructionCard(step.effort, step.title, step.body, true);
           htmlParts.push(cardHtml);
           container.innerHTML = '<div id="onboardingAnimatedWrap" style="display:flex; flex-direction:column; gap:6px; margin-top:5px;">' + htmlParts.join("") + "</div>";
           container.style.display = "block";
@@ -3910,17 +3942,25 @@ app.get("/", (req, res) => {
               '<li><strong>Custom Pool Geometry:</strong> Support for any pool length (33m, 27yd, etc.) with perfect Swimmer Math.</li>' +
               '<li><strong>Pace & Interval Engine:</strong> Calculate send-off times based on your CSS (Critical Swim Speed).</li>' +
               '<li><strong>Equipment Integration:</strong> Toggle Fins, Paddles, Snorkel, and Buoy to match your bag.</li>' +
-              '<li><strong>Remove Advertisements:</strong> Enjoy a clean, distraction-free interface for only 5/year.</li>' +
               '<li><strong>Workout History:</strong> Save your favorite sessions and track your total yardage over time.</li>' +
               '<li><strong>Stroke Focus:</strong> Generate workouts specifically for IM, Distance Free, or Sprint Fly.</li>' +
             '</ul>' +
-            '<hr style="border:0; border-top:1px solid #ccc; margin:20px 0;">' +
-            '<p style="font-size:14px;">Want to influence development? <a href="mailto:feedback@swimsum.com" style="color:#0055aa; font-weight:bold;">Email us your feature requests!</a></p>' +
+            '<hr style="border:0; border-top:1px solid #ccc; margin:16px 0 10px;">' +
+            '<p style="font-size:14px; margin-bottom:10px;">If you mainly want a cleaner experience, you will also be able to purchase a simple <strong>Remove Ads</strong> option to turn off banners and welcome ads and help support SwimSum.</p>' +
+            '<button id="premium-remove-ads-btn" type="button" style="width:100%; padding:10px; background:#1e3a8a; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-bottom:10px;">Prefer just to remove ads?</button>' +
+            '<p style="font-size:14px;">Want to influence development? <a href="https://groups.google.com/g/swimsum" target="_blank" rel="noopener" style="color:#0055aa; font-weight:bold;">Join our Google Group and share your ideas!</a></p>' +
             '<button id="premium-back-btn" type="button" style="width:100%; padding:12px; background:#0055aa; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Back to Generator</button>' +
           '</div>';
         document.body.appendChild(overlay);
         void overlay.offsetWidth;
         overlay.style.opacity = '1';
+        document.getElementById('premium-remove-ads-btn').addEventListener('click', function() {
+          if (typeof window.showRemoveAdsPlaceholder === 'function') {
+            window.showRemoveAdsPlaceholder();
+          } else if (typeof showRemoveAdsPlaceholder === 'function') {
+            showRemoveAdsPlaceholder();
+          }
+        });
         document.getElementById('premium-back-btn').addEventListener('click', function() {
           overlay.style.opacity = '0';
           setTimeout(function() { overlay.style.display = 'none'; }, 200);
@@ -4910,20 +4950,128 @@ ${HOME_JS_EVENTS}
 ${HOME_JS_GESTURES}
 ${HOME_JS_CLOSE}
 <div class="bottom-tray">
-<div id="adBanner" class="perpetual-banner" style="position:relative; width:100%; min-height:60px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:0 60px; box-sizing:border-box; z-index:9999; border-top:1px solid rgba(255,255,255,0.1); box-shadow:0 -4px 15px rgba(0,0,0,0.4);">
+<div id="adBanner" class="perpetual-banner" style="position:relative; width:100%; min-height:76px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:10px 60px 12px; box-sizing:border-box; z-index:9999; border-top:2px solid rgba(96,165,250,0.4); box-shadow:0 -6px 20px rgba(0,0,0,0.35);">
   <div id="admob-container" style="width:100%; display:none;"></div>
-  <div id="fakeAdFallback" style="display:flex; flex-direction:column; gap:2px;">
-    <div id="fakeAdContent" style="font-weight:800; color:#60a5fa; text-transform:uppercase; letter-spacing:1px; font-size:11px;">Enjoy a clean experience -- Remove Ads today</div>
-    <div style="font-size:9px; color:#94a3b8; font-weight:500;">Check out upcoming Premium features in the menu below</div>
+  <div id="fakeAdFallback" style="display:flex; flex-direction:column; gap:4px;">
+    <div id="fakeAdContent" style="font-weight:800; color:#93c5fd; letter-spacing:0.5px; font-size:12px;">Please consider purchasing Remove Ads to support SwimSum.</div>
+    <div id="fakeAdSubline" style="font-size:10px; color:#cbd5e1; font-weight:500;">This turns off the ads and helps us keep improving SwimSum and exploring premium options for the future.</div>
   </div>
-  <button type="button" style="position:absolute; top:50%; right:12px; transform:translateY(-50%); background:rgba(255,255,255,0.9); color:#1e3a8a; border:none; border-radius:4px; padding:4px 10px; font-size:9px; font-weight:900; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">REMOVE ADS</button>
+  <button type="button" id="removeAdsCta" style="position:absolute; top:50%; right:12px; transform:translateY(-50%); background:rgba(255,255,255,0.9); color:#1e3a8a; border:none; border-radius:4px; padding:5px 12px; font-size:10px; font-weight:900; cursor:pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">REMOVE ADS</button>
+  <button type="button" id="dev-toggle-remove-ads" style="position:absolute; bottom:6px; left:12px; padding:3px 6px; font-size:9px; border-radius:4px; border:1px solid rgba(148,163,184,0.8); background:rgba(15,23,42,0.75); color:#e5e7eb; cursor:pointer; opacity:0.75; ${process.env.NODE_ENV === 'production' ? 'display:none;' : ''}">DEV: Toggle Remove Ads</button>
 </div>
+</div>
+<div id="supportAfterAdModal" style="display:none; position:fixed; inset:0; z-index:10002; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+  <div style="background:linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border-radius:16px; padding:24px; max-width:360px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.5);">
+    <h3 style="margin:0 0 12px; font-size:18px; font-weight:700; color:#0f172a;">Support SwimSum</h3>
+    <p style="margin:0 0 16px; font-size:14px; line-height:1.45; color:#334155;">Thanks for using the app. Please consider purchasing Remove Ads to turn off the banner and welcome ad and help us keep improving SwimSum and exploring premium options for the future. Join our Google Group to discuss ideas and help steer what we build next.</p>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button type="button" id="supportModalRemoveAdsBtn" style="width:100%; padding:12px; background:#1e3a8a; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer;">Remove ads (support SwimSum)</button>
+      <a id="supportModalGoogleGroupLink" href="https://groups.google.com/g/swimsum" target="_blank" rel="noopener" style="display:block; text-align:center; font-size:13px; color:#2563eb; font-weight:600;">Join the discussion (Google Group)</a>
+      <button type="button" id="supportModalCloseBtn" style="width:100%; padding:10px; background:transparent; color:#64748b; border:1px solid #cbd5e1; border-radius:8px; font-size:13px; cursor:pointer;">Maybe later</button>
+    </div>
+  </div>
 </div>
 <script>
 (function() {
+  var HAS_REMOVE_ADS_KEY = 'swimsum_has_remove_ads';
+  var hasRemoveAds = false;
+  var IS_PRODUCTION_BUILD = ${process.env.NODE_ENV === 'production' ? 'true' : 'false'};
+  try {
+    hasRemoveAds = localStorage.getItem(HAS_REMOVE_ADS_KEY) === 'true';
+  } catch (e) {
+    hasRemoveAds = false;
+  }
+
+  function applyRemoveAdsState() {
+    var banner = document.getElementById('adBanner');
+    if (banner) {
+      // In production, a real remove-ads entitlement hides the entire banner.
+      // In dev/test builds we keep the tray visible so the dev toggle is still reachable.
+      if (IS_PRODUCTION_BUILD && hasRemoveAds) {
+        banner.style.display = 'none';
+      } else {
+        banner.style.display = 'flex';
+      }
+    }
+    var marketingLine = document.getElementById('fakeAdContent');
+    if (marketingLine) {
+      marketingLine.style.display = hasRemoveAds ? 'none' : 'block';
+    }
+    window.swimsumEntitlements = window.swimsumEntitlements || {};
+    window.swimsumEntitlements.hasRemoveAds = hasRemoveAds;
+  }
+
+  function setHasRemoveAds(next) {
+    hasRemoveAds = !!next;
+    try {
+      localStorage.setItem(HAS_REMOVE_ADS_KEY, hasRemoveAds ? 'true' : 'false');
+    } catch (e) {}
+    applyRemoveAdsState();
+  }
+
+  // Expose for other scripts if needed
+  window.setSwimsumRemoveAds = setHasRemoveAds;
+
+  var devToggle = document.getElementById('dev-toggle-remove-ads');
+  if (devToggle) {
+    var updateDevLabel = function() {
+      if (hasRemoveAds) {
+        devToggle.textContent = 'DEV: Ads currently OFF (tap to show)';
+        devToggle.style.backgroundColor = 'rgba(22,163,74,0.85)'; // green-ish when ads are removed
+      } else {
+        devToggle.textContent = 'DEV: Ads currently ON (tap to hide)';
+        devToggle.style.backgroundColor = 'rgba(15,23,42,0.75)'; // default slate
+      }
+    };
+    updateDevLabel();
+    devToggle.addEventListener('click', function() {
+      setHasRemoveAds(!hasRemoveAds);
+      updateDevLabel();
+    });
+  }
+
+  applyRemoveAdsState();
+
+  function showRemoveAdsPlaceholder() {
+    var msg = 'Remove Ads will be available as an in-app purchase soon.\\n\\nThis purchase will only remove ads (banner and welcome ad) and will not unlock future premium features. Your support helps us keep improving SwimSum and explore premium options for the future.';
+    try { alert(msg); } catch (e) { console.log(msg); }
+  }
+  var removeAdsBtn = document.getElementById('removeAdsCta');
+  if (removeAdsBtn) removeAdsBtn.addEventListener('click', showRemoveAdsPlaceholder);
+  // Expose placeholder so other UI surfaces (e.g. Premium overlay) can trigger the same flow
+  window.showRemoveAdsPlaceholder = showRemoveAdsPlaceholder;
+
+  var supportModal = document.getElementById('supportAfterAdModal');
+  function showSupportAfterAdModal() {
+    if (supportModal && !hasRemoveAds) supportModal.style.display = 'flex';
+  }
+  function hideSupportAfterAdModal() {
+    if (supportModal) supportModal.style.display = 'none';
+  }
+  var supportModalRemoveAdsBtn = document.getElementById('supportModalRemoveAdsBtn');
+  if (supportModalRemoveAdsBtn) supportModalRemoveAdsBtn.addEventListener('click', function() { hideSupportAfterAdModal(); showRemoveAdsPlaceholder(); });
+  var supportModalCloseBtn = document.getElementById('supportModalCloseBtn');
+  if (supportModalCloseBtn) supportModalCloseBtn.addEventListener('click', hideSupportAfterAdModal);
+  if (supportModal) supportModal.addEventListener('click', function(e) { if (e.target === supportModal) hideSupportAfterAdModal(); });
+
   var isCapacitor = typeof window.Capacitor !== 'undefined';
+  var TEST_ADS = ${ADS_CONFIG.TEST_ADS ? 'true' : 'false'};
+  var ENABLE_INTERSTITIAL = ${ADS_CONFIG.ENABLE_INTERSTITIAL ? 'true' : 'false'};
+  var BANNER_AD_ID = '${ADS_CONFIG.TEST_ADS ? ADS_CONFIG.BANNER_TEST_ID : ADS_CONFIG.BANNER_PROD_ID}';
+  var INTERSTITIAL_AD_ID = '${ADS_CONFIG.TEST_ADS ? ADS_CONFIG.INTERSTITIAL_TEST_ID : ADS_CONFIG.INTERSTITIAL_PROD_ID}';
+
   if (!isCapacitor) return;
+
   function initAdMob() {
+    if (hasRemoveAds) {
+      // Respect entitlement: no banner, no interstitial
+      var fallback = document.getElementById('fakeAdFallback');
+      if (fallback) fallback.style.display = 'none';
+      var container = document.getElementById('admob-container');
+      if (container) container.style.display = 'none';
+      return;
+    }
+
     if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.AdMob) return;
     var AdMob = window.Capacitor.Plugins.AdMob;
     AdMob.initialize({ requestTrackingAuthorization: false }).then(function() {
@@ -4931,16 +5079,43 @@ ${HOME_JS_CLOSE}
       var dpr = window.devicePixelRatio || 1;
       var adWidth = Math.floor(screenWidth / dpr);
       AdMob.showBanner({
-        adId: '${ADMOB_BANNER_ID || "ca-app-pub-3940256099942544/6300978111"}',
+        adId: BANNER_AD_ID,
         adSize: 'ADAPTIVE_BANNER',
         position: 'BOTTOM_CENTER',
         margin: 0,
-        isTesting: true
+        isTesting: TEST_ADS
       }).then(function() {
         var fallback = document.getElementById('fakeAdFallback');
         if (fallback) fallback.style.display = 'none';
         var container = document.getElementById('admob-container');
         if (container) container.style.display = 'block';
+
+        // Welcome interstitial – temporarily ungated for easier testing (still once per session)
+        var showInterstitialThisSession = ENABLE_INTERSTITIAL && INTERSTITIAL_AD_ID;
+        if (showInterstitialThisSession) {
+          var seen = false;
+          try {
+            seen = sessionStorage.getItem('swimsum_welcome_interstitial_seen') === 'true';
+          } catch (e) {
+            seen = false;
+          }
+          // Use the Capacitor Community AdMob v8 API: prepareInterstitial + showInterstitial
+          if (!seen && AdMob && typeof AdMob.prepareInterstitial === 'function' && typeof AdMob.showInterstitial === 'function') {
+            AdMob.prepareInterstitial({
+              adId: INTERSTITIAL_AD_ID,
+              isTesting: TEST_ADS
+            }).then(function() {
+              return AdMob.showInterstitial();
+            }).then(function() {
+              try {
+                sessionStorage.setItem('swimsum_welcome_interstitial_seen', 'true');
+              } catch (e) {}
+              showSupportAfterAdModal();
+            }).catch(function(err) {
+              console.warn('AdMob interstitial failed (welcome):', err);
+            });
+          }
+        }
       }).catch(function(err) {
         console.warn('AdMob banner failed, showing fallback:', err);
       });
@@ -4948,6 +5123,7 @@ ${HOME_JS_CLOSE}
       console.warn('AdMob init failed:', err);
     });
   }
+
   if (document.readyState === 'complete') initAdMob();
   else window.addEventListener('load', initAdMob);
 })();

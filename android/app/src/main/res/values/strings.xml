@@ -5,4 +5,6 @@
     <string name="package_name">com.creativearts.swimsum</string>
     <string name="custom_url_scheme">com.creativearts.swimsum</string>
     <string name="default_web_client_id">660683677456-hpnoj6kff9klsu4mfg0imui5bbcdug1j.apps.googleusercontent.com</string>
+    <!-- AdMob App ID used by native SDK -->
+    <string name="admob_app_id">ca-app-pub-8975918152073391~1783741253</string>
 </resources>

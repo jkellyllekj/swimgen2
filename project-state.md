@@ -53,9 +53,9 @@ POST-LAUNCH ENHANCEMENTS (V1.1+):
 Project: SwimSum - Swim Workout Generator
 Working title(s): SwimSum (final name)
 
-Last updated: 2026-02-27
+Last updated: 2026-03-02
 
-Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented via AuthBridge (Firebase). Email+password sign-in implemented with verification emails working and **hard email-gating** enforced (unverified email+password users are kept at the auth gate with clear “verify then sign in again” copy). Heavy splash screen removed in favour of a lightweight logo fly-in and a 4-card onboarding sequence (Step 1–4) that auto-plays twice, then remains as a static instruction stack with a `?` help button to replay the animation. AdMob test banner integrated at bottom. Testing: Internal/closed testing in progress (second week). Working build protected on branch `cursor-transition`.
+Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented via AuthBridge (Firebase). Email+password sign-in implemented with verification emails working and **hard email-gating** enforced (unverified email+password users are kept at the auth gate with clear “verify then sign in again” copy). Heavy splash screen removed in favour of a lightweight logo fly-in and a 4-card onboarding sequence (Step 1–4) that auto-plays twice, then remains as a static instruction stack with a `?` help button to replay the animation. Onboarding instruction cards have been tuned to use slightly desaturated, non-button-like pastels distinct from the main workout cards (colours captured in `colorStyleForEffortOnboarding` in `index.js`). Ad behaviour for v1 Lite is now defined: free users see a bottom Adaptive Banner plus an optional welcome interstitial (once per app session), while users with a `hasRemoveAds` entitlement see no banner and no welcome interstitial. A `hasRemoveAds` entitlement flag exists in the client, wired via localStorage for now; real Play Billing wiring is still TODO. AdMob integration remains test-ID first, with production IDs configured behind a TEST_ADS flag. Testing: Internal/closed testing in progress (second week). Working build protected on branch `cursor-transition`.
 Current Version: 1.0.7 (versionCode 29) – closed testing build with hardened auth, new onboarding flow, lock button for poolside use, and updated SwimSum launcher icon.
 
 ### 🏢 BUSINESS & PLAY CONSOLE CREDENTIALS
@@ -1068,6 +1068,11 @@ Milestone: Version 25 (1.0.3) built for production upload. Signing alias 'swimsu
   - Revolut Pro bank account connected for payouts; micro-deposit verification is in progress and must complete before in‑app products can be created in Play Console.
   - Once verification is complete, Play Console will allow creation of the `remove_ads_yearly` subscription product, which will then be wired to a `hasRemoveAds` entitlement flag inside the app via Google Play Billing.
 
+- **Update – 2026-03-02 (Ad flags wired):**
+  - `TEST_ADS` flag added in `index.js`: when `TEST_ADS` is true, the app uses Google’s official AdMob test IDs for both the bottom Adaptive Banner and the one-time welcome interstitial; when false, it uses the production banner/interstitial IDs listed above.
+  - Current v1 Lite ad layout on device: bottom Adaptive Banner pinned to `bottom:0` inside the perpetual bottom tray for free users, plus an optional “welcome” interstitial that may show at most once per app session (guarded by `ENABLE_INTERSTITIAL`).
+  - A `hasRemoveAds` entitlement flag now exists in the client UI and is persisted via `localStorage` (`swimsum_has_remove_ads`) for manual toggling during development; real Play Billing is not wired yet, so remove‑ads remains a manual/dev-only entitlement for this build.
+
 ## Launcher Icon & Branding Workflow (Feb 2026)
 
 This section captures the **exact steps** for updating the SwimSum launcher icon and keeping the look consistent in future chats. Do **not** abridge or delete; only append.
@@ -1083,7 +1088,7 @@ This section captures the **exact steps** for updating the SwimSum launcher icon
 - **Goal:** a square PNG where the S fills most of the canvas and the corners are transparent (or a solid colour we actually want), **no accidental green grid or layout guides**.
 - Easiest path on Windows without paid tools:
   - Use **Paint 3D** or an online editor like **Photopea** to:
-    - Open the source logo.
+    - Open te source logo.
     - Remove any unwanted background (magic select / magic wand → delete) so only the S and its intended backdrop remain.
     - Ensure the canvas is square (e.g. 1024×1024) and the S is centered.
     - Export as **PNG** with transparency enabled.
