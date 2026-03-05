@@ -53,10 +53,15 @@ POST-LAUNCH ENHANCEMENTS (V1.1+):
 Project: SwimSum - Swim Workout Generator
 Working title(s): SwimSum (final name)
 
-Last updated: 2026-03-02
+Last updated: 2026-03-03
 
-Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented via AuthBridge (Firebase). Email+password sign-in implemented with verification emails working and **hard email-gating** enforced (unverified email+password users are kept at the auth gate with clear “verify then sign in again” copy). Heavy splash screen removed in favour of a lightweight logo fly-in and a 4-card onboarding sequence (Step 1–4) that auto-plays twice, then remains as a static instruction stack with a `?` help button to replay the animation. Onboarding instruction cards have been tuned to use slightly desaturated, non-button-like pastels distinct from the main workout cards (colours captured in `colorStyleForEffortOnboarding` in `index.js`). Ad behaviour for v1 Lite is now defined: free users see a bottom Adaptive Banner plus an optional welcome interstitial (once per app session), while users with a `hasRemoveAds` entitlement see no banner and no welcome interstitial. A `hasRemoveAds` entitlement flag exists in the client, wired via localStorage for now; real Play Billing wiring is still TODO. AdMob integration remains test-ID first, with production IDs configured behind a TEST_ADS flag. Testing: Internal/closed testing in progress (second week). Working build protected on branch `cursor-transition`.
-Current Version: 1.0.7 (versionCode 29) – closed testing build with hardened auth, new onboarding flow, lock button for poolside use, and updated SwimSum launcher icon.
+### Conventional comparison (2026-03-03)
+- **Phase 1:** Corpus built in `research/outputs/conventional-corpus.json` (62 workouts from USMS article fetch + curated seed). Analysis produced `research/outputs/conventional-rules.json` (distance buckets for 25m/25yd and 50m; allowed main/kick/drill rep patterns). Comparison script `research/compare-generator.js` runs the generator vs rules and writes `research/outputs/conventional-violation-report.json`.
+- **Phase 2:** Generator updated per violation report: 50m warm/build buckets [200,400,500]; 25m/25yd warm/build [300,400,500,600,800]; conventional main rep patterns only (e.g. 4/5/6/8/10/12×50/75/100/200); post-pass sanitizes main-like section bodies. Violations reduced from 63 to 12 (remaining mostly 5x50 and N×25 in edge cases).
+- **Phase 3:** Version bumped to 1.0.10 (versionCode 32). `npm run build` and `npx cap sync android` completed. Gradle `bundleRelease` failed with “invalid source release: 21” (JDK). To produce the AAB: use JDK 21 and run `cd android && .\gradlew.bat bundleRelease`, or in Android Studio: Build → Generate Signed Bundle / APK → Android App Bundle, choose release, sign with your keystore. AAB output path: `android/app/build/outputs/bundle/release/app-release.aab`. Upload that file to Play Console for closed testing.
+
+Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented via AuthBridge (Firebase). Email+password sign-in implemented with verification emails working and **hard email-gating** enforced (unverified email+password users are kept at the auth gate with clear “verify then sign in again” copy). Heavy splash screen removed in favour of a lightweight logo fly-in and a 4-card onboarding sequence (Step 1–4) that auto-plays twice, then remains as a static instruction stack with a `?` help button to replay the animation. Onboarding instruction cards have been tuned to use slightly desaturated, non-button-like pastels distinct from the main workout cards (colours captured in `colorStyleForEffortOnboarding` in `index.js`). Ad behaviour for v1 Lite is now defined: free users see a bottom Adaptive Banner plus an optional welcome interstitial (once per app session), while users with a `hasRemoveAds` entitlement see no banner and no welcome interstitial. A `hasRemoveAds` entitlement flag exists in the client, wired via localStorage for now; real Play Billing wiring is still TODO. AdMob integration remains test-ID first, with production IDs configured behind a TEST_ADS flag. Testing: Internal/closed testing in progress (second week). Working build protected on branch `cursor-transition`. Generator math and UI are in active refinement for standard pools (25m, 50m, 25yd) with lengths display, drill structure, and reroll behaviour iterated in this cycle.
+Current Version: 1.0.10 (versionCode 32) – version bumped for conventional-comparison cycle; build and cap sync completed; AAB must be built with JDK 21 or via Android Studio (see below).
 
 ### 🏢 BUSINESS & PLAY CONSOLE CREDENTIALS
 * **Organization Name:** CREATIVE ARTS GLOBAL LTD
@@ -1058,11 +1063,11 @@ Milestone: Version 25 (1.0.3) built for production upload. Signing alias 'swimsu
   - Interstitial Ad Unit ID (welcome full‑screen ad): `ca-app-pub-8975918152073391/7973599297`.
   - Code currently uses Google’s test banner ID; production IDs and consent prompts will be wired in a subsequent iteration.
 - **Remove-ads subscription (planned):**
-  - Single paid tier for launch: **“Remove ads” yearly subscription** (target price ~£5/year, region-adjusted equivalents via Play Console).
-  - Behaviour: paying users see no bottom banner and no welcome interstitial; free users see an Adaptive Banner at the bottom plus a one-time “welcome” interstitial per session.
+  - Single paid tier for launch: **“Remove ads”** – **$10/year** (or regional equivalent, e.g. ~£7.50/year via Play Console). Optional monthly option to be decided (e.g. ~$1/month or £0.99/month if offered).
+  - Behaviour: paying users see no bottom banner and no welcome interstitial; free users see an Adaptive Banner at the bottom plus a one-time “welcome” interstitial per session (only after the onboarding tutorial has played through at least twice).
   - UI entry points:
-    - Small inline prompt near the banner (e.g. “Ads keep SwimSum free. Remove ads for £5/year to support development.”).
-    - A clearer option in a settings/help area (“Remove ads – £5/year”) that explains the benefit and that purchases help fund SwimSum’s ongoing development.
+    - Small inline prompt near the banner (e.g. “Ads keep SwimSum free. Remove ads to support development.”).
+    - A clearer option in a settings/help area (“Remove ads”) that explains the benefit and that purchases help fund SwimSum’s ongoing development.
 - **Payments / merchant account status:**
   - Google Payments merchant profile created as an Individual, using personal legal details with public branding under the SwimSum / Creative Arts umbrella.
   - Revolut Pro bank account connected for payouts; micro-deposit verification is in progress and must complete before in‑app products can be created in Play Console.
@@ -1072,6 +1077,8 @@ Milestone: Version 25 (1.0.3) built for production upload. Signing alias 'swimsu
   - `TEST_ADS` flag added in `index.js`: when `TEST_ADS` is true, the app uses Google’s official AdMob test IDs for both the bottom Adaptive Banner and the one-time welcome interstitial; when false, it uses the production banner/interstitial IDs listed above.
   - Current v1 Lite ad layout on device: bottom Adaptive Banner pinned to `bottom:0` inside the perpetual bottom tray for free users, plus an optional “welcome” interstitial that may show at most once per app session (guarded by `ENABLE_INTERSTITIAL`).
   - A `hasRemoveAds` entitlement flag now exists in the client UI and is persisted via `localStorage` (`swimsum_has_remove_ads`) for manual toggling during development; real Play Billing is not wired yet, so remove‑ads remains a manual/dev-only entitlement for this build.
+- **Update – 2026-03-02 (Interstitial after tutorial):**
+  - Welcome interstitial is now gated on `swimsum_onboarding_runs >= 2`: it does not show on the first two app opens while the onboarding animation plays through. From the third session onward, the interstitial may show once per session (so the tutorial is never covered by the full-page ad).
 
 ## Launcher Icon & Branding Workflow (Feb 2026)
 

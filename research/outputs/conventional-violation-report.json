@@ -1,0 +1,209 @@
+{
+  "generatedAt": "2026-03-03T01:35:14.768Z",
+  "runsRequested": 60,
+  "runsOk": 60,
+  "totalViolations": 22,
+  "byType": {
+    "rep_pattern": 22
+  },
+  "summary": [
+    {
+      "violation": "rep:main:5x50",
+      "count": 12
+    },
+    {
+      "violation": "rep:main:6x25",
+      "count": 4
+    },
+    {
+      "violation": "rep:main:14x25",
+      "count": 3
+    },
+    {
+      "violation": "rep:main:12x25",
+      "count": 2
+    },
+    {
+      "violation": "rep:main:16x25",
+      "count": 1
+    }
+  ],
+  "sampleViolations": [
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25m",
+      "distance": 1500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "12x25",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 1500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "6x25",
+      "kind": "main",
+      "pool": "25m",
+      "distance": 1800
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 1800
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "6x25",
+      "kind": "main",
+      "pool": "25m",
+      "distance": 2200
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 2200
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 2200
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 2500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 2500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25m",
+      "distance": 3500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "14x25",
+      "kind": "main",
+      "pool": "25m",
+      "distance": 3500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "6x25",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 3500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 1500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "12x25",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 2000
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 2000
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "6x25",
+      "kind": "main",
+      "pool": "25m",
+      "distance": 2200
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25m",
+      "distance": 2500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "16x25",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 2500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25yd",
+      "distance": 2500
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "14x25",
+      "kind": "main",
+      "pool": "25m",
+      "distance": 3200
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "14x25",
+      "kind": "main",
+      "pool": "25m",
+      "distance": 3200
+    },
+    {
+      "type": "rep_pattern",
+      "section": "Workout",
+      "pattern": "5x50",
+      "kind": "main",
+      "pool": "25m",
+      "distance": 4000
+    }
+  ]
+}

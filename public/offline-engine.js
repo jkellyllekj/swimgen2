@@ -873,6 +873,16 @@ var V1_BASE_SET_CATALOGUE_LOCAL = {
       for (const b of buckets) { const d = Math.abs(targetDist - b); if (d < bestDelta) { best = b; bestDelta = d; } }
       return snapToWallSafe(best, poolLen);
     }
+    function clampToConventionalSectionDist(dist, base, labelLower) {
+      if (base !== 25 && base !== 50) return dist;
+      // Conventional buckets from corpus: 25m/25yd warm-build often 300–850; 50m warm-build 200,400,500
+      const warmBuild = base === 50 ? [200, 400, 500] : [300, 400, 500, 600, 800];
+      const buckets = labelLower.includes("cool") ? [200, 300, 400, 500] : (labelLower.includes("warm") || labelLower.includes("build") ? warmBuild : null);
+      if (!buckets) return dist;
+      let best = buckets[0], bestDelta = Math.abs(dist - best);
+      for (const b of buckets) { const d = Math.abs(dist - b); if (d < bestDelta) { best = b; bestDelta = d; } }
+      return snapToPoolMultiple(best, base);
+    }
     function snapToWallSafe(dist, poolLen) {
       const unit = 2 * poolLen; if (unit <= 0) return dist;
       return Math.max(unit, Math.round(dist / unit) * unit);
@@ -924,8 +934,35 @@ var V1_BASE_SET_CATALOGUE_LOCAL = {
 
 function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opts, seed, rerollCount }) {
   const base = poolLen;
-  const target = snapToPoolMultipleShared(targetDistance, base);
+  let target = snapToPoolMultipleShared(targetDistance, base);
   if (target <= 0) return null;
+  // Conventional buckets for 25/50m pools: avoid 350, 625, 1350, 14×25, etc.
+  if (base === 25 || base === 50) {
+    const labelLower = String(label || "").toLowerCase();
+    if (labelLower.includes("warm") || labelLower.includes("build")) {
+      target = typeof clampToConventionalSectionDist === "function" ? clampToConventionalSectionDist(target, base, labelLower) : target;
+    } else if (labelLower.includes("cool")) {
+      target = typeof clampToConventionalSectionDist === "function" ? clampToConventionalSectionDist(target, base, "cool down") : target;
+    } else if (labelLower.includes("drill")) {
+      const drillOpts = [200, 300, 400];
+      let best = drillOpts[0], bestD = Math.abs(target - best);
+      for (let i = 0; i < drillOpts.length; i++) { const d = Math.abs(target - drillOpts[i]); if (d < bestD) { best = drillOpts[i]; bestD = d; } }
+      target = best;
+    } else if (labelLower.includes("kick")) {
+      const kickOpts = [200, 300, 400, 600, 800];
+      let best = kickOpts[0], bestD = Math.abs(target - best);
+      for (let i = 0; i < kickOpts.length; i++) { const d = Math.abs(target - kickOpts[i]); if (d < bestD) { best = kickOpts[i]; bestD = d; } }
+      target = best;
+    } else if (labelLower.includes("main") || labelLower.includes("pull") || labelLower.includes("sprint")) {
+      const optsMain = typeof getConventionalMainOptions === "function" ? getConventionalMainOptions(target) : [];
+      if (!optsMain || optsMain.length === 0) {
+        const mainDists = [400, 500, 600, 800, 1000, 1200, 1600, 2000];
+        let best = mainDists[0], bestD = Math.abs(target - best);
+        for (let i = 0; i < mainDists.length; i++) { const d = Math.abs(target - mainDists[i]); if (d < bestD) { best = mainDists[i]; bestD = d; } }
+        target = best;
+      }
+    }
+  }
   if (typeof remaining === 'undefined') remaining = 0;
   const isNonStandardPool = ![25, 50].includes(base);
   const hasThresholdPace = opts.thresholdPace && String(opts.thresholdPace).trim().length > 0;
@@ -959,7 +996,11 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       suffix = " rest " + String(restSec) + "s";
     }
     let lengthInfo = "";
-    if (isNonStandardPool && dist > 0 && base > 0 && dist % base === 0 && dist / base > 1) {
+    // Show length counts consistently for all pools when the math is clean:
+    // distance must be an exact multiple of pool length and represent more than
+    // a single length ("(2 lengths)" or more). This keeps display aligned
+    // with the wall-safe invariants for both standard and custom pools.
+    if (dist > 0 && base > 0 && dist % base === 0 && dist / base > 1) {
       lengthInfo = " (" + (dist / base) + " lengths)";
     }
     return String(reps) + "x" + String(dist) + lengthInfo + " " + (text || "").trim() + suffix;
@@ -1324,14 +1365,40 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
     mainDesc = descs[seedA % descs.length];
   }
 
-  // Shuffle distance preferences for variety
+  // For 25/50m pools use only conventional main patterns (no 11×100, 13×50, 14×25, etc.)
+  if ((base === 25 || base === 50) && typeof getConventionalMainOptions === "function") {
+    const conventional = getConventionalMainOptions(target);
+    if (conventional && conventional.length > 0) {
+      const chosen = conventional[seedA % conventional.length];
+      return makeLine(chosen.reps, chosen.repDist, mainDesc, restFor(chosen.repDist, effortForRest));
+    }
+  }
   const fit = findBestFit([d100, d50, d200, d75].filter(x => x > 0), true);
   if (!fit) return makeLine(1, target, stroke + " swim", 0);
   return makeLine(fit.reps, fit.dist, mainDesc, restFor(fit.dist, effortForRest));
 }
 
+    // Conventional main-set patterns from corpus (rep×dist only); used to avoid 4x150, 7x100, etc.
+    var CONVENTIONAL_MAIN_PATTERNS = [
+      [4, 50], [4, 75], [4, 100], [4, 200], [5, 50], [5, 100], [5, 200],
+      [6, 50], [6, 100], [6, 200], [8, 50], [8, 75], [8, 100], [8, 200],
+      [10, 50], [10, 100], [12, 50], [12, 100]
+    ];
+    function getConventionalMainOptions(dist) {
+      const d = Number(dist);
+      if (!Number.isFinite(d) || d <= 0) return [];
+      return CONVENTIONAL_MAIN_PATTERNS.filter(function(p) { return p[0] * p[1] === d; }).map(function(p) { return { reps: p[0], repDist: p[1] }; });
+    }
     function validateRepScheme(reps, repDistance) {
       const limit = REP_LIMITS_LOCAL[repDistance];
+      // Conventional rep counts from corpus: 4, 5, 6, 8, 10, 12 (and 16 for 50/yd drill/kick).
+      const conventionalReps = new Set([4, 5, 6, 8, 10, 12, 16]);
+      if (!conventionalReps.has(reps)) {
+        if (repDistance === 50 && reps <= 20) return false;
+        if (repDistance === 100 || repDistance === 200) return false;
+        if (repDistance === 75) return false;
+      }
+      // Global ceiling by distance
       if (!limit) {
         if (repDistance >= 200) return reps <= 8;
         if (repDistance >= 100) return reps <= 16;
@@ -1370,12 +1437,23 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       poolLen = poolLen || 25;
       const scaleFactor = targetDistance / template.totalDistance;
       const scaledSections = []; let runningTotal = 0;
+      const labelLower = (l) => String(l || "").toLowerCase();
       for (let i = 0; i < template.sections.length; i++) {
         const section = template.sections[i];
         const isLast = i === template.sections.length - 1;
         let scaledDist;
-        if (isLast) { scaledDist = targetDistance - runningTotal; }
-        else { scaledDist = Math.round(section.distance * scaleFactor); scaledDist = Math.round(scaledDist / poolLen) * poolLen; }
+        if (isLast) {
+          scaledDist = snapToPoolMultiple(targetDistance - runningTotal, poolLen);
+        } else {
+          scaledDist = Math.round(section.distance * scaleFactor);
+          scaledDist = Math.round(scaledDist / poolLen) * poolLen;
+          if (poolLen === 25 || poolLen === 50) {
+            const l = labelLower(section.label);
+            if (l.includes("warm") || l.includes("build") || l.includes("cool")) {
+              scaledDist = clampToConventionalSectionDist(scaledDist, poolLen, l);
+            }
+          }
+        }
         if (scaledDist < poolLen * 2) scaledDist = poolLen * 2;
         scaledSections.push({ label: section.label, desc: section.desc, distance: scaledDist, originalDistance: section.distance });
         runningTotal += scaledDist;
@@ -1403,30 +1481,41 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       "FAST with rest": ["FAST with rest", "sprint with rest", "max effort with recovery"]
     };
     
-    const repMatch = desc.match(/^(\\d+)x(\\d+)\\s+(.+)$/);
+    const repMatch = desc.match(/^(\\d+)\\s*[x×]\\s*(\\d+)\\s+(.+)$/);
     if (repMatch) {
       const origReps = Number(repMatch[1]);
       const origRepDist = Number(repMatch[2]);
       const origIntensity = repMatch[3];
-      
-      const repDistOptions = [];
-      if (dist >= 800 && dist % 200 === 0) repDistOptions.push(200);
-      if (dist >= 300 && dist % 100 === 0) repDistOptions.push(100);
-      if (dist >= 150 && dist % 50 === 0) repDistOptions.push(50);
-      if (dist >= 50 && dist % base === 0) repDistOptions.push(base);
-      
-      const validRepDists = repDistOptions.filter(rd => {
-        const r = dist / rd;
-        return r >= 2 && r <= 16 && validateRepScheme(r, rd);
-      });
-      
+      const labelLowerDesc = String(label || "").toLowerCase();
       let newRepDist = origRepDist;
       let newReps = origReps;
-      if (validRepDists.length > 1) {
-        newRepDist = validRepDists[((s * 9973) >>> 0) % validRepDists.length];
-        newReps = Math.round(dist / newRepDist);
+      let useRepScheme = false;
+      const isMainLike = labelLowerDesc.includes("main") || labelLowerDesc.includes("pull") || labelLowerDesc.includes("sprint");
+      if (isMainLike) {
+        const conventional = getConventionalMainOptions(dist);
+        if (conventional.length > 0) {
+          const chosen = conventional[((s * 9973) >>> 0) % conventional.length];
+          newReps = chosen.reps;
+          newRepDist = chosen.repDist;
+          useRepScheme = true;
+        }
+      } else {
+        const repDistOptions = [];
+        if (dist >= 800 && dist % 200 === 0) repDistOptions.push(200);
+        if (dist >= 300 && dist % 100 === 0) repDistOptions.push(100);
+        if (dist >= 150 && dist % 50 === 0) repDistOptions.push(50);
+        if (dist >= 75 && dist % 75 === 0) repDistOptions.push(75);
+        if (repDistOptions.indexOf(base) === -1 && dist >= 50 && dist % base === 0) repDistOptions.push(base);
+        const validRepDists = repDistOptions.filter(rd => {
+          const r = dist / rd;
+          return r >= 2 && r <= 16 && validateRepScheme(r, rd);
+        });
+        if (validRepDists.length >= 1) {
+          newRepDist = validRepDists.length > 1 ? validRepDists[((s * 9973) >>> 0) % validRepDists.length] : validRepDists[0];
+          newReps = dist / newRepDist;
+          useRepScheme = true;
+        }
       }
-      
       const baseIntensity = origIntensity.replace(/\\s*\\(.*\\)$/, "").trim();
       const parenthetical = origIntensity.match(/\\(.*\\)$/);
       let newIntensity = baseIntensity;
@@ -1436,7 +1525,9 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       if (parenthetical) {
         newIntensity += " " + parenthetical[0];
       }
-      
+      if (!useRepScheme) {
+        return dist + " " + newIntensity;
+      }
       return newReps + "x" + newRepDist + " " + newIntensity;
     }
     
@@ -1469,16 +1560,13 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       "steady", "moderate", "strong", "threshold pace",
       "@ strong effort", "negative split", "descend 1-4"
     ];
-    const mainPatterns = [
-      "odd fast, even easy", "build each rep", "descend within set",
-      "hold pace", "negative split", "last 25 fast"
+    const mainPatternsAll = [
+      "odd fast, even easy", "build each rep", "descend",
+      "hold pace", "negative split", "last 25 fast", "last one sprint"
     ];
+    const mainPatternsLargeMain = mainPatternsAll.filter(p => !/sprint|last one sprint/i.test(p));
     const buildDescriptions = [
       "build", "build by 25", "build to fast", "build each rep"
-    ];
-    const drillStrokes = [
-      "drill FC", "drill choice", "drill mix", "technique focus",
-      "catch-up drill", "drill IM"
     ];
     const kickDescriptions = [
       "kick moderate", "kick choice", "kick with board",
@@ -1502,25 +1590,48 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       if (dist <= 600) {
         return dist + " " + pick(descPool);
       }
-      // Longer warmups: split into easy + build
+      // Longer warmups: split into easy + build (only when build part has exact reps x repDist)
       const easyDist = snapToPoolMultiple(Math.round(dist * 0.6), base);
       const buildDist = dist - easyDist;
-      const buildReps = Math.round(buildDist / (base * 2));
-      const buildRepDist = buildReps > 0 ? Math.round(buildDist / buildReps) : buildDist;
-      if (buildReps > 1) {
-        return easyDist + " " + pick(descPool) + "\n" + buildReps + "x" + snapToPoolMultiple(buildRepDist, base) + " build";
+      const buildRepDistCandidates = [];
+      if (buildDist >= base * 2 && buildDist % (base * 2) === 0) buildRepDistCandidates.push(base * 2);
+      if (buildDist >= 100 && buildDist % 100 === 0) buildRepDistCandidates.push(100);
+      if (buildDist >= 200 && buildDist % 200 === 0) buildRepDistCandidates.push(200);
+      const buildRepDist = buildRepDistCandidates.find(rd => { const r = buildDist / rd; return r >= 2 && r <= 16 && validateRepScheme(r, rd); });
+      if (buildRepDist != null) {
+        const buildReps = buildDist / buildRepDist;
+        return easyDist + " " + pick(descPool) + "\n" + buildReps + "x" + buildRepDist + " build";
       }
       return dist + " " + pick(descPool);
     }
     
-    // Determine rep distance options based on total distance
+    // Main / Pull / Sprint: only use conventional rep×dist patterns (comparison treats all as main)
+    const isMainLike = labelLower.includes("main") || labelLower.includes("pull") || labelLower.includes("sprint");
+    if (isMainLike) {
+      const conventional = getConventionalMainOptions(dist);
+      if (conventional.length > 0) {
+        const chosen = conventional[((s * 9973) >>> 0) % conventional.length];
+        const repDist = chosen.repDist;
+        const reps = chosen.reps;
+        const intensity = labelLower.includes("pull") ? pick(pullDescriptions) : labelLower.includes("sprint") ? pick(sprintIntensities) : pick(mainIntensities);
+        const addPattern = !labelLower.includes("pull") && !labelLower.includes("sprint") && ((s * 7919) >>> 0) % 3 === 0;
+        const mainPatterns = dist >= 800 ? mainPatternsLargeMain : mainPatternsAll;
+        if (addPattern && reps >= 4) {
+          return annotateLengthsInBody(reps + "x" + repDist + " " + intensity + " (" + pick2(mainPatterns) + ")", base);
+        }
+        return annotateLengthsInBody(reps + "x" + repDist + " " + intensity, base);
+      }
+      return annotateLengthsInBody(dist + " " + (labelLower.includes("pull") ? pick(pullDescriptions) : labelLower.includes("sprint") ? pick(sprintIntensities) : pick(mainIntensities)), base);
+    }
+    
+    // Determine rep distance options for non-main (build, drill, kick, etc.)
     const repOptions = [];
     if (dist >= 800 && dist % 200 === 0) repOptions.push(200);
     if (dist >= 400 && dist % 100 === 0) repOptions.push(100);
     if (dist >= 200 && dist % 50 === 0) repOptions.push(50);
-    if (dist >= 100 && dist % base === 0) repOptions.push(base);
+    if (dist >= 75 && dist % 75 === 0) repOptions.push(75);
+    if (repOptions.indexOf(base) === -1 && dist >= 100 && dist % base === 0) repOptions.push(base);
     
-    // Filter to valid rep counts (coaching constraints)
     const validOptions = repOptions.filter(rd => {
       const reps = dist / rd;
       return reps >= 2 && reps <= 16 && validateRepScheme(reps, rd);
@@ -1530,54 +1641,110 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
     if (validOptions.length > 0) {
       repDist = validOptions[((s * 9973) >>> 0) % validOptions.length];
     } else {
-      if (dist >= 600) repDist = 200;
-      else if (dist >= 300) repDist = 100;
-      else if (dist >= 100) repDist = 50;
-      repDist = snapToPoolMultiple(repDist, base);
-      if (repDist <= 0) repDist = base;
+      return annotateLengthsInBody(dist + " " + (pick(warmDescriptions)), base);
     }
     
-    const reps = Math.round(dist / repDist);
+    const reps = dist / repDist;
     
-    // Straight swim for small distances
     if (reps <= 1) {
-      if (labelLower.includes("main")) return dist + " " + pick(mainIntensities);
-      return dist + " " + pick(warmDescriptions);
+      const desc = labelLower.includes("main") ? pick(mainIntensities) : pick(warmDescriptions);
+      return annotateLengthsInBody(dist + " " + desc, base);
     }
     
     // Build section descriptions
     if (labelLower.includes("build")) {
-      return reps + "x" + repDist + " " + pick(buildDescriptions);
+      return annotateLengthsInBody(reps + "x" + repDist + " " + pick(buildDescriptions), base);
     }
     
-    // Drill sections
+    // Drill sections - always structured, never vague "mix drill"
     if (labelLower.includes("drill")) {
-      return reps + "x" + repDist + " " + pick(drillStrokes);
+      const drillPool = [
+        "Fist", "Catch-up", "DPS", "Jazz Hands", "Long Dog",
+        "Scull Front", "Scull Rear", "Torpedo Glide", "Single Arm",
+        "3-3-3", "Finger Drag", "25 Drill / 25 Swim"
+      ];
+      const shuffled = shuffleWithSeed([...drillPool], s);
+      const drillLines = [];
+      for (let i = 0; i < reps; i++) {
+        drillLines.push((i + 1) + ". " + shuffled[i % shuffled.length]);
+      }
+      const heading = reps + "x" + repDist + " Drill FC";
+      const headingWithLengths = annotateLengthsInBody(heading, base);
+      return headingWithLengths + "\n" + drillLines.join("\n");
     }
     
     // Kick sections
     if (labelLower.includes("kick")) {
-      return reps + "x" + repDist + " " + pick(kickDescriptions);
+      return annotateLengthsInBody(reps + "x" + repDist + " " + pick(kickDescriptions), base);
     }
     
     // Pull sections
     if (labelLower.includes("pull")) {
-      return reps + "x" + repDist + " " + pick(pullDescriptions);
+      return annotateLengthsInBody(reps + "x" + repDist + " " + pick(pullDescriptions), base);
     }
     
     // Sprint sections
     if (labelLower.includes("sprint")) {
-      return reps + "x" + repDist + " " + pick(sprintIntensities);
+      return annotateLengthsInBody(reps + "x" + repDist + " " + pick(sprintIntensities), base);
     }
     
-    // Main sections - add pattern variations
+    // Main sections - add pattern variations; no full-gas wording on large main (dist >= 800)
     const intensity = pick(mainIntensities);
     const addPattern = ((s * 7919) >>> 0) % 3 === 0;
+    const mainPatterns = dist >= 800 ? mainPatternsLargeMain : mainPatternsAll;
     if (addPattern && reps >= 4) {
-      return reps + "x" + repDist + " " + intensity + " (" + pick2(mainPatterns) + ")";
+      return annotateLengthsInBody(reps + "x" + repDist + " " + intensity + " (" + pick2(mainPatterns) + ")", base);
     }
     
-    return reps + "x" + repDist + " " + intensity;
+    return annotateLengthsInBody(reps + "x" + repDist + " " + intensity, base);
+  }
+
+  // Append "(N lengths)" where the math is clean.
+  // This is a conservative pass over human-readable body text so we don't
+  // have to thread length formatting into every template by hand.
+  function annotateLengthsInBody(body, base) {
+    if (!base || !Number.isFinite(base) || base <= 0) return body;
+    const lines = String(body || "").split("\n");
+    const out = lines.map((rawLine) => {
+      const line = String(rawLine || "");
+      // Skip if we've already added any length info
+      if (line.toLowerCase().includes("length")) return line;
+
+      // Pattern 1: reps x dist ...  e.g. "12x100 freestyle build"
+      let m = line.match(/^(\s*)(\d+)\s*x\s*(\d+)(.*)$/);
+      if (m) {
+        const leading = m[1] || "";
+        const repsStr = m[2];
+        const distStr = m[3];
+        const tail = m[4] || "";
+        const dist = Number(distStr);
+        if (Number.isFinite(dist) && dist > 0 && dist % base === 0) {
+          const nLengths = dist / base;
+          if (nLengths > 1) {
+            return leading + repsStr + "x" + distStr + " (" + nLengths + " lengths)" + tail;
+          }
+        }
+        return line;
+      }
+
+      // Pattern 2: single distance at start, e.g. "600 easy swim"
+      m = line.match(/^(\s*)(\d+)\b(.*)$/);
+      if (m) {
+        const leading = m[1] || "";
+        const distStr = m[2];
+        const tail = m[3] || "";
+        const dist = Number(distStr);
+        if (Number.isFinite(dist) && dist > 0 && dist % base === 0) {
+          const nLengths = dist / base;
+          if (nLengths > 1) {
+            return leading + distStr + " (" + nLengths + " lengths)" + tail;
+          }
+        }
+      }
+
+      return line;
+    });
+    return out.join("\n");
   }
 
   function buildWorkoutFromTemplate({ targetTotal, poolLen, unitsShort, poolLabel, thresholdPace, opts, seed }) {
@@ -1599,7 +1766,13 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
     let sectionSeed = seed;
     
     for (const section of scaled.sections) {
-      const dist = snapToPoolMultiple(section.distance, base);
+      let dist = snapToPoolMultiple(section.distance, base);
+      if (base === 25 || base === 50) {
+        const l = section.label.toLowerCase();
+        if (l.includes("warm") || l.includes("build") || l.includes("cool")) {
+          dist = clampToConventionalSectionDist(dist, base, l);
+        }
+      }
       sectionSeed = ((sectionSeed * 1103515245 + 12345) >>> 0);
       const labelLower = section.label.toLowerCase();
       const isFixed = labelLower.includes("warm") || labelLower.includes("cool");
@@ -1637,34 +1810,79 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       }
     }
     
-    // Apply sensible cooldown calculation to override template cooldown
+    // Apply conventional cooldown and conventional main for 25/50 (no 350 cool, no 1350 main)
     const cooldownIdx = sets.findIndex(s => s.label.toLowerCase().includes("cool"));
-    if (cooldownIdx >= 0) {
+    const mainIdx = sets.findIndex(s => s.label.toLowerCase().includes("main"));
+    if (cooldownIdx >= 0 && mainIdx >= 0 && (base === 25 || base === 50)) {
+      const conventionalCool = [200, 300, 400, 500];
+      const conventionalMainDists = [400, 500, 600, 800, 1000, 1200, 1600, 2000];
+      const otherSum = sets.reduce((sum, s, i) => (i === mainIdx || i === cooldownIdx) ? sum : sum + s.dist, 0);
+      const remainder = total - otherSum;
       const sensibleCool = calculateSensibleCoolDown(total, base);
-      const currentCool = sets[cooldownIdx].dist;
-      const diff = currentCool - sensibleCool;
-      
-      // Only adjust if difference is significant
-      if (Math.abs(diff) > base * 2) {
-        // Find main section to redistribute
-        const mainIdx = sets.findIndex(s => s.label.toLowerCase().includes("main"));
-        if (mainIdx >= 0) {
-          const newMainDist = snapToPoolMultiple(sets[mainIdx].dist + diff, base);
-          // Guard: Only adjust if main stays above minimum (400m)
-          if (newMainDist >= 400) {
-            sets[cooldownIdx].dist = sensibleCool;
-            sets[cooldownIdx].body = generateSimpleBody(sensibleCool, "Cool down", base);
-            sets[mainIdx].dist = newMainDist;
-            if (!useOriginalDesc) {
-              sets[mainIdx].body = generateSimpleBody(newMainDist, sets[mainIdx].label, base);
-            }
-          }
+      let chosenCool = null;
+      let chosenMain = null;
+      let bestDelta = 1e9;
+      for (const mainD of conventionalMainDists) {
+        const coolD = remainder - mainD;
+        if (conventionalCool.indexOf(coolD) < 0) continue;
+        const d = Math.abs(sensibleCool - coolD);
+        if (d < bestDelta) { chosenMain = mainD; chosenCool = coolD; bestDelta = d; }
+      }
+      if (chosenCool != null && chosenMain != null) {
+        sets[cooldownIdx].dist = chosenCool;
+        sets[cooldownIdx].body = generateSimpleBody(chosenCool, "Cool down", base);
+        sets[mainIdx].dist = chosenMain;
+        if (!useOriginalDesc) sets[mainIdx].body = generateSimpleBody(chosenMain, sets[mainIdx].label, base);
+      } else {
+        let bestCool = conventionalCool[0], bestCoolD = Math.abs(sensibleCool - bestCool);
+        for (const c of conventionalCool) { const d = Math.abs(sensibleCool - c); if (d < bestCoolD) { bestCool = c; bestCoolD = d; } }
+        const diff = sets[cooldownIdx].dist - bestCool;
+        const newMainDist = snapToPoolMultiple(sets[mainIdx].dist + diff, base);
+        if (newMainDist >= 400) {
+          sets[cooldownIdx].dist = bestCool;
+          sets[cooldownIdx].body = generateSimpleBody(bestCool, "Cool down", base);
+          sets[mainIdx].dist = newMainDist;
+          if (!useOriginalDesc) sets[mainIdx].body = generateSimpleBody(newMainDist, sets[mainIdx].label, base);
         }
       }
     }
     
     // Recalculate total after adjustments
     const finalTotal = sets.reduce((sum, s) => sum + s.dist, 0);
+
+    // Ensure main-like section bodies only use conventional rep patterns (safety net)
+    const conventionalMainSet = new Set(CONVENTIONAL_MAIN_PATTERNS.map(function(p) { return p[0] + "x" + p[1]; }));
+    for (const s of sets) {
+      const lab = s.label.toLowerCase();
+      if (!(lab.includes("main") || lab.includes("pull") || lab.includes("sprint"))) continue;
+      const lines = s.body.split("\n");
+      const out = [];
+      for (const line of lines) {
+        const m = line.match(/^(\d+)\s*[x×]\s*(\d+)\s+(.*)$/);
+        if (m) {
+          const reps = parseInt(m[1], 10);
+          const repDist = parseInt(m[2], 10);
+          const lineDist = reps * repDist;
+          const key = m[1] + "x" + m[2];
+          if (!conventionalMainSet.has(key) && lineDist > 0) {
+            const opts = getConventionalMainOptions(lineDist);
+            if (opts.length > 0) {
+              const o = opts[((fnv1a32(line) >>> 0) % opts.length)];
+              out.push(o.reps + "x" + o.repDist + " " + (m[3] || "steady").trim());
+              continue;
+            }
+            out.push(lineDist + " " + (m[3] || "steady").trim());
+            continue;
+          }
+        }
+        out.push(line);
+      }
+      s.body = out.join("\n");
+    }
+    // Add "(N lengths)" hints into every section body
+    for (const s of sets) {
+      s.body = annotateLengthsInBody(s.body, base);
+    }
     
     // Generate workout text
     const workoutName = template.name;
@@ -1707,7 +1925,7 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       const headerRe = /^([A-Za-z][A-Za-z0-9 \\-]*?)\\s*:\\s*(.*)$/;
       const knownLabels = new Set([
         'warm up','warm-up','warmup','wu','build','builds','drill','drills',
-        'kick','kicks','pull','pulls','main','main set','sprint','sprints',
+        'kick','kicks','pull','pulls','main','main 1','main 2','main set','sprint','sprints',
         'speed','cool down','cool-down','cooldown','cd','workout','set','recovery'
       ]);
       for (const line of plines) {
@@ -1819,9 +2037,11 @@ function buildOneSetBodyShared({ label, targetDistance, poolLen, unitsShort, opt
       })();
       const totalMeters = workout.totalMeters || targetTotal;
       const totalLengths = Math.round(totalMeters / poolLen);
+      const sectionDists = workout.sections ? workout.sections.map(s => ({ label: s.label, dist: s.dist })) : null;
       return {
         ok: true, workoutText: workout.text, workoutName: workout.name || "",
         sections: parsed.sections, sectionMeta, workoutMeta, totalMeters, totalLengths,
+        sectionDists,
         poolLength: poolLen, poolLabel: isCustomPool ? (String(poolLen) + unitsShort + " custom") : String(poolLength)
       };
     }

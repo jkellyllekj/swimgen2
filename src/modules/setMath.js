@@ -126,6 +126,24 @@ function computeSetDistanceFromBody(body) {
     if (Number.isFinite(reps) && Number.isFinite(dist)) sum += reps * dist;
   }
 
+   // Pyramid patterns, e.g. "Pyramid: 100-200-300-400-300-200-100"
+   if (sum === 0) {
+     const pyramidMatch = t.match(/pyramid\s*:\s*([\d\s\-]+)/i);
+     if (pyramidMatch && pyramidMatch[1]) {
+       const parts = pyramidMatch[1].split(/[-\s]+/).filter(Boolean);
+       let total = 0;
+       for (const part of parts) {
+         const v = Number(part);
+         if (Number.isFinite(v) && v > 0) {
+           total += v;
+         }
+       }
+       if (total > 0) {
+         sum = total;
+       }
+     }
+   }
+
   if (sum === 0) {
     const one = t.match(/(^|\s)(\d{2,5})(\s*(m|yd))?(\s|$)/);
     if (one) {

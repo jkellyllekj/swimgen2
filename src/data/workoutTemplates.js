@@ -457,39 +457,71 @@ function findClosestTemplate(targetDistance, tags = [], seed = 0) {
   };
 }
 
+function snapToPoolMultipleLocal(dist, poolLen) {
+  if (!poolLen || poolLen <= 0) return dist;
+  return Math.round(dist / poolLen) * poolLen;
+}
+
+function clampToConventionalSectionDist(dist, base, labelLower) {
+  if (base !== 25 && base !== 50) return dist;
+  const warmBuild = [200, 300, 400, 500, 600, 800];
+  const buckets = labelLower.includes("cool")
+    ? [200, 300, 400, 500]
+    : (labelLower.includes("warm") || labelLower.includes("build") ? warmBuild : null);
+  if (!buckets) return dist;
+  let best = buckets[0];
+  let bestDelta = Math.abs(dist - best);
+  for (const b of buckets) {
+    const d = Math.abs(dist - b);
+    if (d < bestDelta) {
+      best = b;
+      bestDelta = d;
+    }
+  }
+  return snapToPoolMultipleLocal(best, base);
+}
+
 /**
  * Scale a template to match target distance
- * Maintains proportions and applies coaching constraints
+ * Maintains proportions and applies coaching constraints.
+ * For 25m/50m pools: warm/build/cool use conventional distances (200,300,400,500,600,800) so we never output 350, 450, etc.
  */
 function scaleTemplate(template, targetDistance, poolLen = 25) {
   const scaleFactor = targetDistance / template.totalDistance;
   const scaledSections = [];
   let runningTotal = 0;
-  
+  const labelLower = (l) => String(l || "").toLowerCase();
+
   for (let i = 0; i < template.sections.length; i++) {
     const section = template.sections[i];
     const isLast = i === template.sections.length - 1;
-    
+
     let scaledDist;
     if (isLast) {
-      scaledDist = targetDistance - runningTotal;
+      scaledDist = snapToPoolMultipleLocal(targetDistance - runningTotal, poolLen);
     } else {
       scaledDist = Math.round(section.distance * scaleFactor);
       scaledDist = Math.round(scaledDist / poolLen) * poolLen;
+      if (poolLen === 25 || poolLen === 50) {
+        const l = labelLower(section.label);
+        if (l.includes("warm") || l.includes("build") || l.includes("cool")) {
+          scaledDist = clampToConventionalSectionDist(scaledDist, poolLen, l);
+        }
+      }
     }
-    
+
     if (scaledDist < poolLen * 2) scaledDist = poolLen * 2;
-    
+
     scaledSections.push({
       label: section.label,
       desc: section.desc,
       distance: scaledDist,
       originalDistance: section.distance
     });
-    
+
     runningTotal += scaledDist;
   }
-  
+
   return {
     name: template.name,
     totalDistance: targetDistance,

@@ -1,0 +1,1753 @@
+{
+  "workouts": [
+    {
+      "source": "USMS-3000yd-article",
+      "pool": "25yd",
+      "totalDistance": 3050,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 850,
+          "sets": []
+        },
+        {
+          "label": "main",
+          "distance": 1900,
+          "sets": []
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": []
+        }
+      ]
+    },
+    {
+      "source": "USMS-3000yd-article",
+      "pool": "25yd",
+      "totalDistance": 2900,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 800,
+          "sets": []
+        },
+        {
+          "label": "main",
+          "distance": 1800,
+          "sets": []
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": []
+        }
+      ]
+    },
+    {
+      "source": "USMS-3000yd-article",
+      "pool": "25yd",
+      "totalDistance": 3000,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": []
+        },
+        {
+          "label": "main",
+          "distance": 2100,
+          "sets": []
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": []
+        }
+      ]
+    },
+    {
+      "source": "USMS-3000yd-article",
+      "pool": "25yd",
+      "totalDistance": 2900,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": []
+        },
+        {
+          "label": "main",
+          "distance": 2100,
+          "sets": []
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": []
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 3000,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 800,
+          "sets": [
+            "300 choice",
+            "4x50 build",
+            "200 pull"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1800,
+          "sets": [
+            "6x200 descend",
+            "8x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 3000,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "300 easy",
+            "4x75 kick-swim"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 2100,
+          "sets": [
+            "3x(200 smooth",
+            "4x50",
+            "3x100 descend)"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "6x50 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 2900,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "200 choice",
+            "4x50 scull",
+            "200 choice"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 2100,
+          "sets": [
+            "4x75",
+            "300 pull",
+            "4x75",
+            "300 pull",
+            "4x75",
+            "300 pull",
+            "4x75"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 kick/swim"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 1600,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 800,
+          "sets": [
+            "8x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 2000,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "build",
+          "distance": 300,
+          "sets": [
+            "6x50 build"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1000,
+          "sets": [
+            "10x100 descend 1-5"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 2500,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        },
+        {
+          "label": "drill",
+          "distance": 200,
+          "sets": [
+            "4x50 drill"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1600,
+          "sets": [
+            "8x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 3000,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "600 easy"
+          ]
+        },
+        {
+          "label": "build",
+          "distance": 400,
+          "sets": [
+            "8x50 build"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1600,
+          "sets": [
+            "8x200 threshold"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 3000,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 2200,
+          "sets": [
+            "4x400",
+            "6x100"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 2000,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 400,
+          "sets": [
+            "4x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 1600,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 600,
+          "sets": [
+            "6x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 1700,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 800,
+          "sets": [
+            "8x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 2300,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1000,
+          "sets": [
+            "10x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 1900,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "600 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1200,
+          "sets": [
+            "12x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 2000,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 800,
+          "sets": [
+            "800 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 800,
+          "sets": [
+            "4x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 2600,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1200,
+          "sets": [
+            "6x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 2200,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1600,
+          "sets": [
+            "8x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 2300,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 200,
+          "sets": [
+            "4x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 2900,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 300,
+          "sets": [
+            "6x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 2500,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "600 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 400,
+          "sets": [
+            "8x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 2600,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 800,
+          "sets": [
+            "800 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 500,
+          "sets": [
+            "10x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 3200,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 600,
+          "sets": [
+            "12x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 2800,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 500,
+          "sets": [
+            "5x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 2900,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1000,
+          "sets": [
+            "5x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 3500,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 300,
+          "sets": [
+            "6x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 3100,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "600 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 600,
+          "sets": [
+            "8x75 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 3200,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 800,
+          "sets": [
+            "800 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 400,
+          "sets": [
+            "4x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 3800,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 600,
+          "sets": [
+            "6x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 3400,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 800,
+          "sets": [
+            "8x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 3500,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1000,
+          "sets": [
+            "10x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 2100,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1200,
+          "sets": [
+            "12x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 3700,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "600 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 800,
+          "sets": [
+            "4x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 3800,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 800,
+          "sets": [
+            "800 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1200,
+          "sets": [
+            "6x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 2400,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1600,
+          "sets": [
+            "8x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 1500,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 200,
+          "sets": [
+            "4x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 1600,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 300,
+          "sets": [
+            "6x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 2700,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 400,
+          "sets": [
+            "8x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 1800,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "600 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 500,
+          "sets": [
+            "10x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 1900,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 800,
+          "sets": [
+            "800 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 600,
+          "sets": [
+            "12x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 3000,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 500,
+          "sets": [
+            "5x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 2100,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1000,
+          "sets": [
+            "5x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 2200,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 300,
+          "sets": [
+            "6x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 3300,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 600,
+          "sets": [
+            "8x75 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 2400,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "600 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 400,
+          "sets": [
+            "4x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 2500,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 800,
+          "sets": [
+            "800 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 600,
+          "sets": [
+            "6x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 3600,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 800,
+          "sets": [
+            "8x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 2700,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1000,
+          "sets": [
+            "10x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 2800,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1200,
+          "sets": [
+            "12x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 3900,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 800,
+          "sets": [
+            "4x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 3000,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "600 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1200,
+          "sets": [
+            "6x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 3100,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 800,
+          "sets": [
+            "800 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1600,
+          "sets": [
+            "8x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 2200,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 200,
+          "sets": [
+            "4x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 3300,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 300,
+          "sets": [
+            "6x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 3400,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 400,
+          "sets": [
+            "8x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 2500,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 500,
+          "sets": [
+            "10x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25m",
+      "totalDistance": 3600,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 600,
+          "sets": [
+            "600 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 600,
+          "sets": [
+            "12x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 400,
+          "sets": [
+            "400 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 3700,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 800,
+          "sets": [
+            "800 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 500,
+          "sets": [
+            "5x100 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 500,
+          "sets": [
+            "500 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "50m",
+      "totalDistance": 2800,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 1000,
+          "sets": [
+            "5x200 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 200,
+          "sets": [
+            "200 easy"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "curated",
+      "pool": "25yd",
+      "totalDistance": 3900,
+      "sections": [
+        {
+          "label": "warm-up",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        },
+        {
+          "label": "main",
+          "distance": 300,
+          "sets": [
+            "6x50 steady"
+          ]
+        },
+        {
+          "label": "cool-down",
+          "distance": 300,
+          "sets": [
+            "300 easy"
+          ]
+        }
+      ]
+    }
+  ],
+  "generatedAt": "2026-03-03T00:55:13.992Z"
+}

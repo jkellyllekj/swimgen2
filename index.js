@@ -1726,7 +1726,7 @@ app.get("/", (req, res) => {
           { effort: "moderate", title: "Step 1: Pick your pool size", body: "Tap 25m, 50m or 25yd to match your pool." },
           { effort: "strong", title: "Step 2: Slide your distance", body: "Move the slider to choose your total distance." },
           { effort: "hard", title: "Step 3: Tap Generate", body: "Tap Generate to roll a coach-plausible session." },
-          { effort: "fullgas", title: "Step 4: Drag and delete sets", body: "Long-press to drag or delete a set. You can support SwimSum later by purchasing Remove Ads from the banner or Premium options." }
+          { effort: "fullgas", title: "Step 4: Drag and delete sets", body: "Long-press to drag or delete a set. You can support SwimSum later by purchasing Remove Ads (which only turns off ads) from the bottom banner or Premium options." }
           ];
         const html = [];
         html.push('<div id="onboardingStaticWrap" style="display:flex; flex-direction:column; gap:6px; margin-top:5px;">');
@@ -1780,7 +1780,7 @@ app.get("/", (req, res) => {
             id: "drag",
             effort: "fullgas",
             title: "Step 4: Drag and delete sets",
-            body: "Long-press to drag or delete a set. You can support SwimSum later by purchasing Remove Ads from the banner or Premium options.",
+            body: "Long-press to drag or delete a set. You can support SwimSum later by purchasing Remove Ads (which only turns off ads) from the bottom banner or Premium options.",
             duration: 3400,
           },
         ];
@@ -2417,11 +2417,29 @@ app.get("/", (req, res) => {
           lcgState = (lcgState * 9301 + 49297) % 233280;
           return lcgState / 233280;
         }
+
+        // Cap any ladder to at most three distinct effort levels while
+        // preserving the original sequence order as much as possible.
+        function limitZones(zones) {
+          if (!Array.isArray(zones) || zones.length === 0) return zones;
+          const distinct = [];
+          for (const z of zones) {
+            if (!distinct.includes(z)) {
+              if (distinct.length >= 3) continue;
+              distinct.push(z);
+            }
+          }
+          // If we never exceeded three distinct levels, keep the original array.
+          if (distinct.length <= 3) return zones;
+          // Otherwise, drop any zones that are not in the first three distinct levels.
+          return zones.filter(z => distinct.includes(z));
+        }
         
         // Detect progression keywords - these create smooth gradients
         const hasProgression = /build|descend|negative split|pyramid|disappearing/i.test(bodyText);
         const hasFinalSprint = /final.*(sprint|fast|hard)|last.*(sprint|fast|hard)|with final|last \\d+ sprint/i.test(bodyText);
         const hasAlternating = /odds.*(easy|fast)|evens.*(easy|fast)|alternate/i.test(bodyText);
+        const isPyramid = /pyramid\\s*:/i.test(bodyText);
         
         // Warm-up: 80% solid blue, 20% easy→moderate gradient
         if (labelOnly.includes("warm")) {
@@ -2443,6 +2461,31 @@ app.get("/", (req, res) => {
         if (labelOnly.includes("drill")) {
           const zone = nextRandom() < 0.7 ? "moderate" : "strong";
           return { zones: [zone], isStriped: false, isProgressive: false };
+        }
+
+        // Pyramid main sets: use conventional multi-step ladders, never stripes
+        if (isPyramid && labelOnly.includes("main")) {
+          // Try to infer a base intensity from the text (e.g. "all @ strong effort")
+          const baseZone = detectLineZone(bodyText) || "strong";
+          const ladders = [];
+
+          if (baseZone === "easy" || baseZone === "moderate") {
+            ladders.push(["easy", "moderate", "strong"]);
+            ladders.push(["moderate", "strong", "hard"]);
+            ladders.push(["easy", "strong", "hard"]);
+          } else if (baseZone === "strong") {
+            ladders.push(["moderate", "strong", "hard"]);
+            ladders.push(["strong", "hard", "fullgas"]);
+            ladders.push(["moderate", "hard", "fullgas"]);
+          } else {
+            // hard or fullgas base
+            ladders.push(["strong", "hard", "fullgas"]);
+            ladders.push(["moderate", "hard", "fullgas"]);
+          }
+
+          const idx = ladders.length > 0 ? Math.floor(nextRandom() * ladders.length) : 0;
+          const zones = ladders[idx] || [baseZone];
+          return { zones: limitZones(zones), isStriped: false, isProgressive: true };
         }
         
         // Alternating pattern: odds easy evens fast -> stripes with actual zones
@@ -2484,33 +2527,34 @@ app.get("/", (req, res) => {
           return { zones: ["strong"], isStriped: false, isProgressive: false };
         }
         
-        // Progression sets: build, descend, etc
+        // Progression sets: build, descend, etc (non-pyramid)
         if (hasProgression) {
-          // Determine start and end zones based on context
-          let startZone = "moderate"; // Default start
-          let endZone = "hard"; // Default end
-          
-          // Check for explicit start zone mentions
-          if (/from easy|start easy|start relaxed/i.test(bodyText)) startZone = "easy";
-          else if (/from moderate|start steady|start smooth/i.test(bodyText)) startZone = "moderate";
-          
-          // Check for explicit end zone mentions  
-          if (hasFinalSprint || /to sprint|to max|to race pace|to full/i.test(bodyText)) {
-            endZone = "fullgas";
-          } else if (/to strong|strong effort/i.test(bodyText)) {
-            endZone = "hard";
-          } else if (/to fast|to hard|to threshold/i.test(bodyText)) {
-            endZone = "hard";
+          const ladders = [];
+          const hasSprintWords = /sprint|all out|max effort|race pace|full gas|100%/i.test(bodyText);
+
+          if (hasSprintWords) {
+            // Sprinty progressions – allow big jumps into fullgas
+            ladders.push(["easy", "hard", "fullgas"]);
+            ladders.push(["moderate", "hard", "fullgas"]);
+            ladders.push(["strong", "fullgas"]);
+            ladders.push(["easy", "fullgas"]);
+          } else {
+            // Classic build / descend ladders
+            ladders.push(["easy", "moderate", "strong"]);
+            ladders.push(["moderate", "strong", "hard"]);
+            ladders.push(["easy", "strong", "hard"]);
+            ladders.push(["moderate", "hard"]);
           }
-          
-          // For main sets with build, start higher
-          if (labelOnly.includes("main") && startZone === "easy") {
-            startZone = "moderate";
+
+          // For main sets, occasionally extend up into fullgas at the top end
+          if (labelOnly.includes("main")) {
+            ladders.push(["strong", "hard", "fullgas"]);
+            ladders.push(["moderate", "hard", "fullgas"]);
           }
-          
-          // Fill the progression
-          const progressionZones = fillZoneGap(startZone, endZone);
-          return { zones: progressionZones, isStriped: false, isProgressive: true };
+
+          const idx = ladders.length > 0 ? Math.floor(nextRandom() * ladders.length) : 0;
+          const zones = ladders[idx] || ["moderate", "strong", "hard"];
+          return { zones: limitZones(zones), isStriped: false, isProgressive: true };
         }
         
         // Multi-line sets: parse each line's zone
@@ -2521,7 +2565,7 @@ app.get("/", (req, res) => {
             if (zone) lineZones.push(zone);
           }
           
-          if (lineZones.length >= 2) {
+            if (lineZones.length >= 2) {
             // Check if it's alternating (A-B-A-B pattern)
             const isAlternatingPattern = lineZones.length >= 3 && lineZones.every((z, i) => 
               z === lineZones[i % 2 === 0 ? 0 : 1]
@@ -2535,7 +2579,7 @@ app.get("/", (req, res) => {
             const firstZone = lineZones[0];
             const lastZone = lineZones[lineZones.length - 1];
             if (firstZone !== lastZone) {
-              return { zones: fillZoneGap(firstZone, lastZone), isStriped: false, isProgressive: true };
+              return { zones: limitZones(fillZoneGap(firstZone, lastZone)), isStriped: false, isProgressive: true };
             }
           }
         }
@@ -2556,7 +2600,7 @@ app.get("/", (req, res) => {
             const endZone = ZONE_ORDER[endIdx];
             if (singleZone !== endZone) {
               const progressionZones = fillZoneGap(singleZone, endZone);
-              return { zones: progressionZones, isStriped: false, isProgressive: true };
+              return { zones: limitZones(progressionZones), isStriped: false, isProgressive: true };
             }
           }
           return { zones: [singleZone], isStriped: false, isProgressive: false };
@@ -2594,7 +2638,7 @@ app.get("/", (req, res) => {
             const mainEndRoll = nextRandom();
             const endZone = mainEndRoll < 0.2 ? "fullgas" : "hard";
             const startZone = mainEndRoll < 0.5 ? "moderate" : "strong";
-            return { zones: fillZoneGap(startZone, endZone), isStriped: false, isProgressive: true };
+            return { zones: limitZones(fillZoneGap(startZone, endZone)), isStriped: false, isProgressive: true };
           }
           // Solid - even distribution across all 5 zones for variety
           const mainSolidRoll = nextRandom();
@@ -2653,14 +2697,20 @@ app.get("/", (req, res) => {
         const shouldStripe = isZoneStriped(label, body, variantSeed);
         
         if (shouldStripe) {
-          // Alternating patterns now use smooth blended gradients (not hard stripes)
-          // This creates a wave-like transition between effort levels
-          const bgStops = colors.map((c, i) => c.bg + ' ' + Math.round(i * 100 / (colors.length - 1)) + '%').join(', ');
-          const bgGradient = 'linear-gradient(to bottom, ' + bgStops + ')';
-          
-          const barStops = colors.map((c, i) => c.bar + ' ' + Math.round(i * 100 / (colors.length - 1)) + '%').join(', ');
-          const barGradient = 'linear-gradient(to bottom, ' + barStops + ')';
-          
+          const n = colors.length;
+          const bgStops = [];
+          const barStops = [];
+          for (let i = 0; i < n; i++) {
+            const pos = n === 1 ? 0 : (i * 100) / (n - 1);
+            // Use a wider band (~24% width) around each stripe center so
+            // neighbouring colours blend over roughly 20% of the space.
+            const start = Math.max(0, Math.round(pos - 12));
+            const end = Math.min(100, Math.round(pos + 12));
+            bgStops.push(colors[i].bg + ' ' + start + '%', colors[i].bg + ' ' + end + '%');
+            barStops.push(colors[i].bar + ' ' + start + '%', colors[i].bar + ' ' + end + '%');
+          }
+          const bgGradient = 'linear-gradient(to bottom, ' + bgStops.join(', ') + ')';
+          const barGradient = 'linear-gradient(to bottom, ' + barStops.join(', ') + ')';
           return {
             background: bgGradient,
             barGradient: barGradient,
@@ -2669,12 +2719,22 @@ app.get("/", (req, res) => {
           };
         }
         
-        // Smooth gradient for progressive builds
-        const bgStops = colors.map((c, i) => c.bg + ' ' + Math.round(i * 100 / (colors.length - 1)) + '%').join(', ');
-        const bgGradient = 'linear-gradient(to bottom, ' + bgStops + ')';
-        
-        const barStops = colors.map((c, i) => c.bar + ' ' + Math.round(i * 100 / (colors.length - 1)) + '%').join(', ');
-        const barGradient = 'linear-gradient(to bottom, ' + barStops + ')';
+        // Stepped gradient: defined bands per zone with softened edges
+        const n = colors.length;
+        const bgStops = [];
+        const barStops = [];
+        for (let i = 0; i < n; i++) {
+          const baseStart = (i * 100) / n;
+          const baseEnd = i < n - 1 ? ((i + 1) * 100) / n : 100;
+          const segmentWidth = 100 / n;
+          const margin = segmentWidth * 0.2; // ~20% overlap into neighbours
+          const start = Math.max(0, Math.round(baseStart - margin));
+          const end = Math.min(100, Math.round(baseEnd + margin));
+          bgStops.push(colors[i].bg + ' ' + start + '%', colors[i].bg + ' ' + end + '%');
+          barStops.push(colors[i].bar + ' ' + start + '%', colors[i].bar + ' ' + end + '%');
+        }
+        const bgGradient = 'linear-gradient(to bottom, ' + bgStops.join(', ') + ')';
+        const barGradient = 'linear-gradient(to bottom, ' + barStops.join(', ') + ')';
         
         return {
           background: bgGradient,
@@ -2943,7 +3003,24 @@ app.get("/", (req, res) => {
       
       function computeSetDistanceFromBody(body) {
         const t = String(body || "");
+        const lower = t.toLowerCase();
         let sum = 0;
+
+        // Handle pyramid patterns first, e.g. "Pyramid: 100-200-300-400-300-200-100"
+        const pyramidMatch = lower.match(/pyramid\\s*:\\s*([\\d\\s\\-]+)/i);
+        if (pyramidMatch && pyramidMatch[1]) {
+          const parts = pyramidMatch[1].split(/[-\\s]+/).filter(Boolean);
+          let total = 0;
+          for (const part of parts) {
+            const v = Number(part);
+            if (Number.isFinite(v) && v > 0) {
+              total += v;
+            }
+          }
+          if (total > 0) {
+            return total;
+          }
+        }
 
         // Split by newlines to handle multi-line set bodies
         const lines = t.split(/\\n/);
@@ -2964,9 +3041,9 @@ app.get("/", (req, res) => {
             if (Number.isFinite(reps) && Number.isFinite(dist)) sum += reps * dist;
           }
           
-          // Also check for standalone distances like "200 easy" without NxD
-          // Only if this line had no NxD matches
-          if (!/(\\d+)\\s*[x×]\\s*(\\d+)/i.test(line)) {
+          // Also check for standalone distances like "200 easy" without NxD,
+          // but avoid counting Pyramid header lines again.
+          if (!/(\\d+)\\s*[x×]\\s*(\\d+)/i.test(line) && !/pyramid\\s*:/i.test(line)) {
             const standaloneMatch = line.match(/(^|\\s)(\\d{2,5})(\\s*(m|yd|meters|yards))?(\\s|$)/i);
             if (standaloneMatch) {
               const v = Number(standaloneMatch[2]);
@@ -3182,14 +3259,23 @@ app.get("/", (req, res) => {
             const bodyEl = cards.querySelector('[data-set-body="' + String(setIndex) + '"]');
             if (!bodyEl) return;
 
-            // Use original body (with rest) for avoidText matching, display body for distance calc
+            // Use original body (with rest) for avoidText matching. Prefer authoritative section distance
+            // from the generator so reroll never changes the section total (e.g. 900 warm-up stays 900).
             const originalBody = bodyEl.getAttribute("data-original-body") || "";
             const displayBody = bodyEl.textContent || "";
-            const currentDist = computeSetDistanceFromBody(displayBody);
-
-            if (!Number.isFinite(currentDist)) {
-              renderError("Cannot reroll this set", ["Set distance could not be parsed. Ensure it contains NxD segments like 8x50, 4x100, or a single distance like 600."]);
-              return;
+            let currentDist = null;
+            if (window.__lastSectionDists && setIndex >= 1 && window.__lastSectionDists[setIndex - 1] && Number.isFinite(window.__lastSectionDists[setIndex - 1].dist)) {
+              currentDist = window.__lastSectionDists[setIndex - 1].dist;
+            }
+            if (currentDist == null) currentDist = computeSetDistanceFromBody(displayBody);
+            if (!Number.isFinite(currentDist) || currentDist <= 0) {
+              const section = sections[setIndex - 1];
+              if (section && Number.isFinite(section.dist) && section.dist > 0) {
+                currentDist = section.dist;
+              } else {
+                renderError("Cannot reroll this set", ["Set distance could not be parsed. Ensure it contains NxD segments like 8x50, 4x100, or a single distance like 600."]);
+                return;
+              }
             }
 
             // Increment reroll counter using persistent Map (survives innerHTML replacement)
@@ -3796,6 +3882,10 @@ app.get("/", (req, res) => {
             return;
           }
           statusPill.textContent = "";
+          // Store section distances so reroll always uses the same section total (avoids wrong distance on multi-line sets)
+          try {
+            window.__lastSectionDists = (data.sectionDists && Array.isArray(data.sectionDists)) ? data.sectionDists : null;
+          } catch (_) { window.__lastSectionDists = null; }
           // STEP 1: Setup title and cards for fade-in (both invisible initially)
           const nameDisplayEl = document.getElementById("workoutNameDisplay");
           const nameText = document.getElementById("workoutNameText");
@@ -3929,12 +4019,20 @@ app.get("/", (req, res) => {
 
       function showPremiumOverlay() {
         var existing = document.getElementById('premium-overlay');
+        // Temporarily hide bottom banner while the Premium overlay is visible so
+        // the back button cannot be obscured.
+        var banner = document.getElementById('adBanner');
+        if (banner) {
+          banner.dataset.prevDisplay = banner.style.display || '';
+          banner.style.display = 'none';
+        }
         if (existing) { existing.style.opacity = '1'; existing.style.display = 'flex'; return; }
         var overlay = document.createElement('div');
         overlay.id = 'premium-overlay';
-        overlay.style.cssText = 'position:fixed; inset:0; z-index:99997; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s ease;';
+        overlay.style.cssText = 'position:fixed; inset:0; z-index:99997; background:rgba(0,0,0,0.5); display:flex; align-items:flex-start; justify-content:center; padding-top:30px; box-sizing:border-box; opacity:0; transition:opacity 0.2s ease;';
         overlay.innerHTML =
-          '<div class="glassPanel" style="max-width:600px; width:90%; margin:0 auto; padding:25px; background:#f0f4f8; border-radius:16px; max-height:85vh; overflow-y:auto;">' +
+        '<div class="glassPanel" style="max-width:600px; width:90%; margin:0 auto; padding:65px 25px 240px; background:#f0f4f8; border-radius:16px; max-height:85vh; overflow-y:auto;">' +
+          '<button id="premium-back-top-btn" type="button" style="width:100%; padding:12px; margin-bottom:10px; background:#0055aa; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Back to Generator</button>' +
             '<h1 style="margin-top:0;">✨ Premium Options</h1>' +
             '<p>We are currently developing a suite of powerful features for competitive and fitness swimmers. Here is what we are considering for the Premium release:</p>' +
             '<ul style="padding-left:20px;">' +
@@ -3945,11 +4043,12 @@ app.get("/", (req, res) => {
               '<li><strong>Workout History:</strong> Save your favorite sessions and track your total yardage over time.</li>' +
               '<li><strong>Stroke Focus:</strong> Generate workouts specifically for IM, Distance Free, or Sprint Fly.</li>' +
             '</ul>' +
-            '<hr style="border:0; border-top:1px solid #ccc; margin:16px 0 10px;">' +
-            '<p style="font-size:14px; margin-bottom:10px;">If you mainly want a cleaner experience, you will also be able to purchase a simple <strong>Remove Ads</strong> option to turn off banners and welcome ads and help support SwimSum.</p>' +
+          '<hr style="border:0; border-top:1px solid #ccc; margin:16px 0 10px;">' +
+          '<p style="font-size:14px; margin-bottom:10px;">If you mainly want a cleaner experience, you will also be able to purchase a simple <strong>Remove Ads</strong> option to turn off banners and welcome ads. This only removes ads; future premium features will be separate.</p>' +
             '<button id="premium-remove-ads-btn" type="button" style="width:100%; padding:10px; background:#1e3a8a; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-bottom:10px;">Prefer just to remove ads?</button>' +
             '<p style="font-size:14px;">Want to influence development? <a href="https://groups.google.com/g/swimsum" target="_blank" rel="noopener" style="color:#0055aa; font-weight:bold;">Join our Google Group and share your ideas!</a></p>' +
-            '<button id="premium-back-btn" type="button" style="width:100%; padding:12px; background:#0055aa; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Back to Generator</button>' +
+          '<button id="premium-back-btn" type="button" style="width:100%; padding:12px; background:#0055aa; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Back to Generator</button>' +
+          '<div style="height:180px;"></div>' +
           '</div>';
         document.body.appendChild(overlay);
         void overlay.offsetWidth;
@@ -3961,14 +4060,22 @@ app.get("/", (req, res) => {
             showRemoveAdsPlaceholder();
           }
         });
-        document.getElementById('premium-back-btn').addEventListener('click', function() {
+        var handleClosePremium = function() {
           overlay.style.opacity = '0';
-          setTimeout(function() { overlay.style.display = 'none'; }, 200);
-        });
+          setTimeout(function() {
+            overlay.style.display = 'none';
+            var banner = document.getElementById('adBanner');
+            if (banner) banner.style.display = banner.dataset.prevDisplay || '';
+          }, 200);
+        };
+        document.getElementById('premium-back-btn').addEventListener('click', handleClosePremium);
+        var backTopBtn = document.getElementById('premium-back-top-btn');
+        if (backTopBtn) {
+          backTopBtn.addEventListener('click', handleClosePremium);
+        }
         overlay.addEventListener('click', function(e) {
           if (e.target === overlay) {
-            overlay.style.opacity = '0';
-            setTimeout(function() { overlay.style.display = 'none'; }, 200);
+            handleClosePremium();
           }
         });
       }
@@ -4953,17 +5060,17 @@ ${HOME_JS_CLOSE}
 <div id="adBanner" class="perpetual-banner" style="position:relative; width:100%; min-height:76px; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:10px 60px 12px; box-sizing:border-box; z-index:9999; border-top:2px solid rgba(96,165,250,0.4); box-shadow:0 -6px 20px rgba(0,0,0,0.35);">
   <div id="admob-container" style="width:100%; display:none;"></div>
   <div id="fakeAdFallback" style="display:flex; flex-direction:column; gap:4px;">
-    <div id="fakeAdContent" style="font-weight:800; color:#93c5fd; letter-spacing:0.5px; font-size:12px;">Please consider purchasing Remove Ads to support SwimSum.</div>
-    <div id="fakeAdSubline" style="font-size:10px; color:#cbd5e1; font-weight:500;">This turns off the ads and helps us keep improving SwimSum and exploring premium options for the future.</div>
+    <div id="fakeAdContent" style="font-weight:800; color:#93c5fd; letter-spacing:0.5px; font-size:12px;">Please consider purchasing Remove Ads to support SwimSum and enjoy an ad-free experience.</div>
+    <div id="fakeAdSubline" style="font-size:10px; color:#cbd5e1; font-weight:500;">Remove Ads turns off the ads only; it does not unlock future premium features.</div>
   </div>
   <button type="button" id="removeAdsCta" style="position:absolute; top:50%; right:12px; transform:translateY(-50%); background:rgba(255,255,255,0.9); color:#1e3a8a; border:none; border-radius:4px; padding:5px 12px; font-size:10px; font-weight:900; cursor:pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">REMOVE ADS</button>
-  <button type="button" id="dev-toggle-remove-ads" style="position:absolute; bottom:6px; left:12px; padding:3px 6px; font-size:9px; border-radius:4px; border:1px solid rgba(148,163,184,0.8); background:rgba(15,23,42,0.75); color:#e5e7eb; cursor:pointer; opacity:0.75; ${process.env.NODE_ENV === 'production' ? 'display:none;' : ''}">DEV: Toggle Remove Ads</button>
+  <button type="button" id="dev-toggle-remove-ads" style="position:absolute; bottom:6px; left:12px; padding:3px 6px; font-size:9px; border-radius:4px; border:1px solid rgba(148,163,184,0.8); background:rgba(15,23,42,0.75); color:#e5e7eb; cursor:pointer; opacity:0.75; ${process.env.NODE_ENV === 'production' ? 'display:none;' : ''}">DEV: Ads test toggle</button>
 </div>
 </div>
 <div id="supportAfterAdModal" style="display:none; position:fixed; inset:0; z-index:10002; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
   <div style="background:linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border-radius:16px; padding:24px; max-width:360px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.5);">
     <h3 style="margin:0 0 12px; font-size:18px; font-weight:700; color:#0f172a;">Support SwimSum</h3>
-    <p style="margin:0 0 16px; font-size:14px; line-height:1.45; color:#334155;">Thanks for using the app. Please consider purchasing Remove Ads to turn off the banner and welcome ad and help us keep improving SwimSum and exploring premium options for the future. Join our Google Group to discuss ideas and help steer what we build next.</p>
+    <p style="margin:0 0 16px; font-size:14px; line-height:1.45; color:#334155;">Thanks for using the app. Please consider purchasing Remove Ads to turn off the banner and welcome ad and help us keep improving SwimSum. This purchase only removes ads and does not include future premium features. Join our Google Group to discuss ideas and help steer what we build next.</p>
     <div style="display:flex; flex-direction:column; gap:10px;">
       <button type="button" id="supportModalRemoveAdsBtn" style="width:100%; padding:12px; background:#1e3a8a; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer;">Remove ads (support SwimSum)</button>
       <a id="supportModalGoogleGroupLink" href="https://groups.google.com/g/swimsum" target="_blank" rel="noopener" style="display:block; text-align:center; font-size:13px; color:#2563eb; font-weight:600;">Join the discussion (Google Group)</a>
@@ -4974,6 +5081,10 @@ ${HOME_JS_CLOSE}
 <script>
 (function() {
   var HAS_REMOVE_ADS_KEY = 'swimsum_has_remove_ads';
+  // Google Play subscription product ID for the yearly Remove Ads entitlement.
+  // Native billing code should use this SKU when granting/removing access and
+  // call window.setSwimsumRemoveAds(true/false) accordingly.
+  var REMOVE_ADS_SUBSCRIPTION_ID = 'remove_ads_yearly';
   var hasRemoveAds = false;
   var IS_PRODUCTION_BUILD = ${process.env.NODE_ENV === 'production' ? 'true' : 'false'};
   try {
@@ -5090,8 +5201,16 @@ ${HOME_JS_CLOSE}
         var container = document.getElementById('admob-container');
         if (container) container.style.display = 'block';
 
-        // Welcome interstitial – temporarily ungated for easier testing (still once per session)
-        var showInterstitialThisSession = ENABLE_INTERSTITIAL && INTERSTITIAL_AD_ID;
+        // Welcome interstitial – only after user has seen the tutorial animation at least twice
+        // (so the ad does not cover the first two play-throughs)
+        var onboardingRuns = 0;
+        try {
+          onboardingRuns = parseInt(localStorage.getItem('swimsum_onboarding_runs') || '0', 10);
+          if (!Number.isFinite(onboardingRuns) || onboardingRuns < 0) onboardingRuns = 0;
+        } catch (e) {
+          onboardingRuns = 0;
+        }
+        var showInterstitialThisSession = ENABLE_INTERSTITIAL && INTERSTITIAL_AD_ID && onboardingRuns >= 2;
         if (showInterstitialThisSession) {
           var seen = false;
           try {
@@ -6396,6 +6515,24 @@ app.post("/generate-workout", (req, res) => {
       if (Number.isFinite(reps) && Number.isFinite(dist)) sum += reps * dist;
     }
 
+    // Pyramid-style description, e.g. "Pyramid: 100-200-300-400-300-200-100"
+    if (sum === 0) {
+      const pyramidMatch = t.match(/pyramid\s*:\s*([\d\s\-]+)/i);
+      if (pyramidMatch && pyramidMatch[1]) {
+        const parts = pyramidMatch[1].split(/[-\s]+/).filter(Boolean);
+        let total = 0;
+        for (const part of parts) {
+          const v = Number(part);
+          if (Number.isFinite(v) && v > 0) {
+            total += v;
+          }
+        }
+        if (total > 0) {
+          sum = total;
+        }
+      }
+    }
+
     if (sum === 0) {
       const one = t.match(/(^|\s)(\d{2,5})(\s*(m|yd))?(\s|$)/);
       if (one) {
@@ -7061,8 +7198,24 @@ app.post("/generate-workout", (req, res) => {
     let actualTotal = 0;
     let sectionSeed = seed;
     
+    function clampToConventionalSectionDist(dist, base, labelLower) {
+      if (base !== 25 && base !== 50) return dist;
+      const warmBuild = [200, 300, 400, 500, 600, 800];
+      const buckets = labelLower.includes("cool") ? [200, 300, 400, 500] : (labelLower.includes("warm") || labelLower.includes("build") ? warmBuild : null);
+      if (!buckets) return dist;
+      let best = buckets[0], bestDelta = Math.abs(dist - best);
+      for (const b of buckets) { const d = Math.abs(dist - b); if (d < bestDelta) { best = b; bestDelta = d; } }
+      return snapToPoolMultiple(best, base);
+    }
+
     for (const section of scaled.sections) {
-      const dist = snapToPoolMultiple(section.distance, base);
+      let dist = snapToPoolMultiple(section.distance, base);
+      if (base === 25 || base === 50) {
+        const l = section.label.toLowerCase();
+        if (l.includes("warm") || l.includes("build") || l.includes("cool")) {
+          dist = clampToConventionalSectionDist(dist, base, l);
+        }
+      }
       sectionSeed = ((sectionSeed * 1103515245 + 12345) >>> 0);
       const labelLower = section.label.toLowerCase();
       const isFixed = labelLower.includes("warm") || labelLower.includes("cool");
@@ -7082,11 +7235,10 @@ app.post("/generate-workout", (req, res) => {
       });
       actualTotal += dist;
     }
-    
+
     // Adjust last section to hit exact total (absorb rounding errors)
     if (actualTotal !== total && sets.length > 0) {
       const delta = total - actualTotal;
-      // Find main to adjust (not cooldown)
       const mainIdx = sets.findIndex(s => s.label.toLowerCase().includes("main"));
       const adjustIdx = mainIdx >= 0 ? mainIdx : sets.length - 2;
       if (adjustIdx >= 0) {
@@ -7099,28 +7251,30 @@ app.post("/generate-workout", (req, res) => {
         }
       }
     }
-    
-    // Apply sensible cooldown calculation to override template cooldown
+
+    // Conventional cooldown for 25/50: 200, 300, 400, 500 only; rebalance main so total is exact
     const cooldownIdx = sets.findIndex(s => s.label.toLowerCase().includes("cool"));
-    if (cooldownIdx >= 0) {
-      const sensibleCool = calculateSensibleCoolDown(total, base);
+    if (cooldownIdx >= 0 && (base === 25 || base === 50)) {
+      const conventionalCool = [200, 300, 400, 500];
+      const sensibleTarget = calculateSensibleCoolDown(total, base);
+      let chosenCool = conventionalCool[0];
+      let bestDelta = Math.abs(sensibleTarget - chosenCool);
+      for (const c of conventionalCool) {
+        const d = Math.abs(sensibleTarget - c);
+        if (d < bestDelta) { chosenCool = c; bestDelta = d; }
+      }
+      chosenCool = snapToPoolMultiple(chosenCool, base);
       const currentCool = sets[cooldownIdx].dist;
-      const diff = currentCool - sensibleCool;
-      
-      // Only adjust if difference is significant
-      if (Math.abs(diff) > base * 2) {
-        // Find main section to redistribute
-        const mainIdx = sets.findIndex(s => s.label.toLowerCase().includes("main"));
-        if (mainIdx >= 0) {
-          const newMainDist = snapToPoolMultiple(sets[mainIdx].dist + diff, base);
-          // Guard: Only adjust if main stays above minimum (400m)
-          if (newMainDist >= 400) {
-            sets[cooldownIdx].dist = sensibleCool;
-            sets[cooldownIdx].body = generateSimpleBody(sensibleCool, "Cool down", base);
-            sets[mainIdx].dist = newMainDist;
-            if (!useOriginalDesc) {
-              sets[mainIdx].body = generateSimpleBody(newMainDist, sets[mainIdx].label, base);
-            }
+      const diff = currentCool - chosenCool;
+      const mainIdx = sets.findIndex(s => s.label.toLowerCase().includes("main"));
+      if (mainIdx >= 0 && diff !== 0) {
+        const newMainDist = snapToPoolMultiple(sets[mainIdx].dist + diff, base);
+        if (newMainDist >= 400) {
+          sets[cooldownIdx].dist = chosenCool;
+          sets[cooldownIdx].body = generateSimpleBody(chosenCool, "Cool down", base);
+          sets[mainIdx].dist = newMainDist;
+          if (!useOriginalDesc) {
+            sets[mainIdx].body = generateSimpleBody(newMainDist, sets[mainIdx].label, base);
           }
         }
       }
