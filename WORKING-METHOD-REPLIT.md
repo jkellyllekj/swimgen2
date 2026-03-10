@@ -312,6 +312,48 @@ The project’s designated project state file is the memory. The handover and pr
 Stability note
 This document should change rarely. The project’s designated project state file changes often. If this document needs to change, it should be discussed and agreed deliberately.
 
+============================================================================
+
+Cursor / Android Studio Collaboration Notes (2026-03-10)
+These notes capture how we are currently working together in the local Cursor + Android Studio environment. They do not replace the rules above; they clarify practical roles so future sessions can resume smoothly.
+
+Roles:
+- Human:
+  - Owns Google Play Console, Firebase Console, and any web-hosted privacy policy pages.
+  - Runs Android Studio, generates signed App Bundles (AABs), and uploads them to Play Console.
+  - Performs manual device tests (installing from closed testing, checking billing dialogs, and verifying UI behaviour on real hardware).
+- Assistant (in Cursor):
+  - Owns code-level changes inside the repo when in Agent mode (Java/JS/Gradle, Capacitor configuration, analytics wiring, etc.).
+  - Runs local Node/Capacitor build commands (e.g. `npm run build`, `npx cap sync android`) as needed to keep `www/` and `android/app/src/main/assets/public` in sync.
+  - Updates `project-state.md` at Pause In Action points with what was done, current state, and next steps.
+
+Android build protocol (Cursor + Android Studio):
+- Assistant:
+  - Ensures `android/app/build.gradle` has the correct `versionCode` / `versionName` for each new build.
+  - Runs `npm run build` and then `npx cap sync android` from the project root whenever JS/HTML/CSS changes need to be reflected in the Android assets.
+  - Documents any required Gradle or plugin changes in `project-state.md`.
+- Human:
+  - Opens the **inner** `android` folder in Android Studio (as documented in project-state).
+  - Lets Gradle sync fully, resolving any Android Studio UI prompts with guidance from the assistant when necessary.
+  - Uses **Build → Generate Signed Bundle / APK → Android App Bundle** to produce the release AAB with the existing keystore.
+  - Uploads the AAB to the desired Play Console track (internal or closed testing) and monitors Google’s review.
+
+Testing patterns:
+- Local installs (Android Studio “Run” button):
+  - Used for quick sanity checks (UI layout, workout generation, reroll/delete behaviour, ad layout) even if Google Play Billing will reject purchases due to signature mismatch.
+  - Assistant may read Logcat output (pasted into chat) to diagnose native plugin crashes or silent failures.
+- Play-signed installs (closed testing):
+  - Required to validate Google Play Billing and any server-side Play Console configuration (subscriptions, pricing, availability).
+  - Also preferred for validating analytics events (Firebase Analytics DebugView) using a real Play-distributed build.
+
+Pause In Action in this environment:
+- When the human asks for a "Pause In Action":
+  - Assistant updates `project-state.md` with:
+    - The current app version and key changes since the last version section.
+    - Billing and analytics status (what works, what still depends on Play configuration or production-only behaviour).
+    - The next 2–3 concrete steps for the human (e.g., generate signed bundle, upload to closed testing, test specific flows) and for the next agent session (e.g., refine gradients, adjust premium page padding, extend analytics).
+  - Assistant provides a short handover summary in chat that can be used as a starting brief for the next session.
+
 CSS & Layout Architecture Locks (2026-02-22)
 The following CSS geometry values have been device-tested on Samsung S24+ and are locked. Do not modify without physical device verification.
 

@@ -53,7 +53,63 @@ POST-LAUNCH ENHANCEMENTS (V1.1+):
 Project: SwimSum - Swim Workout Generator
 Working title(s): SwimSum (final name)
 
-Last updated: 2026-03-03
+Last updated: 2026-03-05
+
+### Version and release (2026-03-05)
+- **Version 1.0.12 (versionCode 34)** – closed-testing build with hardened auth, improved gradients, and initial AdMob/Billing wiring. In `android/app/build.gradle`: versionCode 34, versionName "1.0.12".
+- **Closed testing:** A release must have an app bundle **attached** (Add app bundle / Upload). If the release shows "No app bundles have been added" or "Available on 0 devices", add the new AAB to that release and roll out again.
+- **Gradient blend:** In `index.js` `gradientStyleForZones`, stripe bands use ±22% and stepped bands use ~35% overlap so colours visibly blend instead of hard stripes.
+- **Ads:** Test ads are default (`TEST_ADS` true). For production/real ads, build with `TEST_ADS=false` (e.g. set env or build flag). Production IDs are in code (BANNER_PROD_ID, INTERSTITIAL_PROD_ID). Remove Ads subscription not yet purchasable; Play Billing dependency added, purchase flow still TODO.
+- **Connect phone to Android Studio (wireless):** Pairing by QR/code has not worked; use **same hotspot** (PC and phone on same hotspot). Wireless debugging port changes each time – in Developer options note the IP:port (e.g. 192.168.0.16:44271). Run: `adb connect <IP>:<port>` (requires Android SDK Platform Tools / `adb` on PATH). If `adb` not found, install Platform Tools and add to PATH.
+
+### Version and release (2026-03-10 – Billing + Analytics)
+- **Current Version: 1.0.13 (versionCode 35)** – Android `app` module now sets `versionCode 35`, `versionName "1.0.13"`. This is the first build with working Google Play Billing integration for the `remove_ads_yearly` subscription plus Firebase Analytics wiring.
+- **Billing (Remove Ads):**
+  - Native `BillingBridge` plugin refactored to use a single `activePurchaseCall` and to supply the **subscription offer token** when launching the billing flow (required for Play Billing v5+).
+  - `purchaseRemoveAds` and `checkRemoveAdsEntitlement` both fully resolve or reject their `PluginCall`s; entitlement checks query Play purchases and return `hasRemoveAds` to JS.
+  - On device, `index.js` calls `BillingBridge.purchaseRemoveAds()` from all Remove Ads entry points; on success it sets `hasRemoveAds` and thanks the user, on failure it shows an explanatory message.
+  - Current behaviour: Play billing UI now appears and works correctly **only for Play-signed builds installed from the test track**. Locally installed (Android Studio) builds still show “This version of the application is not configured for billing” / “Purchase failed” – this is expected and due to signature mismatch, not a code bug.
+  - Entitlement sync on startup: `syncEntitlementFromBilling()` runs once on app load and calls `BillingBridge.checkRemoveAdsEntitlement()` to align local `hasRemoveAds` state with any active Play subscription on the device.
+- **Analytics (Firebase Analytics via AnalyticsBridge):**
+  - Added `implementation 'com.google.firebase:firebase-analytics'` under the existing Firebase BOM in `android/app/build.gradle`.
+  - New native Capacitor plugin `AnalyticsBridge` (`android/app/src/main/java/com/creativearts/swimsum/AnalyticsBridge.java`) wraps `FirebaseAnalytics` and exposes three methods to JS:
+    - `setUserId({ userId })` – sets the Firebase Analytics `user_id` (we pass in the Firebase Auth UID).
+    - `setUserProperty({ name, value })` – sets GA4 user properties (e.g. `subscription_status`).
+    - `logEvent({ name, ...params })` – logs events, coercing extra params to strings in a `Bundle`.
+  - `MainActivity` now registers `AnalyticsBridge` alongside `AuthBridge` and `BillingBridge` so it is available in the WebView.
+  - In `index.js` we added a small analytics wrapper:
+    - `trackEvent(name, params)` – no-op in the browser; on-device calls `AnalyticsBridge.logEvent({ name, ...params })` and swallows any errors so UX is never broken by logging.
+    - `trackSetUserId(uid)` – called when auth resolves a user; sets the analytics `user_id` to the Firebase Auth UID.
+    - `trackSetUserProperty(key, value)` – used to keep a high-level `subscription_status` user property in sync (`free` vs `remove_ads`).
+  - Key events and properties now instrumented:
+    - On boot: `app_open` with params `{ signed_in: true/false, environment: 'capacitor'|'web' }` fires once when `authReadyPromise` resolves.
+    - Workout generation: `generate_workout` with pool length (custom vs standard), unit, target distance, focus, and whether kick/pull are included.
+    - Rerolls: `reroll_section` with section index, label, target distance, and cumulative `reroll_count` per section.
+    - Deletions: `delete_section` with section index and label whenever a card is deleted.
+    - Monetisation funnel:
+      - `remove_ads_cta_clicked` with `source: 'premium_page'` or `source: 'support_after_interstitial'` when the user taps Remove Ads from those entry points.
+      - `remove_ads_flow_opened` when the JS billing flow is about to call into native billing.
+      - `remove_ads_purchase_success` when a Remove Ads purchase resolves with `hasRemoveAds=true`.
+      - `remove_ads_purchase_failed` with a `reason` string when Play rejects the purchase or when the entitlement cannot be confirmed.
+  - User properties:
+    - `subscription_status` is kept in sync with the local `hasRemoveAds` flag (`'remove_ads'` vs `'free'`) via `trackSetUserProperty` inside `setHasRemoveAds`.
+    - Analytics `user_id` is set to the anonymous Firebase Auth UID (no email/name stored as analytics properties).
+- **Build + Capacitor sync:**
+  - `npm run build` generates a fresh `www/` bundle (index, styles, assets, offline-engine) and confirms the web app remains self-contained.
+  - `npx cap sync android` was run from the project root so `android/app/src/main/assets/public` now contains the latest web build, and `capacitor.config.json` is refreshed.
+  - Android Studio can generate the signed AAB for closed testing directly from the current `android` project without additional CLI steps.
+- **Analytics validation plan:**
+  - Use Firebase Console → Analytics → **DebugView** with `adb shell setprop debug.firebase.analytics.app com.creativearts.swimsum` to verify events from a real device.
+  - Confirm that `app_open`, `generate_workout`, `reroll_section`, `delete_section`, and the Remove Ads funnel events appear with reasonable parameters and that `user_id` matches the Firebase Auth UID when signed in.
+- **Data safety + privacy (next steps, not blocking closed testing):**
+  - Current closed-testing builds may ship before updating Data Safety again; before **production** we must confirm:
+    - In Play Console → App content → Data safety: “App activity/Usage data” and “Identifiers” are marked as collected for **Analytics/Product improvement** and **not required for app functionality**, and as **not shared** beyond Google services.
+    - Privacy policy text (hosted on the SwimSum site / Google Sites) includes a short statement noting we use Firebase Analytics to collect anonymized usage data (country, app usage frequency, workout generation behaviour, subscription events) to improve SwimSum and that we do not store names/emails as analytics properties.
+- **Immediate next step (March 2026 Pause In Action):**
+  - Human will generate a new **signed AAB** from Android Studio for version **1.0.13 (35)** and upload it to the **closed testing** track in Play Console. Once processed, install from the Play Store test link on a physical device and re-test:
+    - Remove Ads purchase flow (billing dialog appears, purchase succeeds with no “not configured for billing” error when using the Play-signed build and correct test account).
+    - Ads behaviour (test vs production IDs as configured).
+    - Analytics events visible in Firebase DebugView from the Play-signed build.
 
 ### Conventional comparison (2026-03-03)
 - **Phase 1:** Corpus built in `research/outputs/conventional-corpus.json` (62 workouts from USMS article fetch + curated seed). Analysis produced `research/outputs/conventional-rules.json` (distance buckets for 25m/25yd and 50m; allowed main/kick/drill rep patterns). Comparison script `research/compare-generator.js` runs the generator vs rules and writes `research/outputs/conventional-violation-report.json`.
@@ -61,7 +117,7 @@ Last updated: 2026-03-03
 - **Phase 3:** Version bumped to 1.0.10 (versionCode 32). `npm run build` and `npx cap sync android` completed. Gradle `bundleRelease` failed with “invalid source release: 21” (JDK). To produce the AAB: use JDK 21 and run `cd android && .\gradlew.bat bundleRelease`, or in Android Studio: Build → Generate Signed Bundle / APK → Android App Bundle, choose release, sign with your keystore. AAB output path: `android/app/build/outputs/bundle/release/app-release.aab`. Upload that file to Play Console for closed testing.
 
 Status: Migrated from Replit to local Cursor + Android Studio workspace. GitHub is the Source of Truth. Native Android Google Sign-In implemented via AuthBridge (Firebase). Email+password sign-in implemented with verification emails working and **hard email-gating** enforced (unverified email+password users are kept at the auth gate with clear “verify then sign in again” copy). Heavy splash screen removed in favour of a lightweight logo fly-in and a 4-card onboarding sequence (Step 1–4) that auto-plays twice, then remains as a static instruction stack with a `?` help button to replay the animation. Onboarding instruction cards have been tuned to use slightly desaturated, non-button-like pastels distinct from the main workout cards (colours captured in `colorStyleForEffortOnboarding` in `index.js`). Ad behaviour for v1 Lite is now defined: free users see a bottom Adaptive Banner plus an optional welcome interstitial (once per app session), while users with a `hasRemoveAds` entitlement see no banner and no welcome interstitial. A `hasRemoveAds` entitlement flag exists in the client, wired via localStorage for now; real Play Billing wiring is still TODO. AdMob integration remains test-ID first, with production IDs configured behind a TEST_ADS flag. Testing: Internal/closed testing in progress (second week). Working build protected on branch `cursor-transition`. Generator math and UI are in active refinement for standard pools (25m, 50m, 25yd) with lengths display, drill structure, and reroll behaviour iterated in this cycle.
-Current Version: 1.0.10 (versionCode 32) – version bumped for conventional-comparison cycle; build and cap sync completed; AAB must be built with JDK 21 or via Android Studio (see below).
+Current Version: 1.0.13 (versionCode 35) – see "Version and release (2026-03-10 – Billing + Analytics)" above. AAB should be built via Android Studio (Generate Signed Bundle / APK) using the existing release keystore and uploaded to the Play Console closed testing track.
 
 ### 🏢 BUSINESS & PLAY CONSOLE CREDENTIALS
 * **Organization Name:** CREATIVE ARTS GLOBAL LTD
@@ -253,6 +309,19 @@ For precise debugging, pin index.js to a commit permalink when investigating a b
 - **Play Console:** latest closed‑testing release has been submitted and is awaiting Google review; once approved we can invite more testers and gauge real‑world behaviour (auth friction, onboarding clarity, lock button usefulness, icon appearance, and ad intrusiveness).
 - **Next focus for future chats:** return to the **math and logic** inside the generator (pace/interval reasoning, set composition, edge cases for distances) and the **Advanced options** surface (strokes, equipment, templates) which are still roughly wired but not final. The v1 Lite app is shippable today, but we want v1.1+ to have more polished, coach‑plausible logic and clearer options.
 - **Reminder to future agent:** do **not** abridge this file; only append / update sections with precise patches. Follow the existing Android build protocol (npm run build → npx cap copy android → Android Studio signed bundle) and the “Launcher Icon & Branding Workflow” section if the S‑logo or icon assets are touched again.
+
+### Handoff note – 2026‑03‑02 (Billing + Analytics regression)
+
+- **Current build on device:** 1.0.13 (versionCode 35) with Google Play Billing + Firebase Analytics wiring in place as described in “Version and release (2026‑03‑10 – Billing + Analytics)”, but the **Remove Ads** purchase flow is still effectively broken in practice.
+- **Symptom:** All “Remove Ads” entry points (premium page buttons, support banner CTA, etc.) currently **do nothing visible** on device; Google Play’s purchase dialog is never shown and no entitlement is granted. Logcat repeatedly reports `ReferenceError: trackEvent is not defined` from `index.js` (around the billing/analytics funnel code, latest seen near line 4443).
+- **Root cause (current understanding):** Analytics instrumentation for the Remove Ads funnel was added on top of the billing wiring using a `trackEvent` helper defined inside one IIFE and (intended to be) exposed as `window.trackEvent`. However, several billing‑related call sites still execute in a different IIFE/scope and invoke a bare `trackEvent(...)`. On real devices, those call sites throw a `ReferenceError` before reaching the Capacitor billing bridge, so **analytics failures are blocking the billing UI entirely**.
+- **Attempts this session (all failed):** Introduced a `globalThis.trackEvent` shim at the very top of `index.js`, explicitly assigned `window.trackEvent = trackEvent` at the definition site, and then updated billing‑related code paths to call `window.trackEvent` behind `typeof window.trackEvent === 'function'` guards. Despite these changes, Logcat still shows `ReferenceError: trackEvent is not defined` for the Remove Ads paths and the UI remains inert, suggesting that at least one billing/CTA code path is still invoking an unscoped `trackEvent(...)` or running before the analytics helper is initialised in the WebView.
+- **What is known to work:** Outside of this Remove Ads regression, Firebase Analytics is otherwise wired and events such as `app_open`, `generate_workout`, and reroll/delete events have been observed in DebugView from earlier builds. The native `BillingBridge` plugin compiles and, in earlier iterations, the Play billing sheet could be reached from a Play‑signed build when called directly without analytics wrappers. The current blocker is **JavaScript scoping/initialisation order** in `index.js`, not Play Console SKU configuration.
+- **Next steps for the next agent:**
+  - Open `index.js` and locate **all** references to `trackEvent` and `window.trackEvent`, especially inside the Remove Ads funnel (`startRemoveAdsPurchase`, premium page CTAs, interstitial support CTAs, and any shared helpers). Replace or wrap any remaining bare `trackEvent(...)` calls so that (a) they cannot throw if analytics is missing, and (b) they never prevent the call into `BillingBridge.purchaseRemoveAds()` / `BillingBridge.checkRemoveAdsEntitlement()`. It is acceptable to temporarily **no‑op analytics in these flows** to unblock billing.
+  - Verify via a local debug build that tapping any Remove Ads button at least logs console output and reaches the Capacitor billing bridge (even if Play Billing subsequently rejects the purchase in a debug‑signed build). The key is that **JS errors must no longer occur before the native call**.
+  - Once JS scoping is fixed, rebuild (`npm run build` → `npx cap sync android`) and then generate a new Play‑signed AAB for 1.0.13 (or bump to 1.0.14) so the human can re‑test on a closed‑testing install. Only after the purchase dialog reliably appears and resolves should analytics events (`remove_ads_cta_clicked`, `remove_ads_flow_opened`, `remove_ads_purchase_success` / `failed`) be carefully re‑enabled around the billing calls with hardened guards.
+  - Keep this section **unabridged** and append any future findings here; do not delete prior notes about the billing/analytics integration even if the underlying bug is later fixed.
 
 ============================================================================ WORKOUT STRUCTURE RULES
 Standard section order:
