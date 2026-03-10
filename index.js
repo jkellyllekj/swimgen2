@@ -1,3 +1,46 @@
+// Global analytics shim to prevent ReferenceError before analytics is loaded.
+// This is intentionally very early so any later calls to trackEvent(...) or the
+// other helpers will at worst no-op instead of breaking flows like billing.
+if (typeof globalThis !== 'undefined') {
+  if (typeof globalThis.trackEvent !== 'function') {
+    globalThis.trackEvent = function () { /* no-op until analytics wires in */ };
+  }
+  if (typeof globalThis.trackSetUserId !== 'function') {
+    globalThis.trackSetUserId = function () { /* no-op */ };
+  }
+  if (typeof globalThis.trackSetUserProperty !== 'function') {
+    globalThis.trackSetUserProperty = function () { /* no-op */ };
+  }
+  // Global, non-throwing analytics helper used throughout the app.
+  if (typeof globalThis.safeTrackEvent !== 'function') {
+    globalThis.safeTrackEvent = function safeTrackEventGlobal(name, params) {
+      try {
+        if (typeof globalThis.trackEvent === 'function') {
+          globalThis.trackEvent(name, params || {});
+        }
+      } catch (e) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('trackEvent failed in safeTrackEvent', e);
+        }
+      }
+    };
+  }
+}
+
+// Ensure global identifiers exist so bare trackEvent(...) / safeTrackEvent(...) never throw.
+// These delegate to globalThis.safeTrackEvent, which is always defined above.
+function trackEvent(name, params) {
+  if (typeof globalThis !== 'undefined' && typeof globalThis.safeTrackEvent === 'function') {
+    globalThis.safeTrackEvent(name, params);
+  }
+}
+
+function safeTrackEvent(name, params) {
+  if (typeof globalThis !== 'undefined' && typeof globalThis.safeTrackEvent === 'function') {
+    globalThis.safeTrackEvent(name, params);
+  }
+}
+
 /**
  * Swim Workout Generator v1
  * Node + Express single-file app
@@ -2702,10 +2745,9 @@ app.get("/", (req, res) => {
           const barStops = [];
           for (let i = 0; i < n; i++) {
             const pos = n === 1 ? 0 : (i * 100) / (n - 1);
-            // Use a wider band (~24% width) around each stripe center so
-            // neighbouring colours blend over roughly 20% of the space.
-            const start = Math.max(0, Math.round(pos - 12));
-            const end = Math.min(100, Math.round(pos + 12));
+            // Wide band (~44% width) so neighbouring colours visibly blend, not hard stripes.
+            const start = Math.max(0, Math.round(pos - 22));
+            const end = Math.min(100, Math.round(pos + 22));
             bgStops.push(colors[i].bg + ' ' + start + '%', colors[i].bg + ' ' + end + '%');
             barStops.push(colors[i].bar + ' ' + start + '%', colors[i].bar + ' ' + end + '%');
           }
@@ -2727,7 +2769,7 @@ app.get("/", (req, res) => {
           const baseStart = (i * 100) / n;
           const baseEnd = i < n - 1 ? ((i + 1) * 100) / n : 100;
           const segmentWidth = 100 / n;
-          const margin = segmentWidth * 0.2; // ~20% overlap into neighbours
+          const margin = segmentWidth * 0.35; // ~35% overlap so bands visibly blend, not hard lines
           const start = Math.max(0, Math.round(baseStart - margin));
           const end = Math.min(100, Math.round(baseEnd + margin));
           bgStops.push(colors[i].bg + ' ' + start + '%', colors[i].bg + ' ' + end + '%');
@@ -3282,6 +3324,16 @@ app.get("/", (req, res) => {
             const prevCount = rerollCountMap.get(setIndex) || 0;
             const rerollCount = prevCount + 1;
             rerollCountMap.set(setIndex, rerollCount);
+
+            try {
+              const sectionMeta = sections[setIndex - 1] || {};
+              globalThis.safeTrackEvent('reroll_section', {
+                section_index: setIndex,
+                section_label: sectionMeta.label || '',
+                target_distance: currentDist,
+                reroll_count: rerollCount
+              });
+            } catch (e2) {}
 
             if (btn.dataset.busy === "1") return;
             btn.dataset.busy = "1";
@@ -3874,6 +3926,16 @@ app.get("/", (req, res) => {
 
           const workoutText = String(data.workoutText || "").trim();
           const workoutName = String(data.workoutName || "").trim();
+          try {
+            globalThis.safeTrackEvent('generate_workout', {
+              pool_length: isCustom ? payload.customPoolLength : payload.poolLength,
+              pool_unit: isCustom ? (payload.poolLengthUnit || "meters") : "meters",
+              target_distance: payload.totalDistance || null,
+              focus: payload.focus || "allround",
+              include_kick: !!payload.includeKick,
+              include_pull: !!payload.includePull
+            });
+          } catch (e) {}
 
           if (!workoutText) {
             dolphinAnimFinish(dolphinLoader, [regenDolphin], generateBtn);
@@ -4053,13 +4115,23 @@ app.get("/", (req, res) => {
         document.body.appendChild(overlay);
         void overlay.offsetWidth;
         overlay.style.opacity = '1';
-        document.getElementById('premium-remove-ads-btn').addEventListener('click', function() {
-          if (typeof window.showRemoveAdsPlaceholder === 'function') {
-            window.showRemoveAdsPlaceholder();
-          } else if (typeof showRemoveAdsPlaceholder === 'function') {
-            showRemoveAdsPlaceholder();
-          }
-        });
+        var premiumRemoveAdsBtn = document.getElementById('premium-remove-ads-btn');
+        if (premiumRemoveAdsBtn) {
+          premiumRemoveAdsBtn.addEventListener('click', function() {
+            try {
+              try {
+                alert('Starting Remove Ads purchase…');
+              } catch (eAlert) {
+                console.log('Premium Remove Ads button clicked');
+              }
+              startRemoveAdsPurchase();
+            } catch (e) {
+              try {
+                showRemoveAdsMessage('Remove Ads purchase could not be started: ' + (e && e.message ? e.message : String(e)));
+              } catch (_) {}
+            }
+          });
+        }
         var handleClosePremium = function() {
           overlay.style.opacity = '0';
           setTimeout(function() {
@@ -4270,6 +4342,12 @@ app.get("/", (req, res) => {
         if (isAnimatingSetAction) return;
         if (!currentWorkoutArray || !currentWorkoutArray[index]) return;
         const setRef = currentWorkoutArray[index];
+        try {
+          globalThis.safeTrackEvent('delete_section', {
+            section_index: index,
+            section_label: setRef && setRef.label ? setRef.label : ''
+          });
+        } catch (e) {}
         const card = document.querySelector('[data-effort][data-index="' + index + '"]');
         if (card) {
           isAnimatingSetAction = true;
@@ -4697,11 +4775,80 @@ app.get("/", (req, res) => {
 (function() {
   var isCapacitor = typeof window.Capacitor !== 'undefined';
 
+  function getCapacitorPlugins() {
+    return (window.Capacitor && window.Capacitor.Plugins) || window.CapacitorPlugins || {};
+  }
+
+  function nativeAnalytics() {
+    if (!isCapacitor) return null;
+    var plugins = getCapacitorPlugins();
+    return plugins.AnalyticsBridge || plugins.analyticsBridge || null;
+  }
+
+  function trackEvent(name, params) {
+    try {
+      if (!name) return;
+      var analytics = nativeAnalytics();
+      if (!analytics || typeof analytics.logEvent !== 'function') return;
+      var payload = Object.assign({ name: String(name) }, params || {});
+      analytics.logEvent(payload);
+    } catch (e) {
+      // Swallow analytics errors – never break UX for logging.
+    }
+  }
+
+  function trackSetUserId(uid) {
+    try {
+      if (!uid) return;
+      var analytics = nativeAnalytics();
+      if (!analytics || typeof analytics.setUserId !== 'function') return;
+      analytics.setUserId({ userId: String(uid) });
+    } catch (e) {
+      // Ignore analytics failures.
+    }
+  }
+
+  function trackSetUserProperty(key, value) {
+    try {
+      if (!key) return;
+      var analytics = nativeAnalytics();
+      if (!analytics || typeof analytics.setUserProperty !== 'function') return;
+      analytics.setUserProperty({ name: String(key), value: value != null ? String(value) : null });
+    } catch (e) {
+      // Ignore analytics failures.
+    }
+  }
+
+  // Ensure analytics helpers are available globally so that any
+  // event handlers or scripts outside this closure can call them
+  // without throwing ReferenceError and breaking core flows (like billing).
+  if (typeof window !== 'undefined') {
+    if (typeof window.trackEvent !== 'function') {
+      window.trackEvent = trackEvent;
+    }
+    if (typeof window.trackSetUserId !== 'function') {
+      window.trackSetUserId = trackSetUserId;
+    }
+    if (typeof window.trackSetUserProperty !== 'function') {
+      window.trackSetUserProperty = trackSetUserProperty;
+    }
+  }
+
   // Resolve the current auth user (native or web) with a safety timeout
   var authReadyPromise = new Promise(function(resolve) {
     var resolved = false;
     function done(user) {
-      if (!resolved) { resolved = true; resolve(user || null); }
+      if (!resolved) {
+        resolved = true;
+        if (user && user.uid) {
+          trackSetUserId(user.uid);
+        }
+        trackEvent('app_open', {
+          signed_in: !!(user && user.uid),
+          environment: isCapacitor ? 'capacitor' : 'web'
+        });
+        resolve(user || null);
+      }
     }
     var timeout = setTimeout(function() { done(null); }, 8000);
     try {
@@ -4980,7 +5127,11 @@ app.get("/", (req, res) => {
   }
 
   function showCoachMark() {
-    // Auto-run the onboarding sequence (instruction cards) a limited number of times
+    // Auto-run the onboarding sequence (instruction cards) a limited number of times.
+    // Behaviour:
+    // - Session 1–2: full animated tutorial.
+    // - Session 3–4: static 4-card instructions only.
+    // - Session 5+: no automatic instruction cards (Help button can always replay).
     var runs = 0;
     try {
       runs = parseInt(localStorage.getItem('swimsum_onboarding_runs') || '0', 10);
@@ -4992,13 +5143,19 @@ app.get("/", (req, res) => {
     if (typeof window.runOnboardingSequence !== 'function') return;
 
     if (runs < 2) {
+      // First two sessions: full animated flow.
       try {
         localStorage.setItem('swimsum_onboarding_runs', String(runs + 1));
       } catch (e) {}
       window.runOnboardingSequence({});
-    } else {
-      // From the third session onward, show static instruction cards only
+    } else if (runs < 4) {
+      // Next two sessions: static instruction cards only.
+      try {
+        localStorage.setItem('swimsum_onboarding_runs', String(runs + 1));
+      } catch (e) {}
       window.runOnboardingSequence({ mode: 'static' });
+    } else {
+      // After that, do nothing automatically – user can always tap Help to replay.
     }
   }
 
@@ -5093,6 +5250,25 @@ ${HOME_JS_CLOSE}
     hasRemoveAds = false;
   }
 
+  // On native builds, ask BillingBridge if the user already owns the Remove Ads
+  // subscription and align the local entitlement flag accordingly.
+  (function syncEntitlementFromBilling() {
+    var plugins = (window.Capacitor && window.Capacitor.Plugins) || window.CapacitorPlugins || {};
+    var billing = plugins.BillingBridge || plugins.billingBridge || null;
+    if (!billing || typeof billing.checkRemoveAdsEntitlement !== 'function') return;
+    try {
+      billing.checkRemoveAdsEntitlement().then(function(result) {
+        if (result && result.hasRemoveAds) {
+          setHasRemoveAds(true);
+        }
+      }).catch(function() {
+        // Silent failure; fall back to localStorage state.
+      });
+    } catch (e) {
+      // Ignore and keep existing state.
+    }
+  })();
+
   function applyRemoveAdsState() {
     var banner = document.getElementById('adBanner');
     if (banner) {
@@ -5116,6 +5292,10 @@ ${HOME_JS_CLOSE}
     hasRemoveAds = !!next;
     try {
       localStorage.setItem(HAS_REMOVE_ADS_KEY, hasRemoveAds ? 'true' : 'false');
+    } catch (e) {}
+    // Keep an analytics-friendly subscription_status property in sync.
+    try {
+      trackSetUserProperty('subscription_status', hasRemoveAds ? 'remove_ads' : 'free');
     } catch (e) {}
     applyRemoveAdsState();
   }
@@ -5143,14 +5323,67 @@ ${HOME_JS_CLOSE}
 
   applyRemoveAdsState();
 
-  function showRemoveAdsPlaceholder() {
-    var msg = 'Remove Ads will be available as an in-app purchase soon.\\n\\nThis purchase will only remove ads (banner and welcome ad) and will not unlock future premium features. Your support helps us keep improving SwimSum and explore premium options for the future.';
+  function showRemoveAdsMessage(message) {
+    var msg = message || 'Thank you for supporting SwimSum by removing ads.';
     try { alert(msg); } catch (e) { console.log(msg); }
   }
+
+  function startRemoveAdsPurchase() {
+    var plugins = (window.Capacitor && window.Capacitor.Plugins) || window.CapacitorPlugins || {};
+    var billing = plugins.BillingBridge || plugins.billingBridge || null;
+    var isCapacitor = typeof window.Capacitor !== 'undefined';
+
+    console.log('Remove Ads: startRemoveAdsPurchase called', {
+      isCapacitor: isCapacitor,
+      hasRemoveAds: hasRemoveAds,
+      hasBillingBridge: !!billing
+    });
+
+    safeTrackEvent('remove_ads_flow_opened', {
+      environment: isCapacitor ? 'capacitor' : 'web'
+    });
+
+    if (!isCapacitor) {
+      showRemoveAdsMessage('Remove Ads purchase is only available in the installed app (not in the browser).');
+      return;
+    }
+
+    if (!billing) {
+      showRemoveAdsMessage('BillingBridge plugin is not available. (Native billing bridge not loaded.)');
+      return;
+    }
+
+    if (typeof billing.purchaseRemoveAds !== 'function') {
+      showRemoveAdsMessage('BillingBridge.purchaseRemoveAds is not available on this build.');
+      return;
+    }
+
+    billing.purchaseRemoveAds().then(function(result) {
+      console.log('Remove Ads: BillingBridge.purchaseRemoveAds() resolved', { result: result });
+      if (result && result.hasRemoveAds) {
+        setHasRemoveAds(true);
+        safeTrackEvent('remove_ads_purchase_success', {});
+        showRemoveAdsMessage('Ads are now turned off on this device. Thank you for supporting SwimSum!');
+      } else {
+        safeTrackEvent('remove_ads_purchase_failed', { reason: 'no_entitlement_in_result' });
+        showRemoveAdsMessage('Purchase completed, but we could not confirm the Remove Ads entitlement. If ads are still showing, please contact support.');
+      }
+    }).catch(function(err) {
+      var msg = (err && err.message) ? err.message : String(err || 'Unknown error');
+      safeTrackEvent('remove_ads_purchase_failed', { reason: msg });
+      console.warn('Remove Ads: BillingBridge.purchaseRemoveAds() failed', err);
+      showRemoveAdsMessage('Purchase not completed: ' + msg);
+    });
+  }
+
   var removeAdsBtn = document.getElementById('removeAdsCta');
-  if (removeAdsBtn) removeAdsBtn.addEventListener('click', showRemoveAdsPlaceholder);
-  // Expose placeholder so other UI surfaces (e.g. Premium overlay) can trigger the same flow
-  window.showRemoveAdsPlaceholder = showRemoveAdsPlaceholder;
+  if (removeAdsBtn) removeAdsBtn.addEventListener('click', function() {
+    console.log('Remove Ads CTA clicked from premium banner');
+    safeTrackEvent('remove_ads_cta_clicked', { source: 'premium_page' });
+    startRemoveAdsPurchase();
+  });
+  // Expose handler so other UI surfaces (e.g. Premium overlay) can trigger the same flow
+  window.showRemoveAdsPlaceholder = startRemoveAdsPurchase;
 
   var supportModal = document.getElementById('supportAfterAdModal');
   function showSupportAfterAdModal() {
@@ -5160,7 +5393,12 @@ ${HOME_JS_CLOSE}
     if (supportModal) supportModal.style.display = 'none';
   }
   var supportModalRemoveAdsBtn = document.getElementById('supportModalRemoveAdsBtn');
-  if (supportModalRemoveAdsBtn) supportModalRemoveAdsBtn.addEventListener('click', function() { hideSupportAfterAdModal(); showRemoveAdsPlaceholder(); });
+  if (supportModalRemoveAdsBtn) supportModalRemoveAdsBtn.addEventListener('click', function() {
+    console.log('Remove Ads CTA clicked from support modal after interstitial');
+    safeTrackEvent('remove_ads_cta_clicked', { source: 'support_after_interstitial' });
+    hideSupportAfterAdModal();
+    startRemoveAdsPurchase();
+  });
   var supportModalCloseBtn = document.getElementById('supportModalCloseBtn');
   if (supportModalCloseBtn) supportModalCloseBtn.addEventListener('click', hideSupportAfterAdModal);
   if (supportModal) supportModal.addEventListener('click', function(e) { if (e.target === supportModal) hideSupportAfterAdModal(); });
