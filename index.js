@@ -2740,17 +2740,22 @@ app.get("/", (req, res) => {
         const shouldStripe = isZoneStriped(label, body, variantSeed);
         
         if (shouldStripe) {
+          // Distinct bands with soft blend only at boundaries (no big overlapping splodge, no hard stripes).
           const n = colors.length;
+          const blendHalf = 8; // % on each side of boundary where colours blend
           const bgStops = [];
           const barStops = [];
-          for (let i = 0; i < n; i++) {
-            const pos = n === 1 ? 0 : (i * 100) / (n - 1);
-            // Wide band (~44% width) so neighbouring colours visibly blend, not hard stripes.
-            const start = Math.max(0, Math.round(pos - 22));
-            const end = Math.min(100, Math.round(pos + 22));
-            bgStops.push(colors[i].bg + ' ' + start + '%', colors[i].bg + ' ' + end + '%');
-            barStops.push(colors[i].bar + ' ' + start + '%', colors[i].bar + ' ' + end + '%');
+          bgStops.push(colors[0].bg + ' 0%');
+          barStops.push(colors[0].bar + ' 0%');
+          for (let i = 0; i < n - 1; i++) {
+            const boundary = ((i + 0.5) / (n - 1)) * 100;
+            const lo = Math.max(0, Math.round(boundary - blendHalf));
+            const hi = Math.min(100, Math.round(boundary + blendHalf));
+            bgStops.push(colors[i].bg + ' ' + lo + '%', colors[i + 1].bg + ' ' + hi + '%');
+            barStops.push(colors[i].bar + ' ' + lo + '%', colors[i + 1].bar + ' ' + hi + '%');
           }
+          bgStops.push(colors[n - 1].bg + ' 100%');
+          barStops.push(colors[n - 1].bar + ' 100%');
           const bgGradient = 'linear-gradient(to bottom, ' + bgStops.join(', ') + ')';
           const barGradient = 'linear-gradient(to bottom, ' + barStops.join(', ') + ')';
           return {
@@ -2761,20 +2766,22 @@ app.get("/", (req, res) => {
           };
         }
         
-        // Stepped gradient: defined bands per zone with softened edges
+        // Stepped/progressive gradient: distinct bands with soft blend only at boundaries (same idea as striped path)
         const n = colors.length;
+        const blendHalf = 8;
         const bgStops = [];
         const barStops = [];
-        for (let i = 0; i < n; i++) {
-          const baseStart = (i * 100) / n;
-          const baseEnd = i < n - 1 ? ((i + 1) * 100) / n : 100;
-          const segmentWidth = 100 / n;
-          const margin = segmentWidth * 0.35; // ~35% overlap so bands visibly blend, not hard lines
-          const start = Math.max(0, Math.round(baseStart - margin));
-          const end = Math.min(100, Math.round(baseEnd + margin));
-          bgStops.push(colors[i].bg + ' ' + start + '%', colors[i].bg + ' ' + end + '%');
-          barStops.push(colors[i].bar + ' ' + start + '%', colors[i].bar + ' ' + end + '%');
+        bgStops.push(colors[0].bg + ' 0%');
+        barStops.push(colors[0].bar + ' 0%');
+        for (let i = 0; i < n - 1; i++) {
+          const boundary = ((i + 0.5) / (n - 1)) * 100;
+          const lo = Math.max(0, Math.round(boundary - blendHalf));
+          const hi = Math.min(100, Math.round(boundary + blendHalf));
+          bgStops.push(colors[i].bg + ' ' + lo + '%', colors[i + 1].bg + ' ' + hi + '%');
+          barStops.push(colors[i].bar + ' ' + lo + '%', colors[i + 1].bar + ' ' + hi + '%');
         }
+        bgStops.push(colors[n - 1].bg + ' 100%');
+        barStops.push(colors[n - 1].bar + ' 100%');
         const bgGradient = 'linear-gradient(to bottom, ' + bgStops.join(', ') + ')';
         const barGradient = 'linear-gradient(to bottom, ' + barStops.join(', ') + ')';
         
@@ -4108,7 +4115,7 @@ app.get("/", (req, res) => {
           '<hr style="border:0; border-top:1px solid #ccc; margin:16px 0 10px;">' +
           '<p style="font-size:14px; margin-bottom:10px;">If you mainly want a cleaner experience, you will also be able to purchase a simple <strong>Remove Ads</strong> option to turn off banners and welcome ads. This only removes ads; future premium features will be separate.</p>' +
             '<button id="premium-remove-ads-btn" type="button" style="width:100%; padding:10px; background:#1e3a8a; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-bottom:10px;">Prefer just to remove ads?</button>' +
-            '<p style="font-size:14px;">Want to influence development? <a href="https://groups.google.com/g/swimsum" target="_blank" rel="noopener" style="color:#0055aa; font-weight:bold;">Join our Google Group and share your ideas!</a></p>' +
+            '<p style="font-size:14px;">Want to influence development? <a href="' + (window.SWIMSUM_GOOGLE_GROUP_URL || 'https://groups.google.com/g/swim-sum-android-app-test') + '" target="_blank" rel="noopener" style="color:#0055aa; font-weight:bold;">Join our Google Group and share your ideas!</a></p>' +
           '<button id="premium-back-btn" type="button" style="width:100%; padding:12px; background:#0055aa; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Back to Generator</button>' +
           '<div style="height:180px;"></div>' +
           '</div>';
@@ -4119,15 +4126,17 @@ app.get("/", (req, res) => {
         if (premiumRemoveAdsBtn) {
           premiumRemoveAdsBtn.addEventListener('click', function() {
             try {
-              try {
-                alert('Starting Remove Ads purchase…');
-              } catch (eAlert) {
-                console.log('Premium Remove Ads button clicked');
+              // Same link as interstitial Remove Ads: single shared entry point
+              if (typeof window.startRemoveAdsFromUI === 'function') {
+                window.startRemoveAdsFromUI('premium_page');
+              } else if (typeof window.startRemoveAdsPurchase === 'function') {
+                window.startRemoveAdsPurchase();
               }
-              startRemoveAdsPurchase();
             } catch (e) {
               try {
-                showRemoveAdsMessage('Remove Ads purchase could not be started: ' + (e && e.message ? e.message : String(e)));
+                if (typeof window.showRemoveAdsMessage === 'function') {
+                  window.showRemoveAdsMessage('Remove Ads purchase could not be started: ' + (e && e.message ? e.message : String(e)));
+                }
               } catch (_) {}
             }
           });
@@ -5230,7 +5239,7 @@ ${HOME_JS_CLOSE}
     <p style="margin:0 0 16px; font-size:14px; line-height:1.45; color:#334155;">Thanks for using the app. Please consider purchasing Remove Ads to turn off the banner and welcome ad and help us keep improving SwimSum. This purchase only removes ads and does not include future premium features. Join our Google Group to discuss ideas and help steer what we build next.</p>
     <div style="display:flex; flex-direction:column; gap:10px;">
       <button type="button" id="supportModalRemoveAdsBtn" style="width:100%; padding:12px; background:#1e3a8a; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer;">Remove ads (support SwimSum)</button>
-      <a id="supportModalGoogleGroupLink" href="https://groups.google.com/g/swimsum" target="_blank" rel="noopener" style="display:block; text-align:center; font-size:13px; color:#2563eb; font-weight:600;">Join the discussion (Google Group)</a>
+      <a id="supportModalGoogleGroupLink" href="" target="_blank" rel="noopener" style="display:block; text-align:center; font-size:13px; color:#2563eb; font-weight:600;">Join the discussion (Google Group)</a>
       <button type="button" id="supportModalCloseBtn" style="width:100%; padding:10px; background:transparent; color:#64748b; border:1px solid #cbd5e1; border-radius:8px; font-size:13px; cursor:pointer;">Maybe later</button>
     </div>
   </div>
@@ -5238,6 +5247,9 @@ ${HOME_JS_CLOSE}
 <script>
 (function() {
   var HAS_REMOVE_ADS_KEY = 'swimsum_has_remove_ads';
+  // Single source for Google Group link (change to your group URL if different)
+  var GOOGLE_GROUP_URL = 'https://groups.google.com/g/swim-sum-android-app-test';
+  window.SWIMSUM_GOOGLE_GROUP_URL = GOOGLE_GROUP_URL;
   // Google Play subscription product ID for the yearly Remove Ads entitlement.
   // Native billing code should use this SKU when granting/removing access and
   // call window.setSwimsumRemoveAds(true/false) accordingly.
@@ -5248,6 +5260,34 @@ ${HOME_JS_CLOSE}
     hasRemoveAds = localStorage.getItem(HAS_REMOVE_ADS_KEY) === 'true';
   } catch (e) {
     hasRemoveAds = false;
+  }
+
+  // Non-throwing analytics helper dedicated to the Remove Ads funnel.
+  // This NEVER blocks billing; if analytics is missing or broken it simply no-ops.
+  function logRemoveAdsEvent(name, params) {
+    try {
+      var g = (typeof globalThis !== 'undefined')
+        ? globalThis
+        : (typeof window !== 'undefined' ? window : null);
+
+      if (!g) return;
+
+      var fn = null;
+      if (typeof g.safeTrackEvent === 'function') {
+        fn = g.safeTrackEvent;
+      } else if (typeof g.trackEvent === 'function') {
+        fn = g.trackEvent;
+      }
+
+      if (!fn) return;
+      fn(name, params || {});
+    } catch (err) {
+      try {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Remove Ads analytics failed', err);
+        }
+      } catch (_ignored) {}
+    }
   }
 
   // On native builds, ask BillingBridge if the user already owns the Remove Ads
@@ -5272,9 +5312,9 @@ ${HOME_JS_CLOSE}
   function applyRemoveAdsState() {
     var banner = document.getElementById('adBanner');
     if (banner) {
-      // In production, a real remove-ads entitlement hides the entire banner.
-      // In dev/test builds we keep the tray visible so the dev toggle is still reachable.
-      if (IS_PRODUCTION_BUILD && hasRemoveAds) {
+      // When the user has a valid Remove Ads entitlement, hide the entire banner tray
+      // so no AdMob content is visible, regardless of build type.
+      if (hasRemoveAds) {
         banner.style.display = 'none';
       } else {
         banner.style.display = 'flex';
@@ -5339,7 +5379,7 @@ ${HOME_JS_CLOSE}
       hasBillingBridge: !!billing
     });
 
-    safeTrackEvent('remove_ads_flow_opened', {
+    logRemoveAdsEvent('remove_ads_flow_opened', {
       environment: isCapacitor ? 'capacitor' : 'web'
     });
 
@@ -5362,28 +5402,38 @@ ${HOME_JS_CLOSE}
       console.log('Remove Ads: BillingBridge.purchaseRemoveAds() resolved', { result: result });
       if (result && result.hasRemoveAds) {
         setHasRemoveAds(true);
-        safeTrackEvent('remove_ads_purchase_success', {});
+        logRemoveAdsEvent('remove_ads_purchase_success', {});
         showRemoveAdsMessage('Ads are now turned off on this device. Thank you for supporting SwimSum!');
       } else {
-        safeTrackEvent('remove_ads_purchase_failed', { reason: 'no_entitlement_in_result' });
+        logRemoveAdsEvent('remove_ads_purchase_failed', { reason: 'no_entitlement_in_result' });
         showRemoveAdsMessage('Purchase completed, but we could not confirm the Remove Ads entitlement. If ads are still showing, please contact support.');
       }
     }).catch(function(err) {
       var msg = (err && err.message) ? err.message : String(err || 'Unknown error');
-      safeTrackEvent('remove_ads_purchase_failed', { reason: msg });
+      logRemoveAdsEvent('remove_ads_purchase_failed', { reason: msg });
       console.warn('Remove Ads: BillingBridge.purchaseRemoveAds() failed', err);
       showRemoveAdsMessage('Purchase not completed: ' + msg);
     });
   }
 
+  // Single shared entry point for "Remove Ads" from any UI (interstitial modal or premium options).
+  // Both surfaces call this so the link is exactly the same.
+  function startRemoveAdsFromUI(source, options) {
+    logRemoveAdsEvent('remove_ads_cta_clicked', { source: source || 'unknown' });
+    if (options && options.hideSupportModal && typeof hideSupportAfterAdModal === 'function') {
+      hideSupportAfterAdModal();
+    }
+    startRemoveAdsPurchase();
+  }
+  window.startRemoveAdsFromUI = startRemoveAdsFromUI;
+  window.startRemoveAdsPurchase = startRemoveAdsPurchase; // fallback so premium overlay can always trigger billing
+  window.logRemoveAdsEvent = logRemoveAdsEvent;
+  window.showRemoveAdsMessage = showRemoveAdsMessage;
+
   var removeAdsBtn = document.getElementById('removeAdsCta');
   if (removeAdsBtn) removeAdsBtn.addEventListener('click', function() {
-    console.log('Remove Ads CTA clicked from premium banner');
-    safeTrackEvent('remove_ads_cta_clicked', { source: 'premium_page' });
-    startRemoveAdsPurchase();
+    startRemoveAdsFromUI('premium_page');
   });
-  // Expose handler so other UI surfaces (e.g. Premium overlay) can trigger the same flow
-  window.showRemoveAdsPlaceholder = startRemoveAdsPurchase;
 
   var supportModal = document.getElementById('supportAfterAdModal');
   function showSupportAfterAdModal() {
@@ -5392,12 +5442,11 @@ ${HOME_JS_CLOSE}
   function hideSupportAfterAdModal() {
     if (supportModal) supportModal.style.display = 'none';
   }
+  var supportModalGoogleGroupLink = document.getElementById('supportModalGoogleGroupLink');
+  if (supportModalGoogleGroupLink) supportModalGoogleGroupLink.href = GOOGLE_GROUP_URL;
   var supportModalRemoveAdsBtn = document.getElementById('supportModalRemoveAdsBtn');
   if (supportModalRemoveAdsBtn) supportModalRemoveAdsBtn.addEventListener('click', function() {
-    console.log('Remove Ads CTA clicked from support modal after interstitial');
-    safeTrackEvent('remove_ads_cta_clicked', { source: 'support_after_interstitial' });
-    hideSupportAfterAdModal();
-    startRemoveAdsPurchase();
+    startRemoveAdsFromUI('support_after_interstitial', { hideSupportModal: true });
   });
   var supportModalCloseBtn = document.getElementById('supportModalCloseBtn');
   if (supportModalCloseBtn) supportModalCloseBtn.addEventListener('click', hideSupportAfterAdModal);

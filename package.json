@@ -6,8 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node scripts/build-www.js",
+    "build:prod": "node scripts/build-www-prod.js",
     "cap:sync": "npx cap sync android",
     "cap:build": "npm run build && npx cap sync android",
+    "cap:build:prod": "npm run build:prod && npx cap sync android",
     "sync:privacy": "node -e \"require('fs').copyFileSync('privacy-policy.html', 'hosting/privacy.html')\"",
     "deploy:hosting": "npm run sync:privacy && firebase deploy --only hosting",
     "connect-phone": "powershell -ExecutionPolicy Bypass -File ./connect-phone.ps1"

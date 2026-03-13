@@ -53,14 +53,14 @@ POST-LAUNCH ENHANCEMENTS (V1.1+):
 Project: SwimSum - Swim Workout Generator
 Working title(s): SwimSum (final name)
 
-Last updated: 2026-03-05
+Last updated: 2026-03-11
 
 ### Version and release (2026-03-05)
 - **Version 1.0.12 (versionCode 34)** – closed-testing build with hardened auth, improved gradients, and initial AdMob/Billing wiring. In `android/app/build.gradle`: versionCode 34, versionName "1.0.12".
 - **Closed testing:** A release must have an app bundle **attached** (Add app bundle / Upload). If the release shows "No app bundles have been added" or "Available on 0 devices", add the new AAB to that release and roll out again.
 - **Gradient blend:** In `index.js` `gradientStyleForZones`, stripe bands use ±22% and stepped bands use ~35% overlap so colours visibly blend instead of hard stripes.
 - **Ads:** Test ads are default (`TEST_ADS` true). For production/real ads, build with `TEST_ADS=false` (e.g. set env or build flag). Production IDs are in code (BANNER_PROD_ID, INTERSTITIAL_PROD_ID). Remove Ads subscription not yet purchasable; Play Billing dependency added, purchase flow still TODO.
-- **Connect phone to Android Studio (wireless):** Pairing by QR/code has not worked; use **same hotspot** (PC and phone on same hotspot). Wireless debugging port changes each time – in Developer options note the IP:port (e.g. 192.168.0.16:44271). Run: `adb connect <IP>:<port>` (requires Android SDK Platform Tools / `adb` on PATH). If `adb` not found, install Platform Tools and add to PATH.
+- **Connect phone to Android Studio (wireless):** Pairing by QR/code has not worked; use **same hotspot** (PC and phone on same hotspot). Wireless debugging port changes each time – in Developer options note the IP:port (e.g. 192.168.0.16:44271). **Authoritative procedure:** from the project root run `npm run connect-phone -- <IP>:<port>`. This calls `connect-phone.ps1`, which uses the stored adb path (`C:\Users\jesse\AppData\Local\Android\Sdk\platform-tools\adb.exe`) to execute `adb connect <IP>:<port>`. If the script reports that adb.exe is missing, update the path inside `connect-phone.ps1` or reinstall Platform Tools. Future agents must not try to pair via QR/code first; always follow this hotspot + `npm run connect-phone` workflow.
 
 ### Version and release (2026-03-10 – Billing + Analytics)
 - **Current Version: 1.0.13 (versionCode 35)** – Android `app` module now sets `versionCode 35`, `versionName "1.0.13"`. This is the first build with working Google Play Billing integration for the `remove_ads_yearly` subscription plus Firebase Analytics wiring.
@@ -105,8 +105,12 @@ Last updated: 2026-03-05
   - Current closed-testing builds may ship before updating Data Safety again; before **production** we must confirm:
     - In Play Console → App content → Data safety: “App activity/Usage data” and “Identifiers” are marked as collected for **Analytics/Product improvement** and **not required for app functionality**, and as **not shared** beyond Google services.
     - Privacy policy text (hosted on the SwimSum site / Google Sites) includes a short statement noting we use Firebase Analytics to collect anonymized usage data (country, app usage frequency, workout generation behaviour, subscription events) to improve SwimSum and that we do not store names/emails as analytics properties.
+  - **Checklist:** See **DECLARATIONS-AND-REVIEW.md** for a double-check list (Data safety, ads, permissions, account deletion) and steps for submitting for review (closed testing and production).
+- **Premium options Remove Ads fix (2026-03-10):**
+  - The "Prefer just to remove ads?" button in the premium overlay lives in a different IIFE from the Remove Ads billing code, so it was calling `startRemoveAdsPurchase()` which was not in scope → ReferenceError after the alert, so nothing happened. Fixed by having the premium button call `window.showRemoveAdsPlaceholder()` and optionally `window.logRemoveAdsEvent()`; those are now exposed on `window` from the Remove Ads IIFE. The redundant "Starting Remove Ads purchase…" alert was removed.
+  - **Google Group link:** A single constant `GOOGLE_GROUP_URL` (and `window.SWIMSUM_GOOGLE_GROUP_URL`) is set in the Remove Ads IIFE; the support modal "Join the discussion" link and the premium overlay "Join our Google Group" link both use it. Default is `https://groups.google.com/g/swimsum`. If your actual group URL differs, change `GOOGLE_GROUP_URL` in `index.js` (search for "GOOGLE_GROUP_URL") and rebuild.
 - **Immediate next step (March 2026 Pause In Action):**
-  - Human will generate a new **signed AAB** from Android Studio for version **1.0.13 (35)** and upload it to the **closed testing** track in Play Console. Once processed, install from the Play Store test link on a physical device and re-test:
+  - Human will generate a new **signed AAB** from Android Studio for version **1.0.14+ (versionCode 36+)** and upload it to the **closed testing** track in Play Console. Once processed, install from the Play Store test link on a physical device and re-test:
     - Remove Ads purchase flow (billing dialog appears, purchase succeeds with no “not configured for billing” error when using the Play-signed build and correct test account).
     - Ads behaviour (test vs production IDs as configured).
     - Analytics events visible in Firebase DebugView from the Play-signed build.
@@ -1123,6 +1127,17 @@ Milestone: Version 25 (1.0.3) built for production upload. Signing alias 'swimsu
 - ⏳ **Ads:** Confirm AdMob test banners render correctly in debug and that production AdMob IDs and Consent/Privacy configuration are ready for release; verify banners appear in closed testing builds without layout regressions.
 - ⏳ **Closed testing build:** Push a fresh closed‑testing release with the final sign‑in behaviour and capture tester feedback (especially around auth friction, onboarding clarity, lock‑button behaviour, icon appearance, and ad intrusiveness). **Current status:** hardened‑auth build 1.0.7 (versionCode 29) with new onboarding, lock button, and SwimSum S‑logo launcher icon has been prepared and submitted to the closed testing track; review and tester feedback are pending.
 - ⏳ **Marketing hooks & site:** Ensure privacy policy and supporting pages are live at `https://swimsum.com` (backed by Firebase Hosting), and sketch first‑pass plan for using Firebase Auth emails (with explicit consent) to announce future premium tiers and content (e.g., drill videos, technique tips).
+
+### Version and release (2026-03-11 – Billing polish & gradients)
+- **Remove Ads entitlement (banner tray):** `applyRemoveAdsState` in `index.js` now hides the entire bottom banner tray (`#adBanner`) whenever `hasRemoveAds === true`, regardless of `IS_PRODUCTION_BUILD`. After a successful `remove_ads_yearly` subscription purchase (including test-card purchases via license testing), both the interstitial and the bottom banner disappear on device builds from Play tracks.
+- **Gradient blend for multi-effort cards:** In `gradientStyleForZones`, the **striped** path (when `isZoneStriped` is true) was rewritten so multi-effort cards get **distinct colour bands with soft blend only at boundaries**. Stops are placed at 0%, at each zone boundary ±8% (blend zone), and 100%; no more wide overlapping bands, so colours stay definitive (e.g. blue, yellow, orange) and blend only where they meet. The non-striped (stepped) path is unchanged.
+
+### Handoff note – 2026-03-11 (Open test prep, connect phone, iOS)
+- **Connect phone (wireless):** User provides IP:port (e.g. `192.168.137.191:38337`). Run **only** `npm run connect-phone -- <IP>:<port>` from project root. Do not suggest QR/code pairing or raw `adb` unless the script fails; the script uses the stored adb path in `connect-phone.ps1`. Phone and PC must be on the same hotspot.
+- **Play Console:** Production access granted. License testing is **account-level**: leave the app (back to main Play Console), then **Settings → License testing**, add tester Gmail; test-card purchases then work on closed/open test builds. Local Android Studio (debug) builds do **not** see Play entitlements (different signature)—banner/ads removal and billing must be verified on a **Play-signed build** from the test track.
+- **Billing + gradients (this session):** Banner tray now hides when `hasRemoveAds` is true (all builds). Striped multi-effort gradients use distinct bands with ~8% blend at boundaries. Next: build new AAB with these changes, upload to closed or open test, install from Play Store, re-test test-card purchase (interstitial + banner should both disappear) and gradient appearance.
+- **Open test / production:** Plan is open test next (share opt-in link with friends), then production when satisfied. No mandatory 14-day open test; can go straight to production if desired.
+- **iOS / Apple:** Organization enrollment in progress (creativearts.com, D-U-N-S 234466045). When approved: cloud Mac or 2018+ Mac mini for Xcode; same repo, `npx cap add ios` / `npx cap sync ios` on Mac; single codebase for Android + iOS.
 
 ## Monetisation & Ad Strategy (Feb 2026)
 
