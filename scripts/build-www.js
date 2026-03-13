@@ -22,7 +22,24 @@ function fetchPage(pagePath) {
   });
 }
 
+function copyHtml2Canvas(destDir) {
+  const src = path.join(__dirname, '..', 'node_modules', 'html2canvas', 'dist', 'html2canvas.js');
+  if (!fs.existsSync(src)) {
+    console.warn('html2canvas not found in node_modules; run npm install. Share/save image may not work in app.');
+    return;
+  }
+  const dest = path.join(destDir, 'html2canvas.min.js');
+  fs.copyFileSync(src, dest);
+  console.log('Copied html2canvas to', path.relative(path.join(__dirname, '..'), dest));
+}
+
 async function build() {
+  const publicDir = path.join(__dirname, '..', 'public');
+  if (fs.existsSync(publicDir)) {
+    copyHtml2Canvas(publicDir);
+  }
+  copyHtml2Canvas(WWW_DIR);
+
   console.log('Starting temporary server on port', PORT, '...');
   const server = spawn('node', ['index.js'], {
     cwd: path.join(__dirname, '..'),

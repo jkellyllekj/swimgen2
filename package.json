@@ -26,6 +26,7 @@
     "@types/node": "^22.19.5",
     "express": "^5.2.1",
     "firebase": "^12.9.0",
+    "html2canvas": "^1.4.1",
     "node-fetch": "^3.3.2",
     "openai": "^6.16.0",
     "typescript": "^5.9.3"

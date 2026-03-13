@@ -1455,7 +1455,7 @@ app.get("/", (req, res) => {
       </form>
     </div>
 
-    <div style="max-width:520px; box-sizing:border-box; padding:0; display:flex; flex-direction:column;">
+    <div id="workoutCaptureRegion" style="max-width:520px; box-sizing:border-box; padding:0; display:flex; flex-direction:column;">
 
       <div id="resultWrap" style="margin-top:4px; min-height:400px; padding:0; background:transparent; border-radius:0; border:none; box-shadow:none; order:2;">
         <div id="errorBox" style="display:none; margin-bottom:10px; padding:10px; background:#fff; border:1px solid #e7e7e7; border-radius:8px;"></div>
@@ -1467,11 +1467,8 @@ app.get("/", (req, res) => {
               <button id="regenBtn2" class="icon-silhouette" aria-label="Regenerate">
                 <img class="dolphinIcon" src="/assets/dolphins/dolphin-base.png" style="width:40px; height:40px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
               </button>
-              <div style="position:relative; width:26px; height:26px; display:flex; align-items:center; justify-content:center;">
-                <input type="color" oninput="setBgColor(this.value)" style="position:absolute; width:100%; height:100%; opacity:0.01; cursor:pointer; z-index:2;">
-                <span style="font-size:22px; z-index:1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128167;</span>
-              </div>
-              <button id="bgCycleBtn2" class="icon-silhouette" style="font-size:22px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));">&#128444;&#65039;</button>
+              <button id="settingsBtn" type="button" aria-label="Settings" class="icon-silhouette" style="font-size:22px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); padding:4px;" title="Settings">&#9881;</button>
+              <button id="shareBtn" type="button" aria-label="Share or save workout" class="icon-silhouette" style="font-size:22px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); padding:2px; line-height:1; display:inline-flex; align-items:center; justify-content:center;" title="Share or save"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22" style="display:block;"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
             </div>
             <span id="workoutNameText" style="font-weight:700; font-size:14px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow: var(--boulder-shadow);"></span>
           </div>
@@ -1485,6 +1482,28 @@ app.get("/", (req, res) => {
       <div id="sticky-footer-panel" style="max-width:520px; width:100%; order:3;">
         <div id="totalBox" style="display:none; text-align:right; margin-top:8px;"><span id="totalText" style="display:inline-block; font-weight:700; font-size:15px; font-variant:small-caps; color:#111; background:#ffff00; padding:6px 14px; border-radius:4px; border:1px solid #111; box-shadow:0 2px 6px rgba(0,0,0,0.25);"></span></div>
         <div id="footerBox" class="glassSummary" style="display:none; margin-top:8px; padding:12px;"></div>
+      </div>
+    </div>
+
+    <div id="settingsPanel" style="display:none; position:fixed; inset:0; z-index:10001; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+      <div id="settingsPanelInner" style="background:linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border-radius:16px; padding:24px; max-width:320px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="margin:0; font-size:1.2rem;">Settings</h3>
+          <button id="settingsPanelClose" type="button" aria-label="Close" style="background:none; border:none; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div>
+            <label style="display:block; font-weight:600; margin-bottom:6px;">Colour</label>
+            <input type="color" id="settingsColorPicker" oninput="setBgColor(this.value)" value="#40c9e0" style="width:100%; height:40px; border-radius:8px; cursor:pointer; border:2px solid #cbd5e1;">
+          </div>
+          <div>
+            <label style="display:block; font-weight:600; margin-bottom:6px;">Background</label>
+            <button type="button" id="settingsBgCycle" style="width:100%; padding:10px; background:#1e3a8a; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Cycle background image</button>
+          </div>
+          <div>
+            <button type="button" id="settingsHelpBtn" style="width:100%; padding:10px; background:#0f172a; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">How to use SwimSum</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -4051,9 +4070,198 @@ app.get("/", (req, res) => {
       document.getElementById("generateBtn2")?.addEventListener("click", () => {
         document.getElementById("generateBtn")?.click();
       });
-      document.getElementById("bgCycleBtn2")?.addEventListener("click", () => {
-        document.getElementById("bgCycleBtn")?.click();
-      });
+
+      (function initSettingsPanel() {
+        const panel = document.getElementById("settingsPanel");
+        const closeBtn = document.getElementById("settingsPanelClose");
+        const settingsBtn = document.getElementById("settingsBtn");
+        const settingsColorPicker = document.getElementById("settingsColorPicker");
+        const settingsBgCycle = document.getElementById("settingsBgCycle");
+        const settingsHelpBtn = document.getElementById("settingsHelpBtn");
+        function openPanel() {
+          if (!panel) return;
+          if (typeof checkLock === "function" && checkLock()) {
+            if (typeof showToast === "function") showToast("Screen locked. Hold the lock to unlock.");
+            return;
+          }
+          panel.style.display = "flex";
+        }
+        function closePanel() {
+          if (panel) panel.style.display = "none";
+        }
+        settingsBtn?.addEventListener("click", openPanel);
+        closeBtn?.addEventListener("click", closePanel);
+        panel?.addEventListener("click", function(e) {
+          if (e.target === panel) closePanel();
+        });
+        settingsBgCycle?.addEventListener("click", function() {
+          if (typeof cycleBackgroundManually === "function") cycleBackgroundManually();
+        });
+        settingsHelpBtn?.addEventListener("click", function() {
+          closePanel();
+          if (typeof runOnboardingSequence === "function") runOnboardingSequence({ force: true });
+          else if (typeof window.runOnboardingSequence === "function") window.runOnboardingSequence({ force: true });
+        });
+        if (settingsColorPicker) {
+          var bgA = document.getElementById("bgA");
+          if (bgA && bgA.style.backgroundColor) {
+            var c = bgA.style.backgroundColor;
+            if (c && c.indexOf("rgb") === 0) {
+              var m = c.match(/\\d+/g);
+              if (m && m.length >= 3) settingsColorPicker.value = "#" + [1,2,3].map(function(i){ var x = parseInt(m[i-1],10); return (x < 16 ? "0" : "") + x.toString(16); }).join("");
+            }
+          }
+        }
+      })();
+
+      (function initShareButton() {
+        const shareBtn = document.getElementById("shareBtn");
+        const SWIMSUM_WEB_URL = "https://swimsum.com";
+        function captureWorkout(cb) {
+          var el = document.getElementById("workoutCaptureRegion");
+          if (!el) {
+            if (typeof showToast === "function") showToast("No workout to capture.");
+            return;
+          }
+          if (typeof html2canvas === "undefined") {
+            if (typeof showToast === "function") showToast("Capture not ready. Try again in a moment.");
+            return;
+          }
+          if (typeof showToast === "function") showToast("Preparing…");
+          var resultWrap = document.getElementById("resultWrap");
+          var scrollArea = document.getElementById("workout-list-scroll-area");
+          var saved = { rw: {}, sa: {} };
+          if (resultWrap) {
+            saved.rw.overflow = resultWrap.style.overflow;
+            saved.rw.height = resultWrap.style.height;
+            saved.rw.maxHeight = resultWrap.style.maxHeight;
+            resultWrap.style.overflow = "visible";
+            resultWrap.style.height = "auto";
+            resultWrap.style.maxHeight = "none";
+          }
+          if (scrollArea) {
+            saved.sa.overflow = scrollArea.style.overflow;
+            saved.sa.height = scrollArea.style.height;
+            saved.sa.maxHeight = scrollArea.style.maxHeight;
+            scrollArea.style.overflow = "visible";
+            scrollArea.style.height = "auto";
+            scrollArea.style.maxHeight = "none";
+          }
+          var opts = { scale: 2, useCORS: true, logging: false, ignoreElements: function(node) { return node.id === "adBanner" || (node.classList && node.classList.contains("ad-container")); } };
+          html2canvas(el, opts).then(function(canvas) {
+            if (resultWrap) {
+              resultWrap.style.overflow = saved.rw.overflow || "";
+              resultWrap.style.height = saved.rw.height || "";
+              resultWrap.style.maxHeight = saved.rw.maxHeight || "";
+            }
+            if (scrollArea) {
+              scrollArea.style.overflow = saved.sa.overflow || "";
+              scrollArea.style.height = saved.sa.height || "";
+              scrollArea.style.maxHeight = saved.sa.maxHeight || "";
+            }
+            var scale = 2;
+            var lineHeight = 18 * scale;
+            var footerHeight = lineHeight * 3 + 16 * scale;
+            var out = document.createElement("canvas");
+            out.width = canvas.width;
+            out.height = canvas.height + footerHeight;
+            var ctx = out.getContext("2d");
+            ctx.drawImage(canvas, 0, 0);
+            ctx.fillStyle = "#1e293b";
+            ctx.font = "600 " + (14 * scale) + "px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            ctx.textAlign = "center";
+            var y = canvas.height + lineHeight;
+            ctx.fillText("Did you Swim Sum today?", out.width / 2, y);
+            y += lineHeight;
+            ctx.fillText("SwimSum.com", out.width / 2, y);
+            y += lineHeight;
+            ctx.font = "500 " + (12 * scale) + "px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            ctx.fillText("Instant Workout Generator", out.width / 2, y);
+            if (cb) cb(out);
+          }).catch(function() {
+            if (resultWrap) {
+              resultWrap.style.overflow = saved.rw.overflow || "";
+              resultWrap.style.height = saved.rw.height || "";
+              resultWrap.style.maxHeight = saved.rw.maxHeight || "";
+            }
+            if (scrollArea) {
+              scrollArea.style.overflow = saved.sa.overflow || "";
+              scrollArea.style.height = saved.sa.height || "";
+              scrollArea.style.maxHeight = saved.sa.maxHeight || "";
+            }
+            if (typeof showToast === "function") showToast("Could not capture workout.");
+          });
+        }
+        shareBtn?.addEventListener("click", function() {
+          if (typeof checkLock === "function" && checkLock()) {
+            if (typeof showToast === "function") showToast("Screen locked. Hold the lock to unlock.");
+            return;
+          }
+          var nameDisplay = document.getElementById("workoutNameDisplay");
+          var cards = document.getElementById("cards");
+          if (!nameDisplay || nameDisplay.style.display === "none" || !cards || cards.children.length === 0) {
+            if (typeof showToast === "function") showToast("Generate a workout first.");
+            return;
+          }
+          var menu = document.getElementById("shareMenuOverlay");
+          if (menu) {
+            menu.style.display = "flex";
+            return;
+          }
+          menu = document.createElement("div");
+          menu.id = "shareMenuOverlay";
+          menu.style.cssText = "position:fixed; inset:0; z-index:10002; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;";
+          menu.innerHTML = '<div style="background:#fff; border-radius:12px; padding:20px; max-width:300px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.3);">' +
+            '<p style="margin:0 0 16px; font-weight:bold;">Share workout</p>' +
+            '<p style="margin:0 0 12px; font-size:13px; color:#555;">Save as image or share to email, socials, or print.</p>' +
+            '<button type="button" id="shareMenuSave" style="width:100%; padding:12px; margin-bottom:8px; background:#0f172a; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Save as image (JPG)</button>' +
+            '<button type="button" id="shareMenuShare" style="width:100%; padding:12px; margin-bottom:8px; background:#1e3a8a; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Share (email, print, socials)</button>' +
+            '<button type="button" id="shareMenuCancel" style="width:100%; padding:10px; margin-top:4px; background:#e2e8f0; border:none; border-radius:8px; cursor:pointer;">Cancel</button>' +
+            '</div>';
+          menu.addEventListener("click", function(e) {
+            if (e.target === menu) { menu.style.display = "none"; }
+          });
+          document.body.appendChild(menu);
+          document.getElementById("shareMenuCancel").addEventListener("click", function() { menu.style.display = "none"; });
+          document.getElementById("shareMenuSave").addEventListener("click", function() {
+            menu.style.display = "none";
+            captureWorkout(function(canvas) {
+              var dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+              var a = document.createElement("a");
+              a.href = dataUrl;
+              a.download = "swimsum-workout.jpg";
+              a.click();
+              if (typeof showToast === "function") showToast("Image saved.");
+            });
+          });
+          document.getElementById("shareMenuShare").addEventListener("click", function() {
+            menu.style.display = "none";
+            captureWorkout(function(canvas) {
+              canvas.toBlob(function(blob) {
+                if (!blob) {
+                  if (typeof showToast === "function") showToast("Could not create image.");
+                  return;
+                }
+                var f = new File([blob], "swimsum-workout.jpg", { type: "image/jpeg" });
+                var url = (typeof Capacitor !== "undefined" && Capacitor.getPlatform && Capacitor.getPlatform() === "android") ? (window.SWIMSUM_PLAY_STORE_URL || SWIMSUM_WEB_URL) : (typeof Capacitor !== "undefined" && Capacitor.getPlatform && Capacitor.getPlatform() === "ios") ? (window.SWIMSUM_APP_STORE_URL || SWIMSUM_WEB_URL) : SWIMSUM_WEB_URL;
+                var shareText = "My SwimSum workout. Get the app: " + url;
+                if (navigator.share && (navigator.canShare ? navigator.canShare({ files: [f], text: shareText, url: url }) : true)) {
+                  navigator.share({ files: [f], text: shareText, url: url }).then(function() {
+                    if (typeof showToast === "function") showToast("Shared.");
+                  }).catch(function() {});
+                } else {
+                  var a = document.createElement("a");
+                  a.href = canvas.toDataURL("image/jpeg", 0.92);
+                  a.download = "swimsum-workout.jpg";
+                  a.click();
+                  if (typeof showToast === "function") showToast("Image saved. Share the file from your device.");
+                }
+              }, "image/jpeg", 0.92);
+            });
+          });
+          menu.style.display = "flex";
+        });
+      })();
 
       const helpBtn = document.getElementById("helpBtn");
       if (helpBtn) {
@@ -4776,7 +4984,20 @@ app.get("/", (req, res) => {
    if (typeof firebase !== "undefined") firebase.initializeApp(window.firebaseConfig);
   </script>
   <script src="/offline-engine.js"></script>
+  <script src="html2canvas.min.js"></script>
 </head>
+<style>
+  @media print {
+    body.print-workout-only * { visibility: hidden; }
+    body.print-workout-only #appShell { visibility: visible; }
+    body.print-workout-only #appShell * { visibility: hidden; }
+    body.print-workout-only #workoutCaptureRegion,
+    body.print-workout-only #workoutCaptureRegion * { visibility: visible; }
+    body.print-workout-only #printFooterLink { visibility: visible; }
+    body.print-workout-only #workoutCaptureRegion { position: relative; }
+    body.print-workout-only #printFooterLink { padding: 12px; text-align: center; font-size: 12px; color: #333; }
+  }
+</style>
 <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(180deg, #40c9e0 0%, #2db8d4 100%); min-height:100vh; padding-bottom: env(safe-area-inset-bottom, 15px); box-sizing:border-box;">
 <script>try{if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.SplashScreen)window.Capacitor.Plugins.SplashScreen.hide();}catch(e){}</script>
 <div class="safe-area-spacer"></div>
